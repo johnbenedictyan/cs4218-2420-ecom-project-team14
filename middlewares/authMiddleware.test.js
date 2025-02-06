@@ -22,20 +22,18 @@ describe("Auth Middleware", () => {
     role: 1,
   };
 
-  beforeAll(() => {
-    userModel = jest.fn();
-    userModel.findById = jest.fn((userId) =>
-      userId == 1
-        ? adminObject
-        : userId == 2
-          ? nonAdminObject
-          : nonExistentUserObject
-    );
+  userModel = jest.fn();
+  userModel.findById = jest.fn((userId) =>
+    userId == 1
+      ? adminObject
+      : userId == 2
+        ? nonAdminObject
+        : nonExistentUserObject
+  );
 
-    faultyUserModel = jest.fn();
-    faultyUserModel.findById = jest.fn().mockImplementation(() => {
-      throw new Error();
-    });
+  faultyUserModel = jest.fn();
+  faultyUserModel.findById = jest.fn().mockImplementation(() => {
+    throw new Error();
   });
 
   beforeEach(() => {
@@ -52,6 +50,14 @@ describe("Auth Middleware", () => {
   });
 
   const mockNextFn = jest.fn();
+
+  const mockJWT = jest.fn();
+  mockJWT.verify = jest.fn();
+
+  const faultyMockJWT = jest.fn();
+  faultyMockJWT.verify = jest.fn().mockImplementation(() => {
+    throw new Error();
+  });
 
   const fakeResponse = {
     status: jest.fn().mockReturnThis(),
@@ -88,13 +94,36 @@ describe("Auth Middleware", () => {
 
   describe("Require Login Middleware", () => {
     it("Should call the next function when authorization headers are present", async () => {
-      await requireSignIn(nonAdminAuthRequest, undefined, mockNextFn);
+      await requireSignIn(mockJWT)(
+        nonAdminAuthRequest,
+        fakeResponse,
+        mockNextFn
+      );
       expect(mockNextFn).toBeCalledTimes(1);
     });
 
     it("Should not call the next function when authorization headers are not present", async () => {
-      await requireSignIn(nonLoggedInAuthRequest, undefined, mockNextFn);
+      await requireSignIn(mockJWT)(
+        nonLoggedInAuthRequest,
+        fakeResponse,
+        mockNextFn
+      );
       expect(mockNextFn).not.toBeCalled();
+    });
+
+    it("Should not call the next function when JWT has an error", async () => {
+      await requireSignIn(faultyMockJWT)(
+        nonAdminAuthRequest,
+        fakeResponse,
+        mockNextFn
+      );
+      expect(mockNextFn).not.toBeCalled();
+      expect(fakeResponse.status).toBeCalledWith(401);
+      expect(fakeResponse.send).toBeCalledWith({
+        success: false,
+        error: new Error(),
+        message: "Error in admin middleware",
+      });
     });
   });
 
@@ -107,6 +136,10 @@ describe("Auth Middleware", () => {
       );
       expect(mockNextFn).not.toBeCalled();
       expect(fakeResponse.status).toBeCalledWith(401);
+      expect(fakeResponse.send).toBeCalledWith({
+        success: false,
+        message: "Unauthorized Access",
+      });
     });
 
     it("Should return unauthorized when authorization headers are present but with non-existent user", async () => {
@@ -117,6 +150,10 @@ describe("Auth Middleware", () => {
       );
       expect(mockNextFn).not.toBeCalled();
       expect(fakeResponse.status).toBeCalledWith(401);
+      expect(fakeResponse.send).toBeCalledWith({
+        success: false,
+        message: "Unauthorized Access",
+      });
     });
 
     it("Should call next function when authorization headers are present but with existent non-admin user", async () => {

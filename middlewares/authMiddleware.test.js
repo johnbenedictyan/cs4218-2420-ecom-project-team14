@@ -31,6 +31,11 @@ describe("Auth Middleware", () => {
           ? nonAdminObject
           : nonExistentUserObject
     );
+
+    faultyUserModel = jest.fn();
+    faultyUserModel.findById = jest.fn().mockImplementation(() => {
+      throw new Error();
+    });
   });
 
   beforeEach(() => {
@@ -57,30 +62,29 @@ describe("Auth Middleware", () => {
     headers: {
       authorization: JWT.sign(nonAdminObject, fakeJWTSecret),
     },
-    user: nonAdminObject
+    user: nonAdminObject,
   };
 
   const adminAuthRequest = {
     headers: {
       authorization: JWT.sign(adminObject, fakeJWTSecret),
     },
-    user: adminObject
+    user: adminObject,
   };
 
   const nonExistentUserAuthRequest = {
     headers: {
       authorization: JWT.sign(nonExistentUserObject, fakeJWTSecret),
     },
-    user: nonExistentUserObject
+    user: nonExistentUserObject,
   };
 
   const nonLoggedInAuthRequest = {
     headers: {
       authorization: undefined,
     },
-    user: undefined
+    user: undefined,
   };
-
 
   describe("Require Login Middleware", () => {
     it("Should call the next function when authorization headers are present", async () => {
@@ -128,6 +132,20 @@ describe("Auth Middleware", () => {
     it("Should call next function when authorization headers are present but with existent admin user", async () => {
       await isAdmin(userModel)(adminAuthRequest, fakeResponse, mockNextFn);
       expect(mockNextFn).toBeCalledTimes(1);
+    });
+
+    it("return unauthorized when user model throws an error", async () => {
+      await isAdmin(faultyUserModel)(
+        adminAuthRequest,
+        fakeResponse,
+        mockNextFn
+      );
+      expect(fakeResponse.send).toBeCalledWith({
+        success: false,
+        error: new Error(),
+        message: "Error in admin middleware",
+      });
+      expect(mockNextFn).toBeCalledTimes(0);
     });
   });
 });

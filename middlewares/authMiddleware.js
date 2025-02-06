@@ -1,5 +1,8 @@
+import JWT from "jsonwebtoken";
+import userModel from "../models/userModel.js";
+
 // Protected routes token base
-export const requireSignIn = (JWT) => async (req, res, next) => {
+export const requireSignInFn = (JWT) => async (req, res, next) => {
   if (!req.headers.authorization) {
     return res.status(401).send({
       success: false,
@@ -24,8 +27,10 @@ export const requireSignIn = (JWT) => async (req, res, next) => {
   }
 };
 
+export const requireSignIn = requireSignInFn(JWT);
+
 //admin access
-export const isAdmin = (userModel) => async (req, res, next) => {
+export const isAdminFn = (userModel) => async (req, res, next) => {
   if (!req.user) {
     return res.status(401).send({
       success: false,
@@ -50,3 +55,5 @@ export const isAdmin = (userModel) => async (req, res, next) => {
     });
   }
 };
+
+export const isAdmin = isAdminFn(userModel);

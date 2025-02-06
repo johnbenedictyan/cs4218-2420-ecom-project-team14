@@ -27,9 +27,12 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
 
-      - name: Install Dependencies
+      - name: Install Frontend Dependencies
         run: npm ci
         working-directory: client
+
+      - name: Install Jest Dependencies
+        run: npm ci
 
       - name: Run Frontend Tests
         run: npm run test:frontend:no-coverage

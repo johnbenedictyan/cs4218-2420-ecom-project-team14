@@ -33,4 +33,3 @@ jobs:
 
       - name: Run Frontend Tests
         run: npm run test:frontend:no-coverage
-        working-directory: client

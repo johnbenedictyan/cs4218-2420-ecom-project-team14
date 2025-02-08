@@ -6,11 +6,10 @@ import { useAuth } from "../context/auth";
 import { useCart } from "../context/cart";
 import useCategory from "../hooks/useCategory";
 import "../styles/Header.css";
-import SearchInput from "./Form/SearchInput";
 
-const Header = () => {
+const Header = ({ searchInput }) => {
   const [auth, setAuth] = useAuth();
-  const [cart] = useCart();
+  const [cart, setCart] = useCart();
   const categories = useCategory();
 
   const handleLogout = () => {
@@ -42,7 +41,7 @@ const Header = () => {
             🛒 Virtual Vault
           </Link>
           <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
-            <SearchInput />
+            {searchInput}
             <li className="nav-item">
               <NavLink to="/" className="nav-link ">
                 Home
@@ -63,7 +62,7 @@ const Header = () => {
                   </Link>
                 </li>
                 {categories?.map((c) => (
-                  <li>
+                  <li key={c.slug}>
                     <Link className="dropdown-item" to={`/category/${c.slug}`}>
                       {c.name}
                     </Link>
@@ -111,7 +110,7 @@ const Header = () => {
                     <li>
                       <NavLink
                         onClick={handleLogout}
-                        to="/login"
+                        to="/"
                         className="dropdown-item"
                       >
                         Logout

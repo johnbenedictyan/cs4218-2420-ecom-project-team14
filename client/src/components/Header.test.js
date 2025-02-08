@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom/extend-expect";
-import { fireEvent, render, waitFor } from "@testing-library/react";
+import { fireEvent, getByText, render, waitFor } from "@testing-library/react";
 import { describe } from "node:test";
 import React from "react";
 import toast from "react-hot-toast";
@@ -48,7 +48,7 @@ describe("Header Component", () => {
     useAuth.mockReturnValue([null, mockSetAuth]);
     useCategory.mockReturnValue([]);
 
-    const { getByRole } = render(
+    const { getByRole, getByTitle } = render(
       <MemoryRouter>
         <Header />
       </MemoryRouter>
@@ -73,6 +73,7 @@ describe("Header Component", () => {
     );
 
     // Check cart badge
+    expect(getByTitle(mockCategories.length.toString())).toBeInTheDocument();
   });
 
   it("renders category links correctly", () => {

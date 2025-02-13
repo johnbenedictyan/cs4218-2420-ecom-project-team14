@@ -26,6 +26,35 @@ export const registerController = async (req, res) => {
     if (!answer) {
       return res.send({ message: "Answer is Required" });
     }
+
+    // Add validation for password length (Need to be minimum of length 6)
+    if (password.length < 6) {
+      return res.status(404).send({ message: "The length of the password should be at least 6 characters long"});
+    }
+
+    // Add validation for email check 
+    /* Conditions which are added are as follows:
+    Local part
+    1) Cannot start with dot
+    2) Cannot have consecutive dots
+    3) Cannot end with dot
+    4) Restrict characters to alphanumeric, underscore and dot
+    5) Maximally is 64 characters long
+    
+    Domain part
+    1) Cannot start with dot
+    2) Cannot have consecutive dots
+    3) Cannot end with dot
+    4) Cannot start with underscore
+    5) Restrict characters to alphanumeric and dot
+    6) Maximally is 64 characters long
+    
+    */
+    const emailRegex = /^(?!^\.)(?!.*\.@)(?!.*\.{2})[a-zA-Z0-9_.]{1,64}@(?!@\.)(?!.*\.$)(?!.*\.{2})[a-zA-Z0-9.]{1,64}$/    
+    if (!email.match(emailRegex)) {
+      return res.status(404).send({ message: "The email is in an invalid format"});
+    }
+
     //check user
     const exisitingUser = await userModel.findOne({ email });
     //exisiting user
@@ -56,7 +85,7 @@ export const registerController = async (req, res) => {
     console.log(error);
     res.status(500).send({
       success: false,
-      message: "Errro in Registeration",
+      message: "Error in Registeration",
       error,
     });
   }

@@ -6,6 +6,7 @@ import fs from "fs";
 import slugify from "slugify";
 import braintree from "braintree";
 import dotenv from "dotenv";
+import { PRODUCT_LIMIT } from "./constants/productConstants.js";
 
 dotenv.config();
 
@@ -68,7 +69,7 @@ export const getProductController = async (req, res) => {
       .find({})
       .populate("category")
       .select("-photo")
-      .limit(12)
+      .limit(PRODUCT_LIMIT)
       .sort({ createdAt: -1 });
     res.status(200).send({
       success: true,

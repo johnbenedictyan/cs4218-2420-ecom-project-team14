@@ -1,12 +1,10 @@
-import React from "react";
-import { beforeEach, expect, jest } from "@jest/globals";
+import { jest } from "@jest/globals";
 import productModel from "../../models/productModel.js";
 import { getProductController } from "../productController.js";
 import { PRODUCT_LIMIT } from "../constants/productConstants.js";
 
 jest.mock("../../models/productModel");
-
-describe("GET /api/v1/product/get-product", () => {
+describe("Get Product Controller tests", () => {
   let mockFindSuccess;
   let res;
 
@@ -23,10 +21,6 @@ describe("GET /api/v1/product/get-product", () => {
       status: jest.fn().mockReturnThis(),
       send: jest.fn(),
     };
-  });
-
-  afterAll(() => {
-    jest.resetAllMocks();
   });
 
   const mockProducts = [
@@ -72,12 +66,11 @@ describe("GET /api/v1/product/get-product", () => {
     await getProductController({}, res);
 
     // Assertions
-
     expect(res.status).toBeCalledWith(200);
     expect(res.send).toBeCalledWith({
       success: true,
       counTotal: 2,
-      message: "ALlProducts ",
+      message: "AllProducts ",
       products: mockProducts,
     });
   });
@@ -98,7 +91,7 @@ describe("GET /api/v1/product/get-product", () => {
     expect(res.send).toBeCalledWith({
       success: true,
       counTotal: 0,
-      message: "ALlProducts ",
+      message: "AllProducts ",
       products: [],
     });
   });
@@ -146,7 +139,7 @@ describe("GET /api/v1/product/get-product", () => {
     expect(res.send).toBeCalledWith({
       success: true,
       counTotal: 12,
-      message: "ALlProducts ",
+      message: "AllProducts ",
       products: mockProductsExceedLimit.slice(0, PRODUCT_LIMIT),
     });
   });
@@ -167,7 +160,7 @@ describe("GET /api/v1/product/get-product", () => {
     expect(res.status).toBeCalledWith(500);
     expect(res.send).toBeCalledWith({
       success: false,
-      message: "Erorr in getting products",
+      message: "Error in getting products",
       error: "some error",
     });
   });

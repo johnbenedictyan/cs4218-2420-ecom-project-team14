@@ -85,7 +85,7 @@ export const registerController = async (req, res) => {
     console.log(error);
     res.status(500).send({
       success: false,
-      message: "Error in Registeration",
+      message: "Error in Registration",
       error,
     });
   }
@@ -97,24 +97,28 @@ export const loginController = async (req, res) => {
     const { email, password } = req.body;
     //validation
     if (!email || !password) {
+      // Changed error message to have same generic error message as below
       return res.status(404).send({
         success: false,
-        message: "Invalid email or password",
+        message: "Invalid email or password has been entered or email is not registered",
       });
     }
     //check user
     const user = await userModel.findOne({ email });
     if (!user) {
+      // Change error message as it should not reveal that email is not registered (Should just give generic message)
       return res.status(404).send({
         success: false,
-        message: "Email is not registerd",
+        message: "Invalid email or password has been entered or email is not registered",
       });
     }
     const match = await comparePassword(password, user.password);
     if (!match) {
-      return res.status(200).send({
+      // Change http status code to 404 instead of 200 which is for successful response case
+      // Change error message as it should not reveal whether email is wrong or password is wrong (Security Reasons)
+      return res.status(404).send({
         success: false,
-        message: "Invalid Password",
+        message: "Invalid email or password has been entered or email is not registered",
       });
     }
     //token

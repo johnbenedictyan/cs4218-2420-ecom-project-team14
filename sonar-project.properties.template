@@ -1,0 +1,12 @@
+# SonarQube server settings
+sonar.host.url=http://localhost:9000
+sonar.token=YOUR_VALUE
+
+# Project identification
+sonar.projectKey=cs4218-ecom-project
+sonar.projectName=cs4218-ecom-project
+sonar.projectVersion=1.0
+
+# Analysis settings
+sonar.sources=client/src
+# sonar.inclusions=**/*.js,**/*.jsx

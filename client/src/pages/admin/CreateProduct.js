@@ -73,8 +73,8 @@ const CreateProduct = () => {
             <h1>Create Product</h1>
             <div className="m-1 w-75">
               <Select
-                bordered={false}
-                placeholder="Select a category"
+                variant={false}
+                placeholder="Select a Category"
                 size="large"
                 showSearch
                 className="form-select mb-3"
@@ -116,7 +116,7 @@ const CreateProduct = () => {
                 <input
                   type="text"
                   value={name}
-                  placeholder="write a name"
+                  placeholder="Write a Name"
                   className="form-control"
                   onChange={(e) => setName(e.target.value)}
                 />
@@ -125,7 +125,7 @@ const CreateProduct = () => {
                 <textarea
                   type="text"
                   value={description}
-                  placeholder="write a description"
+                  placeholder="Write a Description"
                   className="form-control"
                   onChange={(e) => setDescription(e.target.value)}
                 />
@@ -135,7 +135,7 @@ const CreateProduct = () => {
                 <input
                   type="number"
                   value={price}
-                  placeholder="write a Price"
+                  placeholder="Write a Price"
                   className="form-control"
                   onChange={(e) => setPrice(e.target.value)}
                 />
@@ -144,15 +144,15 @@ const CreateProduct = () => {
                 <input
                   type="number"
                   value={quantity}
-                  placeholder="write a quantity"
+                  placeholder="Write a Quantity"
                   className="form-control"
                   onChange={(e) => setQuantity(e.target.value)}
                 />
               </div>
               <div className="mb-3">
                 <Select
-                  bordered={false}
-                  placeholder="Select Shipping "
+                  variant={false}
+                  placeholder="Select Shipping"
                   size="large"
                   showSearch
                   className="form-select mb-3"

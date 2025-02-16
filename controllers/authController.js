@@ -270,6 +270,14 @@ export const orderStatusController = async (req, res) => {
   try {
     const { orderId } = req.params;
     const { status } = req.body;
+
+    // Add validation for the type of order status (Need to check if it's one of the enums)
+    if (!(orderModel.schema.paths.status.enumValues.includes(status))) {
+      return res.status(400).send({
+        message: "Invalid order status is provided"
+      })
+    }
+
     const orders = await orderModel.findByIdAndUpdate(
       orderId,
       { status },

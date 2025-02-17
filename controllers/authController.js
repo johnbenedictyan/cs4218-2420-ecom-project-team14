@@ -256,7 +256,8 @@ export const getAllOrdersController = async (req, res) => {
       .find({})
       .populate("products", "-photo")
       .populate("buyer", "name")
-      .sort({ createdAt: "-1" });
+      .sort({ createdAt: -1 });
+
     res.json(orders);
   } catch (error) {
     console.log(error);
@@ -273,6 +274,14 @@ export const orderStatusController = async (req, res) => {
   try {
     const { orderId } = req.params;
     const { status } = req.body;
+
+    // Add validation for the type of order status (Need to check if it's one of the enums)
+    if (!(orderModel.schema.paths.status.enumValues.includes(status))) {
+      return res.status(400).send({
+        message: "Invalid order status is provided"
+      })
+    }
+
     const orders = await orderModel.findByIdAndUpdate(
       orderId,
       { status },

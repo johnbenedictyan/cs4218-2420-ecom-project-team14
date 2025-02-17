@@ -30,6 +30,6 @@ export const LayoutFn =
     </>
   );
 
-const Layout = LayoutFn({ header: <Header />, header: <Footer /> });
+const Layout = LayoutFn({ header: <Header />, footer: <Footer /> });
 
 export default Layout;

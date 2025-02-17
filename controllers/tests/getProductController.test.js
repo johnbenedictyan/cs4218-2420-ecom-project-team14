@@ -23,6 +23,10 @@ describe("Get Product Controller tests", () => {
     };
   });
 
+  beforeAll(() => {
+    jest.resetModules();
+  });
+
   const mockProducts = [
     {
       _id: "123",
@@ -70,7 +74,7 @@ describe("Get Product Controller tests", () => {
     expect(res.send).toBeCalledWith({
       success: true,
       counTotal: 2,
-      message: "AllProducts ",
+      message: "AllProducts",
       products: mockProducts,
     });
   });
@@ -91,7 +95,7 @@ describe("Get Product Controller tests", () => {
     expect(res.send).toBeCalledWith({
       success: true,
       counTotal: 0,
-      message: "AllProducts ",
+      message: "AllProducts",
       products: [],
     });
   });
@@ -139,7 +143,7 @@ describe("Get Product Controller tests", () => {
     expect(res.send).toBeCalledWith({
       success: true,
       counTotal: 12,
-      message: "AllProducts ",
+      message: "AllProducts",
       products: mockProductsExceedLimit.slice(0, PRODUCT_LIMIT),
     });
   });

@@ -20,13 +20,26 @@ export default {
   transformIgnorePatterns: ["/node_modules/(?!(styleMock\\.js)$)"],
 
   // only run these tests
-  testMatch: ["<rootDir>/client/src/pages/**/*.test.js"],
+  testMatch: [
+    "<rootDir>/client/src/pages/**/*.test.js",
+    "<rootDir>/client/src/components/**/*.test.js",
+    "<rootDir>/client/src/context/**/*.test.js",
+    "<rootDir>/client/src/pages/**/*.test.js",
+  ],
+
+  testPathIgnorePatterns: [
+    "<rootDir>/client/src/_site/",
+    "<rootDir>/client/node_modules/",
+  ],
 
   // jest code coverage
   collectCoverage: true,
   collectCoverageFrom: [
     "client/src/pages/**/*.js",
     "!client/src/pages/**/*.test.js",
+    "client/src/components/**",
+    "client/src/pages/**",
+    "client/src/context/**",
   ],
   coverageThreshold: {
     global: {
@@ -34,4 +47,5 @@ export default {
       functions: 100,
     },
   },
+  setupFilesAfterEnv: ["<rootDir>/client/src/setupTests.js"],
 };

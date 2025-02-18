@@ -1,13 +1,19 @@
-import React from 'react'
-import Footer from './Footer';
-import Header from './Header';
+import React from "react";
 import { Helmet } from "react-helmet";
-import  { Toaster } from 'react-hot-toast';
+import { Toaster } from "react-hot-toast";
+import Footer from "./Footer";
+import Header from "./Header";
 
-
-const Layout = ({ children, title, description, keywords, author }) => {
-  return (
-    <div>
+export const LayoutFn =
+  ({ header, footer }) =>
+  ({
+    children,
+    title = "Ecommerce app - shop now",
+    description = "mern stack project",
+    keywords = "mern,react,node,mongodb",
+    author = "Techinfoyt",
+  }) => (
+    <>
       <Helmet>
         <meta charSet="utf-8" />
         <meta name="description" content={description} />
@@ -15,21 +21,15 @@ const Layout = ({ children, title, description, keywords, author }) => {
         <meta name="author" content={author} />
         <title>{title}</title>
       </Helmet>
-      <Header />
+      {header}
       <main style={{ minHeight: "70vh" }}>
         <Toaster />
         {children}
       </main>
-      <Footer />
-    </div>
+      {footer}
+    </>
   );
-};
 
-Layout.defaultProps = {
-  title: "Ecommerce app - shop now",
-  description: "mern stack project",
-  keywords: "mern,react,node,mongodb",
-  author: "Techinfoyt",
-};
+const Layout = LayoutFn({ header: <Header />, footer: <Footer /> });
 
 export default Layout;

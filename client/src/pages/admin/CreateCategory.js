@@ -56,6 +56,7 @@ const CreateCategory = () => {
         { name: updatedName }
       );
       if (data.success) {
+        console.log("API called successfully!");
         toast.success(`${updatedName} is updated`);
         setSelected(null);
         setUpdatedName("");
@@ -65,6 +66,7 @@ const CreateCategory = () => {
         toast.error(data.message);
       }
     } catch (error) {
+      console.log("Error in API call:", error);
       toast.error("Somtihing went wrong");
     }
   };
@@ -111,31 +113,29 @@ const CreateCategory = () => {
                 </thead>
                 <tbody>
                   {categories?.map((c) => (
-                    <>
-                      <tr>
-                        <td key={c._id}>{c.name}</td>
-                        <td>
-                          <button
-                            className="btn btn-primary ms-2"
-                            onClick={() => {
-                              setVisible(true);
-                              setUpdatedName(c.name);
-                              setSelected(c);
-                            }}
-                          >
-                            Edit
-                          </button>
-                          <button
-                            className="btn btn-danger ms-2"
-                            onClick={() => {
-                              handleDelete(c._id);
-                            }}
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    </>
+                    <tr key={c._id}>
+                      <td key={c._id}>{c.name}</td>
+                      <td>
+                        <button
+                          className="btn btn-primary ms-2"
+                          onClick={() => {
+                            setVisible(true);
+                            setUpdatedName(c.name);
+                            setSelected(c);
+                          }}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="btn btn-danger ms-2"
+                          onClick={() => {
+                            handleDelete(c._id);
+                          }}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
                   ))}
                 </tbody>
               </table>
@@ -143,7 +143,7 @@ const CreateCategory = () => {
             <Modal
               onCancel={() => setVisible(false)}
               footer={null}
-              visible={visible}
+              open={visible} // Change to open since visible is deprecated
             >
               <CategoryForm
                 value={updatedName}

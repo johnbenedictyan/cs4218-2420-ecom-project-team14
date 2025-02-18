@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`About Component Snapshot matches snapshot 1`] = `
+<div>
+  <div
+    data-testid="mock-layout"
+    data-title="About us - Ecommerce app"
+  >
+    <div
+      class="row contactus "
+    >
+      <div
+        class="col-md-6 "
+      >
+        <img
+          alt="contactus"
+          src="/images/about.jpeg"
+          style="width: 100%;"
+        />
+      </div>
+      <div
+        class="col-md-4"
+      >
+        <p
+          class="text-justify mt-2"
+        >
+          Add text
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+`;

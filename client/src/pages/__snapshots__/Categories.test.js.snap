@@ -1,0 +1,49 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Categories Component matches snapshot 1`] = `
+<div>
+  <div
+    data-testid="mock-layout"
+    data-title="All Categories"
+  >
+    <div
+      class="container"
+    >
+      <div
+        class="row"
+      >
+        <div
+          class="col-md-6 mt-5 mb-3 gx-3 gy-3"
+        >
+          <a
+            class="btn btn-primary"
+            href="/category/electronics"
+          >
+            Electronics
+          </a>
+        </div>
+        <div
+          class="col-md-6 mt-5 mb-3 gx-3 gy-3"
+        >
+          <a
+            class="btn btn-primary"
+            href="/category/clothing"
+          >
+            Clothing
+          </a>
+        </div>
+        <div
+          class="col-md-6 mt-5 mb-3 gx-3 gy-3"
+        >
+          <a
+            class="btn btn-primary"
+            href="/category/books"
+          >
+            Books
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

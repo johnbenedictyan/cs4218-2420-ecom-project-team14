@@ -30,7 +30,8 @@ jest.mock("react-router-dom", () => ({
 
 jest.mock("axios");
 jest.mock("react-hot-toast");
-global.URL.createObjectURL = jest.fn(() => "blob:http://localhost/dummy"); // Mock the damn URL for the picture
+// Mock browser's built-in function for generating temporary URL for file blobs
+global.URL.createObjectURL = jest.fn(() => "blob:http://localhost/dummy");
 
 describe("CreateProduct Component", () => {
   beforeEach(() => {

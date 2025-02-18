@@ -50,9 +50,6 @@ const CreateCategory = () => {
   //update category
   const handleUpdate = async (e) => {
     e.preventDefault();
-    console.log("handleUpdate called!");
-    console.log("Updating category:", name, "New Name:", updatedName);
-  
     try {
       const { data } = await axios.put(
         `/api/v1/category/update-category/${selected._id}`,

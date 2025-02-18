@@ -33,6 +33,7 @@ describe("About Component", () => {
     it("contains main container with contactus class", () => {
       render(<About />);
       // Find the element by its role and check for classes.
+      // eslint-disable-next-line testing-library/no-node-access
       const rowElement = screen.getByTestId("mock-layout").firstChild;
       expect(rowElement).toBeInTheDocument();
       expect(rowElement).toHaveClass("row", "contactus");
@@ -41,6 +42,7 @@ describe("About Component", () => {
     it("contains two columns with correct classes", () => {
       render(<About />);
       const layout = screen.getByTestId("mock-layout");
+      // eslint-disable-next-line testing-library/no-node-access
       const columns = layout.querySelectorAll(".col-md-6, .col-md-4");
       expect(columns).toHaveLength(2);
       expect(columns[0]).toHaveClass("col-md-6");
@@ -100,6 +102,7 @@ describe("About Component", () => {
     it("contains bootstrap responsive classes", () => {
       render(<About />);
       const layout = screen.getByTestId("mock-layout");
+      // eslint-disable-next-line testing-library/no-node-access
       const columns = layout.querySelectorAll(".col-md-6, .col-md-4");
       expect(columns).toHaveLength(2);
       expect(columns[0]).toHaveClass("col-md-6");

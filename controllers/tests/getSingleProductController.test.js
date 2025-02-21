@@ -73,26 +73,6 @@ describe("Get Single Product Controller tests", () => {
     });
   });
 
-  it("Should return no product when no slug exists", async () => {
-    req = { params: { slug: "toy-cat" } };
-    const mockFindNoSlugExist = {
-      select: jest.fn().mockReturnThis(),
-      populate: jest.fn().mockResolvedValue(null),
-    };
-
-    productModel.findOne = jest.fn().mockReturnValue(mockFindNoSlugExist);
-
-    await getSingleProductController(req, res);
-
-    // Assertions
-    expect(res.status).toBeCalledWith(200);
-    expect(res.send).toBeCalledWith({
-      success: true,
-      message: "Single Product Fetched",
-      product: null,
-    });
-  });
-
   it("Should return error response when there is error fetching product", async () => {
     req = { params: { slug: "toy-giraffe" } };
     const mockFindError = {

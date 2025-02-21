@@ -6,7 +6,10 @@ import fs from "fs";
 import slugify from "slugify";
 import braintree from "braintree";
 import dotenv from "dotenv";
-import { PRODUCT_LIMIT } from "./constants/productConstants.js";
+import {
+  PRODUCT_LIMIT,
+  RELATED_PRODUCT_LIMIT,
+} from "./constants/productConstants.js";
 
 dotenv.config();
 
@@ -282,7 +285,7 @@ export const searchProductController = async (req, res) => {
 };
 
 // similar products
-export const realtedProductController = async (req, res) => {
+export const relatedProductController = async (req, res) => {
   try {
     const { pid, cid } = req.params;
     const products = await productModel
@@ -291,7 +294,7 @@ export const realtedProductController = async (req, res) => {
         _id: { $ne: pid },
       })
       .select("-photo")
-      .limit(3)
+      .limit(RELATED_PRODUCT_LIMIT)
       .populate("category");
     res.status(200).send({
       success: true,

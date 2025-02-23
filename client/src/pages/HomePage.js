@@ -133,10 +133,10 @@ const HomePage = () => {
           <h4 className="text-center mt-4">Filter By Price</h4>
           <div className="d-flex flex-column">
             <Radio.Group onChange={(e) => setRadio(e.target.value)}>
-              {Prices?.map((p) => (
-                <div key={p._id}>
-                  <Radio value={p.array}>{p.name}</Radio>
-                </div>
+            {Prices?.map((p, index) => (
+                <Radio key={`${p._id}-${index}`} value={p.array}>
+                  {p.name}
+                </Radio>
               ))}
             </Radio.Group>
           </div>
@@ -170,7 +170,9 @@ const HomePage = () => {
                     </h5>
                   </div>
                   <p className="card-text ">
-                    {p.description.substring(0, 60)}...
+                  {p.description.length > 60
+                      ? `${p.description.substring(0, 60)}...`
+                      : p.description}
                   </p>
                   <div className="card-name-price">
                     <button

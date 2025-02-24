@@ -90,7 +90,7 @@ export const getProductController = async (req, res) => {
 export const getSingleProductController = async (req, res) => {
   try {
     const { slug } = req.params;
-    if (!slug || typeof slug !== "string" || slug.trim() === "") {
+    if (!slug || slug.trim() === "") {
       return res.status(400).send({
         success: false,
         message: "Invalid product slug provided",

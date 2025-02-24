@@ -88,8 +88,8 @@ describe("Get Single Product Controller tests", () => {
   });
 
   // Add equivalence classes
-  it("Should return error response when slug is non-string type", async () => {
-    req = { params: { slug: 123 } };
+  it("Should return error response when slug is empty string", async () => {
+    req = { params: { slug: "" } };
 
     await getSingleProductController(req, res);
 

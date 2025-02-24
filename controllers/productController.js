@@ -288,6 +288,12 @@ export const searchProductController = async (req, res) => {
 export const relatedProductController = async (req, res) => {
   try {
     const { pid, cid } = req.params;
+    if (!pid || !cid) {
+      return res.status(400).send({
+        success: false,
+        message: "Pid and Cid cannot be null",
+      });
+    }
     const products = await productModel
       .find({
         category: cid,

@@ -102,6 +102,48 @@ describe("Get Related Product Controller tests", () => {
     });
   });
 
+  // add more equivalence classes
+  it("Should return error response when pid is null", async () => {
+    req = { params: { cid: "456" } };
+
+    await relatedProductController(req, res);
+
+    // Assertions
+    expect(res.status).toBeCalledWith(400);
+    expect(res.send).toBeCalledWith({
+      success: false,
+      message: "Pid and Cid cannot be null",
+    });
+  });
+
+  // add more equivalence classes
+  it("Should return error response when cid is null", async () => {
+    req = { params: { pid: "456" } };
+
+    await relatedProductController(req, res);
+
+    // Assertions
+    expect(res.status).toBeCalledWith(400);
+    expect(res.send).toBeCalledWith({
+      success: false,
+      message: "Pid and Cid cannot be null",
+    });
+  });
+
+  // add more equivalence classes
+  it("Should return error response when both cid and pid is null", async () => {
+    req = { params: {} };
+
+    await relatedProductController(req, res);
+
+    // Assertions
+    expect(res.status).toBeCalledWith(400);
+    expect(res.send).toBeCalledWith({
+      success: false,
+      message: "Pid and Cid cannot be null",
+    });
+  });
+
   it("Should return error response when there is error fetching related products", async () => {
     req = { params: { pid: "0", cid: "456" } };
     const mockFindError = {

@@ -1,6 +1,7 @@
 import productModel from "../models/productModel.js";
 import categoryModel from "../models/categoryModel.js";
 import orderModel from "../models/orderModel.js";
+import mongoose from "mongoose";
 
 import fs from "fs";
 import slugify from "slugify";
@@ -131,11 +132,11 @@ export const deleteProductController = async (req, res) => {
   try {
     const { pid } = req.params;
 
-    // check if pid is null
-    if (!pid) {
+    // check if pid is null or dpesn't correspond to mongoose object id type
+    if (!pid || !mongoose.Types.ObjectId.isValid(pid)) {
       return res.status(400).send({
         success: false,
-        message: "Product ID cannot be null",
+        message: "Invalid Product format",
       });
     }
 

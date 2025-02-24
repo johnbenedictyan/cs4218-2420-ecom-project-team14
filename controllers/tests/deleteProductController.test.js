@@ -1,6 +1,7 @@
 import { jest } from "@jest/globals";
 import productModel from "../../models/productModel.js";
 import { deleteProductController } from "../productController.js";
+import { ObjectId } from "mongodb";
 
 jest.mock("../../models/productModel");
 
@@ -8,7 +9,7 @@ describe("Delete Product Controller tests", () => {
   let res, req;
 
   const mockProduct = {
-    _id: "123",
+    _id: new ObjectId("0A2463A6406A263EFF5B5F62"),
     name: "Toy Giraffe",
     slug: "toy-giraffe",
     description: "Some toy giraffe",
@@ -38,7 +39,7 @@ describe("Delete Product Controller tests", () => {
   });
 
   it("Should delete a product when product exists", async () => {
-    req = { params: { pid: "123" } };
+    req = { params: { pid: "0A2463A6406A263EFF5B5F62" } };
     productModel.findByIdAndDelete = jest.fn().mockReturnValue({
       select: jest.fn().mockResolvedValue(mockProduct),
     });
@@ -53,8 +54,8 @@ describe("Delete Product Controller tests", () => {
     });
   });
 
-  it("Should return error response if product is not found", async () => {
-    req = { params: { pid: "456" } };
+  it("Should return error response if product id is not found but is valid", async () => {
+    req = { params: { pid: "3373D6C5B1BCFB50E6461FF6" } };
     productModel.findByIdAndDelete = jest
       .fn()
       .mockReturnValue({ select: jest.fn().mockResolvedValue(null) });
@@ -69,7 +70,7 @@ describe("Delete Product Controller tests", () => {
     });
   });
 
-  it("Should return error response if pid is not defined", async () => {
+  it("Should return error response if product id is not defined", async () => {
     req = { params: {} };
 
     await deleteProductController(req, res);
@@ -78,12 +79,25 @@ describe("Delete Product Controller tests", () => {
     expect(res.status).toBeCalledWith(400);
     expect(res.send).toBeCalledWith({
       success: false,
-      message: "Product ID cannot be null",
+      message: "Invalid Product format",
+    });
+  });
+
+  it("Should return error response if product id does not conform to correct id format", async () => {
+    req = { params: { pid: "abc" } };
+
+    await deleteProductController(req, res);
+
+    // Assertions
+    expect(res.status).toBeCalledWith(400);
+    expect(res.send).toBeCalledWith({
+      success: false,
+      message: "Invalid Product format",
     });
   });
 
   it("Should return error response when there is an internal error when deleting product", async () => {
-    req = { params: { pid: "123" } };
+    req = { params: { pid: "3373D6C5B1BCFB50E6461FF6" } };
     productModel.findByIdAndDelete = jest.fn().mockReturnValue({
       select: jest.fn().mockImplementation(() => {
         throw new Error("some error");

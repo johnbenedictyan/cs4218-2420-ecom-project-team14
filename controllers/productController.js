@@ -236,17 +236,20 @@ export const productCountController = async (req, res) => {
 // product list based on page
 export const productListController = async (req, res) => {
   try {
-    let page = req.params.page;
+    // req.params.page will always be a string
+    // Page will be NaN if req.params.page is not a numeric-integer string
+    // Deals with null values which will become NaN
+    let page = parseInt(req.params.page, 10);
 
     // Reject non-integers, null values and negative and 0 values
-    if (typeof page !== "number" || !Number.isInteger(page) || page < 1) {
+    if (!Number.isInteger(page) || page < 1) {
       return res.status(400).send({
         success: false,
         message: "Invalid page number. Page must be positive integer",
       });
     }
 
-    page = Math.max(1, page || 1);
+    page = Math.max(1, page);
 
     const products = await productModel
       .find({})

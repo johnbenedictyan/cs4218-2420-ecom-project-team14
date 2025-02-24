@@ -49,7 +49,7 @@ describe("Product List Controller tests", () => {
   });
 
   it("Should return paginated product list when page is 1", async () => {
-    req = { params: { page: 1 } };
+    req = { params: { page: "1" } };
     productModel.find = jest.fn().mockReturnValue(mockFindProductListSuccess);
     console.log(mockFindProductListSuccess);
 
@@ -65,7 +65,7 @@ describe("Product List Controller tests", () => {
   });
 
   it("Should return paginated product list when page is 2", async () => {
-    req = { params: { page: 2 } };
+    req = { params: { page: "2" } };
     mockFindProductListSuccess.sort = jest
       .fn()
       .mockReturnValue(mockProducts.slice(PER_PAGE_LIMIT));
@@ -84,7 +84,7 @@ describe("Product List Controller tests", () => {
 
   // Added equivalence class tests
   it("Should return error response when page requested is 0", async () => {
-    req = { params: { page: 0 } };
+    req = { params: { page: "0" } };
 
     await productListController(req, res);
 
@@ -98,7 +98,7 @@ describe("Product List Controller tests", () => {
 
   // Added equivalence class tests
   it("Should return error response when page requested is -1", async () => {
-    req = { params: { page: -1 } };
+    req = { params: { page: "-1" } };
 
     await productListController(req, res);
 
@@ -125,7 +125,7 @@ describe("Product List Controller tests", () => {
   });
 
   // Added equivalence class tests
-  it("Should return error response when page requested is string (non-null and non-integer)", async () => {
+  it("Should return error response when page requested is non-numeric", async () => {
     req = { params: { page: "hello" } };
 
     await productListController(req, res);
@@ -139,7 +139,7 @@ describe("Product List Controller tests", () => {
   });
 
   it("Should return error response when there is error fetching product list", async () => {
-    req = { params: { page: 2 } };
+    req = { params: { page: "2" } };
     const mockFindError = {
       ...mockFindProductListSuccess,
       sort: jest.fn().mockImplementation(() => {

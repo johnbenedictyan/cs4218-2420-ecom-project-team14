@@ -83,50 +83,44 @@ describe("Product List Controller tests", () => {
   });
 
   // Added equivalence class tests
-  it("Should return paginated product list for page 1 when page requested is 0", async () => {
+  it("Should return error response when page requested is 0", async () => {
     req = { params: { page: 0 } };
-    productModel.find = jest.fn().mockReturnValue(mockFindProductListSuccess);
 
     await productListController(req, res);
 
     // Assertions
-    expect(mockFindProductListSuccess.skip).toBeCalledWith(0);
-    expect(res.status).toBeCalledWith(200);
+    expect(res.status).toBeCalledWith(400);
     expect(res.send).toBeCalledWith({
-      success: true,
-      products: mockProducts.slice(0, PER_PAGE_LIMIT),
+      success: false,
+      message: "Invalid page number. Page must be positive integer",
     });
   });
 
   // Added equivalence class tests
-  it("Should return paginated product list for page 1 when page requested is -1", async () => {
+  it("Should return error response when page requested is -1", async () => {
     req = { params: { page: -1 } };
-    productModel.find = jest.fn().mockReturnValue(mockFindProductListSuccess);
 
     await productListController(req, res);
 
     // Assertions
-    expect(mockFindProductListSuccess.skip).toBeCalledWith(0);
-    expect(res.status).toBeCalledWith(200);
+    expect(res.status).toBeCalledWith(400);
     expect(res.send).toBeCalledWith({
-      success: true,
-      products: mockProducts.slice(0, PER_PAGE_LIMIT),
+      success: false,
+      message: "Invalid page number. Page must be positive integer",
     });
   });
 
   // Added equivalence class tests
-  it("Should return paginated product list for page 1 when page requested is null", async () => {
+  it("Should return error response when page requested is null", async () => {
     req = { params: {} };
-    productModel.find = jest.fn().mockReturnValue(mockFindProductListSuccess);
 
     await productListController(req, res);
 
     // Assertions
-    expect(mockFindProductListSuccess.skip).toBeCalledWith(0);
-    expect(res.status).toBeCalledWith(200);
+    expect(res.status).toBeCalledWith(400);
     expect(res.send).toBeCalledWith({
-      success: true,
-      products: mockProducts.slice(0, PER_PAGE_LIMIT),
+      success: false,
+      message: "Invalid page number. Page must be positive integer",
     });
   });
 

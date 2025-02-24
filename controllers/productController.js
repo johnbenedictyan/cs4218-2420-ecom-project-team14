@@ -238,16 +238,15 @@ export const productListController = async (req, res) => {
   try {
     let page = req.params.page;
 
-    // Reject non-numeric strings and objects, does not reject null values
-    if (typeof page === "object" || (typeof page === "string" && isNaN(page))) {
+    // Reject non-integers, null values and negative and 0 values
+    if (typeof page !== "number" || !Number.isInteger(page) || page < 1) {
       return res.status(400).send({
         success: false,
         message: "Invalid page number. Page must be positive integer",
       });
     }
 
-    // Convert valid numbers (floats, ints) to integers
-    page = Math.max(1, parseInt(page, 10) || 1);
+    page = Math.max(1, page || 1);
 
     const products = await productModel
       .find({})

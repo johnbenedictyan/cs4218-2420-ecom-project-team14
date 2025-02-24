@@ -89,8 +89,15 @@ export const getProductController = async (req, res) => {
 // get single product
 export const getSingleProductController = async (req, res) => {
   try {
+    const { slug } = req.params;
+    if (!slug || typeof slug !== "string" || slug.trim() === "") {
+      return res.status(400).send({
+        success: false,
+        message: "Invalid product slug provided",
+      });
+    }
     const product = await productModel
-      .findOne({ slug: req.params.slug })
+      .findOne({ slug: slug })
       .select("-photo")
       .populate("category");
     res.status(200).send({

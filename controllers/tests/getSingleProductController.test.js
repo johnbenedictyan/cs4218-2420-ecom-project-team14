@@ -73,6 +73,34 @@ describe("Get Single Product Controller tests", () => {
     });
   });
 
+  // Add equivalence classes
+  it("Should return error response when slug is null", async () => {
+    req = { params: {} };
+
+    await getSingleProductController(req, res);
+
+    // Assertions
+    expect(res.status).toBeCalledWith(400);
+    expect(res.send).toBeCalledWith({
+      success: false,
+      message: "Invalid product slug provided",
+    });
+  });
+
+  // Add equivalence classes
+  it("Should return error response when slug is non-string type", async () => {
+    req = { params: { slug: 123 } };
+
+    await getSingleProductController(req, res);
+
+    // Assertions
+    expect(res.status).toBeCalledWith(400);
+    expect(res.send).toBeCalledWith({
+      success: false,
+      message: "Invalid product slug provided",
+    });
+  });
+
   it("Should return error response when there is error fetching product", async () => {
     req = { params: { slug: "toy-giraffe" } };
     const mockFindError = {

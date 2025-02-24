@@ -10,6 +10,7 @@ import {
   PRODUCT_LIMIT,
   RELATED_PRODUCT_LIMIT,
 } from "./constants/productConstants.js";
+import mongoose from "mongoose";
 
 dotenv.config();
 
@@ -288,12 +289,20 @@ export const searchProductController = async (req, res) => {
 export const relatedProductController = async (req, res) => {
   try {
     const { pid, cid } = req.params;
-    if (!pid || !cid) {
+
+    // Gives this status error when pid/cid is null or invalid
+    if (
+      !pid ||
+      !cid ||
+      !mongoose.Types.ObjectId.isValid(pid) ||
+      !mongoose.Types.ObjectId.isValid(cid)
+    ) {
       return res.status(400).send({
         success: false,
-        message: "Pid and Cid cannot be null",
+        message: "Pid and Cid must be in a valid format",
       });
     }
+
     const products = await productModel
       .find({
         category: cid,
@@ -302,6 +311,7 @@ export const relatedProductController = async (req, res) => {
       .select("-photo")
       .limit(RELATED_PRODUCT_LIMIT)
       .populate("category");
+
     res.status(200).send({
       success: true,
       products,

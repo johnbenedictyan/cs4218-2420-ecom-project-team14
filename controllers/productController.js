@@ -1,12 +1,18 @@
 import productModel from "../models/productModel.js";
 import categoryModel from "../models/categoryModel.js";
 import orderModel from "../models/orderModel.js";
+import mongoose from "mongoose";
 
 import fs from "fs";
 import slugify from "slugify";
 import braintree from "braintree";
 import dotenv from "dotenv";
-import { PRODUCT_LIMIT } from "./constants/productConstants.js";
+import {
+  PRODUCT_LIMIT,
+  RELATED_PRODUCT_LIMIT,
+  PER_PAGE_LIMIT
+} from "./constants/productConstants.js";
+import mongoose from "mongoose";
 
 dotenv.config();
 
@@ -89,8 +95,15 @@ export const getProductController = async (req, res) => {
 // get single product
 export const getSingleProductController = async (req, res) => {
   try {
+    const { slug } = req.params;
+    if (!slug || slug.trim() === "") {
+      return res.status(400).send({
+        success: false,
+        message: "Invalid product slug provided",
+      });
+    }
     const product = await productModel
-      .findOne({ slug: req.params.slug })
+      .findOne({ slug: slug })
       .select("-photo")
       .populate("category");
     res.status(200).send({
@@ -102,7 +115,7 @@ export const getSingleProductController = async (req, res) => {
     console.log(error);
     res.status(500).send({
       success: false,
-      message: "Error while getitng single product",
+      message: "Error while getting single product",
       error,
     });
   }
@@ -129,7 +142,28 @@ export const productPhotoController = async (req, res) => {
 //delete controller
 export const deleteProductController = async (req, res) => {
   try {
-    await productModel.findByIdAndDelete(req.params.pid).select("-photo");
+    const { pid } = req.params;
+
+    // check if pid is null or dpesn't correspond to mongoose object id type
+    if (!pid || !mongoose.Types.ObjectId.isValid(pid)) {
+      return res.status(400).send({
+        success: false,
+        message: "Invalid Product format",
+      });
+    }
+
+    const deletedProduct = await productModel
+      .findByIdAndDelete(pid)
+      .select("-photo");
+
+    // check if product is deleted successfully
+    if (!deletedProduct) {
+      return res.status(404).send({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
     res.status(200).send({
       success: true,
       message: "Product Deleted successfully",
@@ -233,16 +267,29 @@ export const productCountController = async (req, res) => {
   }
 };
 
-// product list base on page
+// product list based on page
 export const productListController = async (req, res) => {
   try {
-    const perPage = 6;
-    const page = req.params.page ? req.params.page : 1;
+    // req.params.page will always be a string
+    // Page will be NaN if req.params.page is not a numeric-integer string
+    // Deals with null values which will become NaN
+    let page = parseInt(req.params.page, 10);
+
+    // Reject non-integers, null values and negative and 0 values
+    if (!Number.isInteger(page) || page < 1) {
+      return res.status(400).send({
+        success: false,
+        message: "Invalid page number. Page must be positive integer",
+      });
+    }
+
+    page = Math.max(1, page);
+
     const products = await productModel
       .find({})
       .select("-photo")
-      .skip((page - 1) * perPage)
-      .limit(perPage)
+      .skip((page - 1) * PER_PAGE_LIMIT)
+      .limit(PER_PAGE_LIMIT)
       .sort({ createdAt: -1 });
     res.status(200).send({
       success: true,
@@ -282,17 +329,32 @@ export const searchProductController = async (req, res) => {
 };
 
 // similar products
-export const realtedProductController = async (req, res) => {
+export const relatedProductController = async (req, res) => {
   try {
     const { pid, cid } = req.params;
+
+    // Gives this status error when pid/cid is null or invalid
+    if (
+      !pid ||
+      !cid ||
+      !mongoose.Types.ObjectId.isValid(pid) ||
+      !mongoose.Types.ObjectId.isValid(cid)
+    ) {
+      return res.status(400).send({
+        success: false,
+        message: "Pid and Cid must be in a valid format",
+      });
+    }
+
     const products = await productModel
       .find({
         category: cid,
         _id: { $ne: pid },
       })
       .select("-photo")
-      .limit(3)
+      .limit(RELATED_PRODUCT_LIMIT)
       .populate("category");
+
     res.status(200).send({
       success: true,
       products,

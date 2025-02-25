@@ -6,7 +6,12 @@ import fs from "fs";
 import slugify from "slugify";
 import braintree from "braintree";
 import dotenv from "dotenv";
-import { PRODUCT_LIMIT, PER_PAGE_LIMIT } from "./constants/productConstants.js";
+import {
+  PRODUCT_LIMIT,
+  RELATED_PRODUCT_LIMIT,
+  PER_PAGE_LIMIT
+} from "./constants/productConstants.js";
+import mongoose from "mongoose";
 
 dotenv.config();
 
@@ -89,8 +94,15 @@ export const getProductController = async (req, res) => {
 // get single product
 export const getSingleProductController = async (req, res) => {
   try {
+    const { slug } = req.params;
+    if (!slug || slug.trim() === "") {
+      return res.status(400).send({
+        success: false,
+        message: "Invalid product slug provided",
+      });
+    }
     const product = await productModel
-      .findOne({ slug: req.params.slug })
+      .findOne({ slug: slug })
       .select("-photo")
       .populate("category");
     res.status(200).send({
@@ -102,7 +114,7 @@ export const getSingleProductController = async (req, res) => {
     console.log(error);
     res.status(500).send({
       success: false,
-      message: "Error while getitng single product",
+      message: "Error while getting single product",
       error,
     });
   }
@@ -295,17 +307,32 @@ export const searchProductController = async (req, res) => {
 };
 
 // similar products
-export const realtedProductController = async (req, res) => {
+export const relatedProductController = async (req, res) => {
   try {
     const { pid, cid } = req.params;
+
+    // Gives this status error when pid/cid is null or invalid
+    if (
+      !pid ||
+      !cid ||
+      !mongoose.Types.ObjectId.isValid(pid) ||
+      !mongoose.Types.ObjectId.isValid(cid)
+    ) {
+      return res.status(400).send({
+        success: false,
+        message: "Pid and Cid must be in a valid format",
+      });
+    }
+
     const products = await productModel
       .find({
         category: cid,
         _id: { $ne: pid },
       })
       .select("-photo")
-      .limit(3)
+      .limit(RELATED_PRODUCT_LIMIT)
       .populate("category");
+
     res.status(200).send({
       success: true,
       products,

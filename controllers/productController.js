@@ -12,7 +12,6 @@ import {
   RELATED_PRODUCT_LIMIT,
   PER_PAGE_LIMIT
 } from "./constants/productConstants.js";
-import mongoose from "mongoose";
 
 dotenv.config();
 

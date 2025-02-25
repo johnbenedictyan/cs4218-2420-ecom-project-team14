@@ -2,6 +2,8 @@ import { jest } from "@jest/globals";
 import productModel from "../../models/productModel.js";
 import { productListController } from "../productController.js";
 import { PER_PAGE_LIMIT } from "../constants/productConstants.js";
+import mongoose from "mongoose";
+import { ObjectId } from "mongodb";
 
 jest.mock("../../models/productModel");
 describe("Product List Controller tests", () => {
@@ -14,13 +16,13 @@ describe("Product List Controller tests", () => {
 
     // An array of (PER_PAGE_LIMIT + 2) products is generated
     mockProducts = Array.from({ length: PER_PAGE_LIMIT + 2 }, (_, index) => ({
-      _id: index.toString(),
+      _id: new mongoose.Types.ObjectId(),
       name: `Toy ${index}`,
       slug: `Toy-${index}`,
       description: `Toy description ${index}`,
       price: 10 + index,
       category: {
-        _id: "456",
+        _id: new ObjectId("bc7f29ed898fefd6a5f713fd"),
         name: "Toys",
         slug: "toys",
         __v: 0,

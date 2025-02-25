@@ -3,7 +3,9 @@ import { forgotPasswordController } from "../authController";
 import userModel from "../../models/userModel";
 import { ObjectId } from "mongodb";
 
-describe("Update Profile Controller Tests", () => {
+jest.mock("../../models/userModel.js");
+
+describe("Forget Password Controller Tests", () => {
     let req, res, user;
 
     beforeEach(() => {

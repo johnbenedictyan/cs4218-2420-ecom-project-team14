@@ -29,6 +29,7 @@ const HomePage = () => {
       }
     } catch (error) {
       console.log(error);
+      toast.error(`Error fetching categories: ${error.message}`);
     }
   };
 
@@ -46,16 +47,18 @@ const HomePage = () => {
     } catch (error) {
       setLoading(false);
       console.log(error);
+      toast.error(`Error fetching product list: ${error.message}`);
     }
   };
 
-  //getTotal COunt
+  //getTotal Count
   const getTotal = async () => {
     try {
       const { data } = await axios.get("/api/v1/product/product-count");
       setTotal(data?.total);
     } catch (error) {
       console.log(error);
+      toast.error(`Error fetching product count: ${error.message}`);
     }
   };
 
@@ -72,6 +75,7 @@ const HomePage = () => {
       setProducts([...products, ...data?.products]);
     } catch (error) {
       console.log(error);
+      toast.error(`Error fetching product list: ${error.message}`);
       setLoading(false);
     }
   };
@@ -104,6 +108,7 @@ const HomePage = () => {
       setProducts(data?.products);
     } catch (error) {
       console.log(error);
+      toast.error(`Error fetching filtered products: ${error.message}`);
     }
   };
   return (

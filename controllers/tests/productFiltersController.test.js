@@ -124,6 +124,28 @@ describe("Product Filters Controller tests", () => {
         message: "'checked' must be an array with valid category ids",
       });
     });
+
+    it("Should return 400 error when there is an error in fetching filtered products", async () => {
+      req = {
+        body: {
+          checked: ["bc7f29ed898fefd6a5f713fd"], // valid
+          radio: [10, 20], // valid
+        },
+      };
+      productModel.find = jest.fn().mockImplementation(() => {
+        throw new Error("some error");
+      });
+
+      await productFiltersController(req, res);
+
+      // Assertions
+      expect(res.status).toBeCalledWith(400);
+      expect(res.send).toBeCalledWith({
+        success: false,
+        message: "Error WHile Filtering Products",
+        error: new Error("some error"),
+      });
+    });
   });
 
   /**
@@ -266,29 +288,6 @@ describe("Product Filters Controller tests", () => {
       expect(res.send).toBeCalledWith({
         success: false,
         message: "'radio' must an empty array or an array with two numbers",
-      });
-    });
-
-    // test when radio is an array with length != 2 and length != 0 (invalid)
-    it("Should return 400 error when radio is an array with length != 2 and length != 0", async () => {
-      req = {
-        body: {
-          checked: ["bc7f29ed898fefd6a5f713fd"], // valid
-          radio: [10, 20], // valid
-        },
-      };
-      productModel.find = jest.fn().mockImplementation(() => {
-        throw new Error("some error");
-      });
-
-      await productFiltersController(req, res);
-
-      // Assertions
-      expect(res.status).toBeCalledWith(400);
-      expect(res.send).toBeCalledWith({
-        success: false,
-        message: "Error WHile Filtering Products",
-        error: new Error("some error"),
       });
     });
   });

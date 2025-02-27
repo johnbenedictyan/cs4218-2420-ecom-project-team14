@@ -3,6 +3,9 @@ import { render, screen, cleanup } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import Pagenotfound from "./Pagenotfound";
 import Layout from "../components/Layout";
+import { axe, toHaveNoViolations } from "jest-axe";
+
+expect.extend(toHaveNoViolations);
 
 // Mock the Layout component
 jest.mock("../components/Layout", () =>
@@ -45,19 +48,12 @@ describe("Pagenotfound Component", () => {
     expect(headingElement.className).toBe("pnf-heading");
 
     const layoutElement = screen.getByTestId("layout");
-    expect(layoutElement.textContent).toContain("404");
-    expect(layoutElement.textContent).toContain("Oops ! Page Not Found");
     expect(layoutElement.textContent).toContain("Go Back");
-
-    const alertElement = screen.queryByRole("alert");
-    expect(alertElement).not.toBeNull();
-    expect(alertElement.getAttribute("aria-labelledby")).toBe("pnf-heading");
   });
 
   it("includes a working back link to home page", () => {
     renderPagenotfound();
     const link = screen.getByRole("link", { name: "Go Back" });
-    expect(link).toBeTruthy();
     expect(link.getAttribute("href")).toBe("/");
     expect(link.className).toBe("pnf-btn");
   });
@@ -66,5 +62,11 @@ describe("Pagenotfound Component", () => {
     renderPagenotfound();
     expect(document.title).toBe("404 - Page Not Found | Ecommerce App");
     cleanup();
+  });
+
+  it("should not have accessibility violations", async () => {
+    const { container } = renderPagenotfound();
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

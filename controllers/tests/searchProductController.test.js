@@ -186,7 +186,7 @@ describe("Search Product Controller tests", () => {
       req = { params: { keyword: "a" } };
       productModel.find = jest.fn().mockReturnValue({
         select: jest.fn().mockImplementation(() => {
-          throw new Error("some error");
+          throw new Error("Error fetching product");
         }),
       });
 
@@ -196,7 +196,7 @@ describe("Search Product Controller tests", () => {
       expect(res.json).toBeCalledWith({
         success: false,
         message: "Error In Search Product API",
-        error: new Error("some error"),
+        error: new Error("Error fetching product"),
       });
     });
   });

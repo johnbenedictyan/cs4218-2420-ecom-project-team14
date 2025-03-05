@@ -8,6 +8,18 @@ jest.mock("../../models/userModel");
 describe("Update Profile Controller Tests", () => {
     let req, res, user, updatedUser;
 
+    const updateUser = () => {
+      updatedUser = {
+        _id: new ObjectId("679f3c5eb35bb2db5e6a3646"),
+        name: req.body.name || user.name,
+        email: 'douglas@mail.com',
+        password: (req.body.password ? '$2b$10$u/a/pMmAY0Iezeuna3W1OOiggduh3sEla8jhXvg0hUDW6vBIeTeWa' : undefined) || user.password,
+        phone: req.body.phone || user.phone,
+        address: req.body.address || user.address,
+        role: 0
+      }
+    }
+
     beforeEach(() => {
         jest.clearAllMocks();
         
@@ -33,7 +45,7 @@ describe("Update Profile Controller Tests", () => {
             address: 'Beautiful Home on Earth',
             role: 0
           }
-      
+
           res = {
             status: jest.fn().mockReturnThis(),
             send: jest.fn(),
@@ -48,17 +60,7 @@ describe("Update Profile Controller Tests", () => {
     // This test also covers the case for lower boundary for the BVA for password (6 characters)
     // This test also covers the case for upper boundary for the BVA for address (150 characters)
     it("should allow the user to update the profile successfully", async () => {
-
-      updatedUser = {
-        _id: new ObjectId("679f3c5eb35bb2db5e6a3646"),
-        name: req.body.name || user.name,
-        email: 'douglas@mail.com',
-        password: (req.body.password ? '$2b$10$u/a/pMmAY0Iezeuna3W1OOiggduh3sEla8jhXvg0hUDW6vBIeTeWa' : undefined) || user.password,
-        phone: req.body.phone || user.phone,
-        address: req.body.address || user.address,
-        role: 0
-      }
-
+      updateUser();
       userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(updatedUser);
 
       await updateProfileController(req, res);
@@ -89,15 +91,7 @@ describe("Update Profile Controller Tests", () => {
     it('should allow the user to update the profile with empty password', async () => {
       req.body.password = "";
 
-      updatedUser = {
-        _id: new ObjectId("679f3c5eb35bb2db5e6a3646"),
-        name: req.body.name || user.name,
-        email: 'douglas@mail.com',
-        password: (req.body.password ? '$2b$10$u/a/pMmAY0Iezeuna3W1OOiggduh3sEla8jhXvg0hUDW6vBIeTeWa' : undefined) || user.password,
-        phone: req.body.phone || user.phone,
-        address: req.body.address || user.address,
-        role: 0
-      }
+      updateUser();
 
       userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(updatedUser);
 
@@ -127,15 +121,7 @@ describe("Update Profile Controller Tests", () => {
     it('should allow the user to update the profile with empty name', async () => {
       req.body.name = "";
 
-      updatedUser = {
-        _id: new ObjectId("679f3c5eb35bb2db5e6a3646"),
-        name: req.body.name || user.name,
-        email: 'douglas@mail.com',
-        password: (req.body.password ? '$2b$10$u/a/pMmAY0Iezeuna3W1OOiggduh3sEla8jhXvg0hUDW6vBIeTeWa' : undefined) || user.password,
-        phone: req.body.phone || user.phone,
-        address: req.body.address || user.address,
-        role: 0
-      }
+      updateUser();
 
       userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(updatedUser);
 
@@ -166,15 +152,7 @@ describe("Update Profile Controller Tests", () => {
     it('should allow the user to update the profile with empty phone number', async () => {
       req.body.phone = "";
 
-      updatedUser = {
-        _id: new ObjectId("679f3c5eb35bb2db5e6a3646"),
-        name: req.body.name || user.name,
-        email: 'douglas@mail.com',
-        password: (req.body.password ? '$2b$10$u/a/pMmAY0Iezeuna3W1OOiggduh3sEla8jhXvg0hUDW6vBIeTeWa' : undefined) || user.password,
-        phone: req.body.phone || user.phone,
-        address: req.body.address || user.address,
-        role: 0
-      }
+      updateUser();
 
       userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(updatedUser);
 
@@ -206,15 +184,7 @@ describe("Update Profile Controller Tests", () => {
     it('should allow the user to update the profile with empty address', async () => {
       req.body.address = "";
 
-      updatedUser = {
-        _id: new ObjectId("679f3c5eb35bb2db5e6a3646"),
-        name: req.body.name || user.name,
-        email: 'douglas@mail.com',
-        password: (req.body.password ? '$2b$10$u/a/pMmAY0Iezeuna3W1OOiggduh3sEla8jhXvg0hUDW6vBIeTeWa' : undefined) || user.password,
-        phone: req.body.phone || user.phone,
-        address: req.body.address || user.address,
-        role: 0
-      }
+      updateUser();
 
       userModel.findByIdAndUpdate = jest.fn().mockResolvedValue(updatedUser);
 
@@ -270,6 +240,37 @@ describe("Update Profile Controller Tests", () => {
 
       await updateProfileController(req, res);
       expect(res.json.mock.lastCall[0].error).toBe("Passsword is required and 6 character long");
+    });
+
+    /* Pairwise Combination 4 (Test 13)
+      Name: Non-empty Invalid
+      Password: Empty
+      Phone: Non-empty Invalid
+      Address: Valid
+    */
+    it('should not allow the user to update their profile when non-empty invalid name, empty password, non-empty invalid phone number and valid address is passed as input', async () => {
+      req.body.name = "John William Samuel Douglas Russell Wallace Brandon Blaine James Joseph Johnson Monrole Jefferson Theodore Timothy Reece Franklin Charles Watson Holmes";
+      req.body.password = "";
+      req.body.phone = "17293922";
+
+      await updateProfileController(req, res);
+      expect(res.send.mock.lastCall[0].message).toBe("The name can only be up to 150 characters long");
+    });
+
+    /* Pairwise Combination 5 (Test 14)
+      Name: Non-empty Invalid
+      Password: Valid
+      Phone: Empty
+      Address: Non-empty Invalid
+    */
+    it('should not allow the user to update their profile when non-empty invalid name, valid password, empty phone and non-empty invalid address is passed as input', async () => {
+      req.body.name = "John William Samuel Douglas Russell Wallace Brandon Blaine James Joseph Johnson Monrole Jefferson Theodore Timothy Reece Franklin Charles Watson Holmes";
+      req.body.phone = "";
+      req.body.address = "This is an extremely long long address with more than one hundred and fifty characters and this should not be allowed when trying to update the profile";
+
+
+      await updateProfileController(req, res);
+      expect(res.send.mock.lastCall[0].message).toBe("The name can only be up to 150 characters long");
     });
 
 });

@@ -51,12 +51,20 @@ const CartPage = () => {
   const removeCartItem = (pid) => {
     try {
       let myCart = [...cart];
+      console.log(myCart)
       let index = myCart.findIndex((item) => item._id === pid);
-      myCart.splice(index, 1);
-      setCart(myCart);
+      // If index is valid splice the cart
+      if (index !== -1) {
+        myCart.splice(index, 1);
+        setCart(myCart);
+      } else {
+        console.log(`Item with pid ${pid} not found in cart.`);
+        throw new Error("Failed to remove item from cart.");
+      }
       localStorage.setItem("cart", JSON.stringify(myCart));
     } catch (error) {
       console.log(error);
+      toast.error(error.message);
     }
   };
 
@@ -128,7 +136,7 @@ const CartPage = () => {
                   </div>
                   <div className="col-md-4">
                     <p>{p.name}</p>
-                    <p>{p.description.substring(0, 30)}</p>
+                    <p>{p.description ? p.description.substring(0, 30) : ""}</p>
                     <p>Price : {p.price}</p>
                   </div>
                   <div className="col-md-4 cart-remove-btn">

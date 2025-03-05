@@ -4,7 +4,6 @@ import { useCart } from "../context/cart";
 import { useAuth } from "../context/auth";
 import { useNavigate } from "react-router-dom";
 import DropIn from "braintree-web-drop-in-react";
-import { AiFillWarning } from "react-icons/ai";
 import axios from "axios";
 import toast from "react-hot-toast";
 import "../styles/CartStyles.css";
@@ -21,18 +20,34 @@ const CartPage = () => {
   const totalPrice = () => {
     try {
       let total = 0;
-      cart?.map((item) => {
-        total = total + item.price;
+      // Check if cart exists and is an array
+      if (!cart || !Array.isArray(cart)) {
+        return total.toLocaleString("en-US", {
+          style: "currency",
+          currency: "USD",
+        });
+      }
+      
+      // Use forEach, we are not using the returned array
+      cart.forEach((item) => {
+        // Check if price exists and is a number
+        if (item && typeof item.price === 'number') {
+          // Ensure we only add positive values
+          total = total + Math.max(0, item.price);
+        }
       });
+      
       return total.toLocaleString("en-US", {
         style: "currency",
         currency: "USD",
       });
     } catch (error) {
       console.log(error);
+      // Return a default value in case of error
+      return "$0.00";
     }
   };
-  //detele item
+  //delete item
   const removeCartItem = (pid) => {
     try {
       let myCart = [...cart];
@@ -74,6 +89,7 @@ const CartPage = () => {
       toast.success("Payment Completed Successfully ");
     } catch (error) {
       console.log(error);
+      toast.error("Payment has failed, please try again");
       setLoading(false);
     }
   };

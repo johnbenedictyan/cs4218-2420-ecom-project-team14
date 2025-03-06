@@ -1,5 +1,11 @@
 import React from "react";
-import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from "@testing-library/react";
 import "@testing-library/jest-dom";
 import CartPage from "./CartPage";
 import { useAuth } from "../context/auth";
@@ -44,7 +50,9 @@ const localStorageMock = {
 Object.defineProperty(window, "localStorage", { value: localStorageMock });
 
 // Create a mock for the requestPaymentMethod function
-const mockRequestPaymentMethod = jest.fn().mockResolvedValue({ nonce: "test-payment-nonce" });
+const mockRequestPaymentMethod = jest
+  .fn()
+  .mockResolvedValue({ nonce: "test-payment-nonce" });
 
 // Mock DropIn component
 jest.mock("braintree-web-drop-in-react", () => {
@@ -80,14 +88,22 @@ describe("CartPage component", () => {
   const mockNavigate = jest.fn();
   const mockSetCart = jest.fn();
   const mockCart = [
-    { _id: "1", name: "Test Product", price: 99.99, description: "Test description" }
+    {
+      _id: "1",
+      name: "Test Product",
+      price: 99.99,
+      description: "Test description",
+    },
   ];
 
   beforeEach(() => {
     jest.clearAllMocks();
     // Setup auth mock with user having an address
     useAuth.mockReturnValue([
-      { user: { name: "Test User", address: "123 Test St" }, token: "test-token" },
+      {
+        user: { name: "Test User", address: "123 Test St" },
+        token: "test-token",
+      },
       jest.fn(),
     ]);
     useNavigate.mockReturnValue(mockNavigate);
@@ -109,7 +125,7 @@ describe("CartPage component", () => {
     // Check if remove button exists
     expect(screen.getByText("Remove")).toBeInTheDocument();
   });
-  
+
   it("makes API call to get token on mount", async () => {
     useCart.mockReturnValue([mockCart, mockSetCart]);
     await act(async () => {
@@ -122,13 +138,21 @@ describe("CartPage component", () => {
   describe("removeCartItem function", () => {
     it("successfully removes the correct item from the cart when found", async () => {
       const cartWithTwoItems = [
-        { _id: "1", name: "Product 1", price: 10, description: "Test description 1" },
-        { _id: "2", name: "Product 2", price: 20, description: "Test description 2" }
+        {
+          _id: "1",
+          name: "Product 1",
+          price: 10,
+          description: "Test description 1",
+        },
+        {
+          _id: "2",
+          name: "Product 2",
+          price: 20,
+          description: "Test description 2",
+        },
       ];
       useCart.mockReturnValue([cartWithTwoItems, mockSetCart]);
-      await act(async () => {
-        render(<CartPage />);
-      });
+      render(<CartPage />);
       const removeButton = screen.getAllByText("Remove")[0];
       await act(async () => {
         fireEvent.click(removeButton);
@@ -150,67 +174,71 @@ describe("CartPage component", () => {
       await waitFor(() => {
         expect(screen.getByTestId("mock-dropin")).toBeInTheDocument();
       });
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
     };
-    
+
     it("successfully processes payment", async () => {
       useCart.mockReturnValue([mockCart, mockSetCart]);
-      await act(async () => {
-        render(<CartPage />);
-      });
+      render(<CartPage />);
+
       await waitForDropIn();
       const paymentButton = screen.getByText("Make Payment");
       fireEvent.click(paymentButton);
       await waitFor(() => {
-        expect(axios.post).toHaveBeenCalledWith("/api/v1/product/braintree/payment", {
-          nonce: "test-payment-nonce",
-          cart: mockCart,
-        });
-        // Check if localStorage.removeItem was called
-        expect(localStorageMock.removeItem).toHaveBeenCalledWith("cart");
-        
-        // Check if setCart was called with empty array
-        expect(mockSetCart).toHaveBeenCalledWith([]);
-        
-        // Check if navigate was called with correct path
-        expect(mockNavigate).toHaveBeenCalledWith("/dashboard/user/orders");
-        
-        // Check if toast.success was called
-        expect(toast.success).toHaveBeenCalledWith("Payment Completed Successfully ");
+        expect(axios.post).toHaveBeenCalledWith(
+          "/api/v1/product/braintree/payment",
+          {
+            nonce: "test-payment-nonce",
+            cart: mockCart,
+          }
+        );
       });
+      // Check if localStorage.removeItem was called
+
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith("cart");
+
+      // Check if setCart was called with empty array
+      expect(mockSetCart).toHaveBeenCalledWith([]);
+
+      // Check if navigate was called with correct path
+      expect(mockNavigate).toHaveBeenCalledWith("/dashboard/user/orders");
+
+      // Check if toast.success was called
+      expect(toast.success).toHaveBeenCalledWith(
+        "Payment Completed Successfully "
+      );
     });
-    
+
     it("handles payment error", async () => {
       axios.post.mockRejectedValueOnce(new Error("Payment failed"));
       useCart.mockReturnValue([mockCart, mockSetCart]);
-      await act(async () => {
-        render(<CartPage />);
-      });
+      render(<CartPage />);
       const consoleSpy = jest.spyOn(console, "log");
       await waitForDropIn();
       const paymentButton = screen.getByText("Make Payment");
       fireEvent.click(paymentButton);
       // Wait for the error handling
       await waitFor(() => {
-        // Check if error was logged
         expect(consoleSpy).toHaveBeenCalled();
-        
-        // Check if toast.error was called
-        expect(toast.error).toHaveBeenCalledWith("Payment has failed, please try again");
-        
-        // Check that localStorage.removeItem was NOT called
-        expect(localStorageMock.removeItem).not.toHaveBeenCalled();
-        
-        // Check that navigate was NOT called
-        expect(mockNavigate).not.toHaveBeenCalled();
       });
+
+      // Check if toast.error was called
+      expect(toast.error).toHaveBeenCalledWith(
+        "Payment has failed, please try again"
+      );
+
+      // Check that localStorage.removeItem was NOT called
+      expect(localStorageMock.removeItem).not.toHaveBeenCalled();
+
+      // Check that navigate was NOT called
+      expect(mockNavigate).not.toHaveBeenCalled();
       consoleSpy.mockRestore();
     });
-    
+
     it("shows loading state during payment processing", async () => {
       let resolvePaymentMethod;
       // Override the mockRequestPaymentMethod for this test
-      const paymentPromise = new Promise(resolve => {
+      const paymentPromise = new Promise((resolve) => {
         resolvePaymentMethod = resolve;
       });
       mockRequestPaymentMethod.mockReturnValueOnce(paymentPromise);

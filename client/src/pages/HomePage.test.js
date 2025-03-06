@@ -109,11 +109,17 @@ describe("HomePage component", () => {
           slug: "test-product",
         },
       ];
-      axios.get
-      .mockResolvedValueOnce({ data: { success: true, category: [] } })  // Mock for getAllCategory()
-      .mockResolvedValueOnce({ data: { total: 1 } })                      // Mock for getTotal()
-      .mockResolvedValueOnce({ data: { products: singleProduct } });       // Mock for getAllProducts()
-
+      // Mocking the axios.get method with refactoring of source code in mind
+      axios.get.mockImplementation((url) => {
+        if (url.includes("/api/v1/category/get-category")) {
+          return Promise.resolve({data: {success: true, category: []}});
+        } else if (url.includes("/api/v1/product/product-count")) {
+          return Promise.resolve({data: {total: 1}});
+        } else if (url.includes("/api/v1/product/product-list/1")) {
+          return Promise.resolve({data: {products: singleProduct}});
+        }
+        return Promise.reject(new Error(`Not found: ${url}`));
+      })
       render(<HomePage />);
 
       await waitFor(() => {
@@ -165,7 +171,7 @@ describe("HomePage component", () => {
         if (url === "/api/v1/category/get-category") {
           return Promise.resolve({ data: { success: true, category: mockCategories } });
         }
-        return Promise.reject(new Error("Not found"));
+        return Promise.reject(new Error(`Not found: ${url}`));
       });
       // Mock the POST call for filtering products
       axios.post.mockResolvedValueOnce({ data: { products: [] } });
@@ -196,7 +202,14 @@ describe("HomePage component", () => {
   describe("Product Description Boundary Tests", () => {
     it("should truncate description > 60 characters", async () => {
       const longDescription =
-        "This is a very long description that should be truncated at exactly sixty chars.";
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. ' +
+        'Sed facilisis velit non massa luctus, quis elementum sapien semper. ' +
+        'Curabitur tristique fringilla risus, sit amet porttitor felis pharetra vel. Fusce eget suscipit augue. ' +
+        'Sed laoreet a orci ut porta. Etiam accumsan augue a mi maximus gravida tempor non nisl. ' +
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque a augue in tellus sollicitudin blandit. ' +
+        'Nam sollicitudin libero et posuere placerat. Curabitur sit amet diam eu ligula fermentum pulvinar non mattis urna. ' +
+        'Maecenas mattis convallis dictum. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia ' +
+        'curae; Pellentesque eleifend quam.';
       const products = [
         {
           _id: 1,
@@ -221,7 +234,7 @@ describe("HomePage component", () => {
         if (url === "/api/v1/category/get-category") {
           return Promise.resolve({ data: { success: true, category: [] } });
         }
-        return Promise.reject(new Error("Not found"));
+        return Promise.reject(new Error(`Not found: ${url}`));
       });
 
       render(<HomePage />);
@@ -232,7 +245,7 @@ describe("HomePage component", () => {
         expect(productCard).toBeInTheDocument();
       });
 
-      // Then check for the truncated description
+      // Truncated description should be rendered
       const descriptionElement = screen.getByText(expectedTruncated);
       expect(descriptionElement).toBeInTheDocument();
       expect(descriptionElement.tagName.toLowerCase()).toBe('p');
@@ -295,10 +308,16 @@ describe("HomePage component", () => {
           slug: "test-product",
         },
       ];
-      axios.get
-        .mockResolvedValueOnce({ data: { success: true, category: [] } })  // for getAllCategory()
-        .mockResolvedValueOnce({ data: { total: 1 } }) // for getTotal()
-        .mockResolvedValueOnce({ data: { products } }); // for getAllProducts()
+      axios.get.mockImplementation((url) => {
+        if (url.includes("/api/v1/category/get-category")) {
+          return Promise.resolve({ data: { success: true, category: [] } });
+        } else if (url.includes("/api/v1/product/product-count")) {
+          return Promise.resolve({ data: { total: 1 } });
+        } else if (url.includes("/api/v1/product/product-list")) {
+          return Promise.resolve({ data: { products: products } });
+        }
+        return Promise.reject(new Error(`Not found: ${url}`));
+      });
 
       render(<HomePage />);
 

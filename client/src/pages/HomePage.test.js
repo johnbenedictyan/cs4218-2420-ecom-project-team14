@@ -4,7 +4,6 @@ import "@testing-library/jest-dom";
 import HomePage from "./HomePage";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
 
 // Mock modules
 jest.mock("axios");

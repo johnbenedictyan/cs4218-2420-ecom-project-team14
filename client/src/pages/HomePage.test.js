@@ -351,7 +351,16 @@ describe("HomePage component", () => {
         .mockResolvedValueOnce({ data: { success: true, category: [] } }) // Mock getAllCategory success
         .mockResolvedValueOnce({ data: { total: 1 } })                      // Mock getTotal success
         .mockRejectedValueOnce(new Error("Network Error"));                 // Mock getAllProducts failure
-
+      axios.get.mockImplementation((url) => {
+        if (url.includes("/api/v1/category/get-category")) {
+          return Promise.resolve({ data: { success: true, category: [] } });
+        } else if (url.includes("/api/v1/product/product-count")) {
+          return Promise.resolve({ data: { total: 1 } });
+        } else if (url.includes("/api/v1/product/product-list")) {
+          return new Error("Network Error");
+        }
+        return Promise.reject(new Error(`Not found: ${url}`));
+      });
       render(<HomePage />);
       await waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith(expect.stringContaining("Network Error"));

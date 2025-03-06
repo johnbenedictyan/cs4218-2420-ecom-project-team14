@@ -123,7 +123,15 @@ export const getSingleProductController = async (req, res) => {
 // get photo
 export const productPhotoController = async (req, res) => {
   try {
-    const product = await productModel.findById(req.params.pid).select("photo");
+    // Check if pid is null or corresponds to mongoose object id type
+    const { pid } = req.params;
+    if (!pid || !mongoose.Types.ObjectId.isValid(pid)) {
+      return res.status(400).send({
+        success: false,
+        message: "Invalid Product id format",
+      });
+    }
+    const product = await productModel.findById(pid).select("photo");
     if (product.photo.data) {
       res.set("Content-type", product.photo.contentType);
       return res.status(200).send(product.photo.data);
@@ -143,7 +151,7 @@ export const deleteProductController = async (req, res) => {
   try {
     const { pid } = req.params;
 
-    // check if pid is null or dpesn't correspond to mongoose object id type
+    // check if pid is null or doesn't correspond to mongoose object id type
     if (!pid || !mongoose.Types.ObjectId.isValid(pid)) {
       return res.status(400).send({
         success: false,

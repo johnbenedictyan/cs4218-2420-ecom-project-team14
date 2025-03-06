@@ -77,7 +77,7 @@ describe("HomePage component", () => {
     });
   });
 
-  describe("HomePage Filters tests", () => {
+  describe("HomePage Filters general tests", () => {
     it("should call window.location.reload when RESET FILTERS is clicked", async () => {
       // Redefine window.location.reload as it is read only
       const originalLocation = window.location;
@@ -135,6 +135,42 @@ describe("HomePage component", () => {
           {
             checked: [],
             radio: expect.anything(),
+          }
+        );
+      });
+    });
+
+    it("should update filter state when a category checkbox is toggled", async () => {
+      const mockCategories = [
+        { _id: "1", name: "Test Category 1", slug: "category-1" },
+      ];
+      axios.get.mockImplementation((url) => {
+        if (url === "/api/v1/category/get-category") {
+          return Promise.resolve({
+            data: { success: true, category: mockCategories },
+          });
+        }
+        if (url === "/api/v1/product/product-count") {
+          return Promise.resolve({ data: { total: 1 } });
+        }
+        if (url.includes("/api/v1/product/product-list")) {
+          return Promise.resolve({ data: { products: [] } });
+        }
+        return Promise.reject(new Error(`Not found: ${url}`));
+      });
+      axios.post.mockResolvedValueOnce({ data: { products: [] } });
+      render(<HomePage />);
+      await waitFor(() => {
+        expect(screen.getByText("Test Category 1")).toBeInTheDocument();
+      });
+      const checkbox = screen.getByRole("checkbox", { name: /Category 1/i });
+      fireEvent.click(checkbox);
+      await waitFor(() => {
+        expect(axios.post).toHaveBeenCalledWith(
+          "/api/v1/product/product-filters",
+          {
+            checked: ["1"],
+            radio: [],
           }
         );
       });
@@ -275,50 +311,6 @@ describe("HomePage component", () => {
 
       await waitFor(() => {
         expect(screen.getByText("Filter By Price")).toBeInTheDocument();
-      });
-    });
-
-    it("should handle single category selection (minimal case)", async () => {
-      const mockCategories = [
-        { _id: "1", name: "Category 1", slug: "category-1" },
-      ];
-
-      // Mock GET calls for categories and products
-      axios.get.mockImplementation((url) => {
-        if (url.includes("/api/v1/product/product-list/")) {
-          return Promise.resolve({ data: { products: [] } });
-        }
-        if (url === "/api/v1/product/product-count") {
-          return Promise.resolve({ data: { total: 1 } });
-        }
-        if (url === "/api/v1/category/get-category") {
-          return Promise.resolve({
-            data: { success: true, category: mockCategories },
-          });
-        }
-        return Promise.reject(new Error(`Not found: ${url}`));
-      });
-      // Mock the POST call for filtering products
-      axios.post.mockResolvedValueOnce({ data: { products: [] } });
-
-      render(<HomePage />);
-
-      // Wait until the category is rendered
-      await waitFor(() => {
-        expect(screen.getByText("Category 1")).toBeInTheDocument();
-      });
-
-      // Target the checkbox instead of just the text
-      fireEvent.click(screen.getByRole("checkbox", { name: /Category 1/i }));
-
-      await waitFor(() => {
-        expect(axios.post).toHaveBeenCalledWith(
-          "/api/v1/product/product-filters",
-          {
-            checked: ["1"],
-            radio: [],
-          }
-        );
       });
     });
   });

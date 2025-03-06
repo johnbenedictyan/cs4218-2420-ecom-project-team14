@@ -51,14 +51,16 @@ export const createProductController = async (req, res) => {
           .status(400)
           .send({ success: false, message: "Quantity is Required" });
       case photo && photo.size > 1000000:
-        return res
-          .status(500)
-          .send({ error: "photo is Required and should be less then 1mb" });
+        return res.status(400).send({
+          success: false,
+          message: "photo is Required and should be less then 1mb",
+        });
     }
 
     // Validate that product name cannot be more than 100 characters
     if (name.length > 100) {
       return res.status(400).send({
+        success: false,
         message: "Name of product can only be up to 100 characters long",
       });
     }
@@ -66,6 +68,7 @@ export const createProductController = async (req, res) => {
     // Validate that product description cannot be more than 500 characters
     if (description.length > 500) {
       return res.status(400).send({
+        success: false,
         message: "Description of product can only be up to 500 characters long",
       });
     }
@@ -73,6 +76,7 @@ export const createProductController = async (req, res) => {
     // Validate that category id must conform to mongoose object id format
     if (!mongoose.Types.ObjectId.isValid(category)) {
       return res.status(400).send({
+        success: false,
         message: "Category id must conform to mongoose object id format",
       });
     }
@@ -80,6 +84,7 @@ export const createProductController = async (req, res) => {
     // Validate that price must be a number when parsed
     if (isNaN(parseFloat(price))) {
       return res.status(400).send({
+        success: false,
         message: "Price must be a number when parsed",
       });
     }
@@ -87,13 +92,15 @@ export const createProductController = async (req, res) => {
     // Validate that quantity must be a stringed positive integer
     if (!/^-?\d+$/.test(quantity) || parseInt(quantity) <= 0) {
       return res.status(400).send({
+        success: false,
         message: "Quantity must be a stringed positive integer",
       });
     }
 
     // Validate that shipping can only take values 0 or 1
-    if (shipping !== 0 && shipping !== 1) {
+    if (shipping !== "0" && shipping !== "1") {
       return res.status(400).send({
+        success: false,
         message: "Shipping must either take on values 0 or 1",
       });
     }
@@ -120,13 +127,14 @@ export const createProductController = async (req, res) => {
       });
     }
 
-    // Convert price to cents and restrict to 2 decimal places
-    const priceInCents = parseFloat(price).toFixed(2) * 100;
+    // Truncate price to 2 decmial places
+    const priceTruncated = parseFloat(price).toFixed(2);
     const products = new productModel({
       ...req.fields,
-      price: priceInCents,
+      price: priceTruncated,
       slug: slugify(name),
     });
+
     if (photo) {
       products.photo.data = fs.readFileSync(photo.path);
       products.photo.contentType = photo.type;

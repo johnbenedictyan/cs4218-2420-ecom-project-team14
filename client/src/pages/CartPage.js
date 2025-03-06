@@ -27,16 +27,16 @@ const CartPage = () => {
           currency: "USD",
         });
       }
-      
+
       // Use forEach, we are not using the returned array
       cart.forEach((item) => {
         // Check if price exists and is a number
-        if (item && typeof item.price === 'number') {
+        if (item && typeof item.price === "number") {
           // Ensure we only add positive values
           total = total + Math.max(0, item.price);
         }
       });
-      
+
       return total.toLocaleString("en-US", {
         style: "currency",
         currency: "USD",
@@ -51,7 +51,6 @@ const CartPage = () => {
   const removeCartItem = (pid) => {
     try {
       let myCart = [...cart];
-      console.log(myCart)
       let index = myCart.findIndex((item) => item._id === pid);
       // If index is valid splice the cart
       if (index !== -1) {

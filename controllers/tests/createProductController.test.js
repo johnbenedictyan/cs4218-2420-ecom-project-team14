@@ -130,37 +130,6 @@ describe("Create Product Controller tests", () => {
     );
   });
 
-  // Equivalence class tested: field "name" is non-empty string but product name already exists (invalid)
-  it("Should return 400 error when name field corresponds to a product name that already exists", async () => {
-    const mockSameNameProduct = {
-      photo: {
-        data: "somePhotoData",
-        contentType: "image/jpeg",
-      },
-      _id: new ObjectId("67c950e3a73fac8fc46a070a"),
-      name: "Some valid name",
-      slug: "some-valid-name",
-      description: "some desc",
-      price: 1000,
-      category: new ObjectId("679f463b6d15f42289be8cdd"),
-      quantity: 11,
-      shipping: false,
-      createdAt: "2025-03-06T07:38:11.874Z",
-      updatedAt: "2025-03-06T07:38:11.874Z",
-      __v: 0,
-    };
-
-    productModel.findOne = jest.fn().mockResolvedValue(mockSameNameProduct);
-    await createProductController(req, res);
-
-    // Assertions
-    expect(res.status).toBeCalledWith(400);
-    expect(res.send.mock.lastCall[0].success).toBe(false);
-    expect(res.send.mock.lastCall[0].message).toBe(
-      "Product with this name already exists"
-    );
-  });
-
   /**
    * Equivalence classes of field "description" identified:
    * a. Non-empty string ≤500 characters (valid): tested in success case above

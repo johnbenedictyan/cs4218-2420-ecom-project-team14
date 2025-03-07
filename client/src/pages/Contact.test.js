@@ -70,18 +70,38 @@ describe("Contact Component", () => {
     });
   });
 
-  // Content Tests
-  describe("Content", () => {
-    it("renders heading with correct text and styling", () => {
+  // Content and Styling Tests
+  describe("Content and Style Tests", () => {
+    it("renders correct elements and applies correct Bootstrap classes", () => {
       render(<Contact />);
+      const layout = screen.getByTestId("mock-layout");
+
+      // Row and columns
+      // eslint-disable-next-line testing-library/no-node-access
+      expect(layout.querySelector(".row")).toHaveClass("contactus");
+      // eslint-disable-next-line testing-library/no-node-access
+      expect(layout.querySelector(".col-md-6")).toBeInTheDocument();
+      // eslint-disable-next-line testing-library/no-node-access
+      expect(layout.querySelector(".col-md-4")).toBeInTheDocument();
+
+      // Heading
       const heading = screen.getByText("CONTACT US");
-      expect(heading).toBeInTheDocument();
       expect(heading).toHaveClass(
         "bg-dark",
         "p-2",
         "text-white",
         "text-center"
       );
+
+      // Paragraphs
+      const infoParagraph = screen.getByText(/For any query/);
+      expect(infoParagraph).toHaveClass("text-justify", "mt-2");
+
+      // Contact details
+      const contactDetails = screen.getAllByText(/:/);
+      contactDetails.forEach((detail) => {
+        expect(detail).toHaveClass("mt-3");
+      });
     });
 
     it("renders contact information paragraph", () => {
@@ -142,41 +162,6 @@ describe("Contact Component", () => {
       render(<Contact />);
       const heading = screen.getByText("CONTACT US");
       expect(heading.tagName).toBe("H1");
-    });
-  });
-
-  // Styling Tests
-  describe("Styling", () => {
-    it("applies correct Bootstrap classes", () => {
-      render(<Contact />);
-      const layout = screen.getByTestId("mock-layout");
-
-      // Row and columns
-      // eslint-disable-next-line testing-library/no-node-access
-      expect(layout.querySelector(".row")).toHaveClass("contactus");
-      // eslint-disable-next-line testing-library/no-node-access
-      expect(layout.querySelector(".col-md-6")).toBeInTheDocument();
-      // eslint-disable-next-line testing-library/no-node-access
-      expect(layout.querySelector(".col-md-4")).toBeInTheDocument();
-
-      // Heading
-      const heading = screen.getByText("CONTACT US");
-      expect(heading).toHaveClass(
-        "bg-dark",
-        "p-2",
-        "text-white",
-        "text-center"
-      );
-
-      // Paragraphs
-      const infoParagraph = screen.getByText(/For any query/);
-      expect(infoParagraph).toHaveClass("text-justify", "mt-2");
-
-      // Contact details
-      const contactDetails = screen.getAllByText(/:/);
-      contactDetails.forEach((detail) => {
-        expect(detail).toHaveClass("mt-3");
-      });
     });
   });
 

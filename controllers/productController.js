@@ -28,25 +28,113 @@ export const createProductController = async (req, res) => {
     const { name, description, price, category, quantity, shipping } =
       req.fields;
     const { photo } = req.files;
-    //alidation
+    // validation
     switch (true) {
-      case !name:
-        return res.status(500).send({ error: "Name is Required" });
-      case !description:
-        return res.status(500).send({ error: "Description is Required" });
-      case !price:
-        return res.status(500).send({ error: "Price is Required" });
-      case !category:
-        return res.status(500).send({ error: "Category is Required" });
-      case !quantity:
-        return res.status(500).send({ error: "Quantity is Required" });
-      case photo && photo.size > 1000000:
+      case !name || name.trim() === "":
         return res
-          .status(500)
-          .send({ error: "photo is Required and should be less then 1mb" });
+          .status(400)
+          .send({ success: false, message: "Name is Required" });
+      case !description || description.trim() === "":
+        return res
+          .status(400)
+          .send({ success: false, message: "Description is Required" });
+      case !price:
+        return res
+          .status(400)
+          .send({ success: false, message: "Price is Required" });
+      case !category:
+        return res
+          .status(400)
+          .send({ success: false, message: "Category is Required" });
+      case !quantity:
+        return res
+          .status(400)
+          .send({ success: false, message: "Quantity is Required" });
+      case photo && photo.size > 1000000:
+        return res.status(400).send({
+          success: false,
+          message: "photo is Required and should be less then 1mb",
+        });
     }
 
-    const products = new productModel({ ...req.fields, slug: slugify(name) });
+    // Validate that product name cannot be more than 100 characters
+    if (name.length > 100) {
+      return res.status(400).send({
+        success: false,
+        message: "Name of product can only be up to 100 characters long",
+      });
+    }
+
+    // Validate that product description cannot be more than 500 characters
+    if (description.length > 500) {
+      return res.status(400).send({
+        success: false,
+        message: "Description of product can only be up to 500 characters long",
+      });
+    }
+
+    // Validate that category id must conform to mongoose object id format
+    if (!mongoose.Types.ObjectId.isValid(category)) {
+      return res.status(400).send({
+        success: false,
+        message: "Category id must conform to mongoose object id format",
+      });
+    }
+
+    // Validate that price must be a number when parsed
+    if (isNaN(parseFloat(price))) {
+      return res.status(400).send({
+        success: false,
+        message: "Price must be a number when parsed",
+      });
+    }
+
+    // Validate that quantity must be a stringed positive integer
+    if (!/^-?\d+$/.test(quantity) || parseInt(quantity) <= 0) {
+      return res.status(400).send({
+        success: false,
+        message: "Quantity must be a stringed positive integer",
+      });
+    }
+
+    // Validate that shipping can only take values 0 or 1
+    if (shipping !== "0" && shipping !== "1") {
+      return res.status(400).send({
+        success: false,
+        message: "Shipping must either take on values 0 or 1",
+      });
+    }
+
+    // Check whether categoryId exists
+    const existingCategory = await categoryModel.findById(category);
+    // Return error if category id does not exist
+    if (!existingCategory) {
+      return res.status(400).send({
+        success: false,
+        message: "Category given does not exist",
+      });
+    }
+
+    // Do a case-insensitive check for a product with same name
+    const existingProduct = await productModel.findOne({
+      name: { $regex: new RegExp(`^${name}$`, "i") },
+    });
+    // Return error if product with same name exists
+    if (existingProduct) {
+      return res.status(400).send({
+        success: false,
+        message: "Product with this name already exists",
+      });
+    }
+
+    // Truncate price to 2 decmial places
+    const priceTruncated = parseFloat(price).toFixed(2);
+    const products = new productModel({
+      ...req.fields,
+      price: priceTruncated,
+      slug: slugify(name),
+    });
+
     if (photo) {
       products.photo.data = fs.readFileSync(photo.path);
       products.photo.contentType = photo.type;
@@ -62,7 +150,7 @@ export const createProductController = async (req, res) => {
     res.status(500).send({
       success: false,
       error,
-      message: "Error in crearing product",
+      message: "Error in creating product",
     });
   }
 };

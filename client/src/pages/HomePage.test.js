@@ -3,11 +3,12 @@ import { screen, render, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import HomePage from "./HomePage";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 // Mock modules
 jest.mock("axios");
 jest.mock("react-hot-toast");
-import toast from "react-hot-toast";
+
 jest.mock("react-router-dom", () => ({
   useNavigate: () => jest.fn(),
 }));
@@ -28,7 +29,7 @@ jest.mock("../components/Layout", () => {
   );
 });
 
-jest.mock('react-icons/ai', () => ({
+jest.mock("react-icons/ai", () => ({
   AiOutlineReload: () => <span>ReloadIcon</span>,
 }));
 
@@ -38,12 +39,156 @@ describe("HomePage component", () => {
     jest.clearAllMocks();
   });
 
+  // UI Navigation tests
+  describe("Navigation Tests", () => {
+    it("should navigate to product details page when More Details is clicked", async () => {
+      const mockNavigate = jest.fn();
+      jest
+        .spyOn(require("react-router-dom"), "useNavigate")
+        .mockReturnValue(mockNavigate);
+      const mockProducts = [
+        {
+          _id: 1,
+          name: "Product 1",
+          price: 100,
+          description: "This is product 1 description",
+          slug: "test-product-1",
+        },
+      ];
+
+      axios.get.mockImplementation((url) => {
+        if (url.includes("/api/v1/category/get-category")) {
+          return Promise.resolve({ data: { success: true, category: [] } });
+        } else if (url.includes("/api/v1/product/product-count")) {
+          return Promise.resolve({ data: { total: 1 } });
+        } else if (url.includes("/api/v1/product/product-list")) {
+          return Promise.resolve({ data: { products: mockProducts } });
+        }
+        return Promise.reject(new Error(`Not found: ${url}`));
+      });
+      render(<HomePage />);
+      await waitFor(() => {
+        expect(screen.getByText("Product 1")).toBeInTheDocument();
+      });
+      fireEvent.click(screen.getByText("More Details"));
+      expect(mockNavigate).toHaveBeenCalledWith(
+        `/product/${mockProducts[0].slug}`
+      );
+    });
+  });
+
+  describe("HomePage Filters general tests", () => {
+    it("should call window.location.reload when RESET FILTERS is clicked", async () => {
+      // Redefine window.location.reload as it is read only
+      const originalLocation = window.location;
+      delete window.location;
+      window.location = { ...originalLocation, reload: jest.fn() };
+      const reloadSpy = jest
+        .spyOn(window.location, "reload")
+        .mockImplementation(() => {});
+      axios.get.mockResolvedValue({ data: { success: true, category: [] } });
+      render(<HomePage />);
+      await waitFor(() => {
+        expect(screen.getByText("RESET FILTERS")).toBeInTheDocument();
+      });
+      fireEvent.click(screen.getByText("RESET FILTERS"));
+      expect(reloadSpy).toHaveBeenCalled();
+      reloadSpy.mockRestore();
+      // Restore window.location
+      window.location = originalLocation;
+    });
+
+    it("should call product filters API when a price range is selected", async () => {
+      const mockCategories = [];
+      axios.get.mockImplementation((url) => {
+        if (url === "/api/v1/category/get-category") {
+          return Promise.resolve({
+            data: { success: true, category: mockCategories },
+          });
+        }
+        if (url === "/api/v1/product/product-count") {
+          return Promise.resolve({ data: { total: 1 } });
+        }
+        if (url.includes("/api/v1/product/product-list")) {
+          return Promise.resolve({ data: { products: [] } });
+        }
+        return Promise.reject(new Error(`Not found: ${url}`));
+      });
+
+      axios.post.mockResolvedValueOnce({ data: { products: [] } });
+
+      render(<HomePage />);
+
+      await waitFor(() => {
+        const radios = screen.getAllByRole("radio");
+        expect(radios.length).toBeGreaterThan(0);
+      });
+      const radios = screen.getAllByRole("radio");
+
+      // Simulate clicking one of the radios
+      fireEvent.click(radios[0]);
+
+      // Verify that the API call to product filters
+      await waitFor(() => {
+        expect(axios.post).toHaveBeenCalledWith(
+          "/api/v1/product/product-filters",
+          {
+            checked: [],
+            radio: expect.anything(),
+          }
+        );
+      });
+    });
+
+    it("should update filter state when a category checkbox is toggled", async () => {
+      const mockCategories = [
+        { _id: "1", name: "Test Category 1", slug: "category-1" },
+      ];
+      axios.get.mockImplementation((url) => {
+        if (url === "/api/v1/category/get-category") {
+          return Promise.resolve({
+            data: { success: true, category: mockCategories },
+          });
+        }
+        if (url === "/api/v1/product/product-count") {
+          return Promise.resolve({ data: { total: 1 } });
+        }
+        if (url.includes("/api/v1/product/product-list")) {
+          return Promise.resolve({ data: { products: [] } });
+        }
+        return Promise.reject(new Error(`Not found: ${url}`));
+      });
+      axios.post.mockResolvedValueOnce({ data: { products: [] } });
+      render(<HomePage />);
+      await waitFor(() => {
+        expect(screen.getByText("Test Category 1")).toBeInTheDocument();
+      });
+      const checkbox = screen.getByRole("checkbox", { name: /Category 1/i });
+      fireEvent.click(checkbox);
+      await waitFor(() => {
+        expect(axios.post).toHaveBeenCalledWith(
+          "/api/v1/product/product-filters",
+          {
+            checked: ["1"],
+            radio: [],
+          }
+        );
+      });
+    });
+  });
+
   // Boundary Value Analysis Tests
   describe("Pagination Boundary Tests", () => {
     it("should not load more products when page is 1 (lower boundary)", async () => {
-      const mockProducts = [{ _id: 1, name: "Product 1",price: 100,
-        description:"This is product 1 description",
-        slug: "test-product-1",}];
+      const mockProducts = [
+        {
+          _id: 1,
+          name: "Product 1",
+          price: 100,
+          description: "This is product 1 description",
+          slug: "test-product-1",
+        },
+      ];
       axios.get.mockResolvedValueOnce({ data: { products: mockProducts } });
 
       render(<HomePage />);
@@ -56,12 +201,24 @@ describe("HomePage component", () => {
     });
 
     it("should load more products when page > 1", async () => {
-      const initialProducts = [{ _id: 1, name: "Product 1",price: 100,
-        description: "This is product 1 description",
-        slug: "test-product-1",}];
-      const moreProducts = [{ _id: 2, name: "Product 2" ,price: 200,
-        description: "This is product 2 description",
-        slug: "test-product-2",}];
+      const initialProducts = [
+        {
+          _id: 1,
+          name: "Product 1",
+          price: 100,
+          description: "This is product 1 description",
+          slug: "test-product-1",
+        },
+      ];
+      const moreProducts = [
+        {
+          _id: 2,
+          name: "Product 2",
+          price: 200,
+          description: "This is product 2 description",
+          slug: "test-product-2",
+        },
+      ];
 
       axios.get
         .mockResolvedValueOnce({ data: { products: initialProducts } })
@@ -109,11 +266,17 @@ describe("HomePage component", () => {
           slug: "test-product",
         },
       ];
-      axios.get
-      .mockResolvedValueOnce({ data: { success: true, category: [] } })  // Mock for getAllCategory()
-      .mockResolvedValueOnce({ data: { total: 1 } })                      // Mock for getTotal()
-      .mockResolvedValueOnce({ data: { products: singleProduct } });       // Mock for getAllProducts()
-
+      // Mocking the axios.get method with refactoring of source code in mind
+      axios.get.mockImplementation((url) => {
+        if (url.includes("/api/v1/category/get-category")) {
+          return Promise.resolve({ data: { success: true, category: [] } });
+        } else if (url.includes("/api/v1/product/product-count")) {
+          return Promise.resolve({ data: { total: 1 } });
+        } else if (url.includes("/api/v1/product/product-list/1")) {
+          return Promise.resolve({ data: { products: singleProduct } });
+        }
+        return Promise.reject(new Error(`Not found: ${url}`));
+      });
       render(<HomePage />);
 
       await waitFor(() => {
@@ -150,53 +313,19 @@ describe("HomePage component", () => {
         expect(screen.getByText("Filter By Price")).toBeInTheDocument();
       });
     });
-
-    it("should handle single category selection (minimal case)", async () => {
-      const mockCategories = [{ _id: "1", name: "Category 1", slug: "category-1" }];
-      
-      // Mock GET calls for categories and products
-      axios.get.mockImplementation((url) => {
-        if (url.includes("/api/v1/product/product-list/")) {
-          return Promise.resolve({ data: { products: [] } });
-        }
-        if (url === "/api/v1/product/product-count") {
-          return Promise.resolve({ data: { total: 1 } });
-        }
-        if (url === "/api/v1/category/get-category") {
-          return Promise.resolve({ data: { success: true, category: mockCategories } });
-        }
-        return Promise.reject(new Error("Not found"));
-      });
-      // Mock the POST call for filtering products
-      axios.post.mockResolvedValueOnce({ data: { products: [] } });
-      
-      render(<HomePage />);
-      
-      // Wait until the category is rendered
-      await waitFor(() => {
-        expect(screen.getByText("Category 1")).toBeInTheDocument();
-      });
-      
-      // Target the checkbox instead of just the text
-      fireEvent.click(screen.getByRole("checkbox", { name: /Category 1/i }));
-      
-      await waitFor(() => {
-        expect(axios.post).toHaveBeenCalledWith(
-          "/api/v1/product/product-filters",
-          {
-            checked: ["1"],
-            radio: [],
-          }
-        );
-      });
-    });
-    
   });
 
   describe("Product Description Boundary Tests", () => {
     it("should truncate description > 60 characters", async () => {
       const longDescription =
-        "This is a very long description that should be truncated at exactly sixty chars.";
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
+        "Sed facilisis velit non massa luctus, quis elementum sapien semper. " +
+        "Curabitur tristique fringilla risus, sit amet porttitor felis pharetra vel. Fusce eget suscipit augue. " +
+        "Sed laoreet a orci ut porta. Etiam accumsan augue a mi maximus gravida tempor non nisl. " +
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque a augue in tellus sollicitudin blandit. " +
+        "Nam sollicitudin libero et posuere placerat. Curabitur sit amet diam eu ligula fermentum pulvinar non mattis urna. " +
+        "Maecenas mattis convallis dictum. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia " +
+        "curae; Pellentesque eleifend quam.";
       const products = [
         {
           _id: 1,
@@ -206,7 +335,6 @@ describe("HomePage component", () => {
           slug: "test-product",
         },
       ];
-
 
       // Expected truncation: first 60 characters + ellipsis
       const expectedTruncated = longDescription.substring(0, 60) + "...";
@@ -221,7 +349,7 @@ describe("HomePage component", () => {
         if (url === "/api/v1/category/get-category") {
           return Promise.resolve({ data: { success: true, category: [] } });
         }
-        return Promise.reject(new Error("Not found"));
+        return Promise.reject(new Error(`Not found: ${url}`));
       });
 
       render(<HomePage />);
@@ -232,11 +360,11 @@ describe("HomePage component", () => {
         expect(productCard).toBeInTheDocument();
       });
 
-      // Then check for the truncated description
+      // Truncated description should be rendered
       const descriptionElement = screen.getByText(expectedTruncated);
       expect(descriptionElement).toBeInTheDocument();
-      expect(descriptionElement.tagName.toLowerCase()).toBe('p');
-      expect(descriptionElement.className).toContain('card-text');
+      expect(descriptionElement.tagName.toLowerCase()).toBe("p");
+      expect(descriptionElement.className).toContain("card-text");
     });
 
     it("should not truncate description <= 60 characters", async () => {
@@ -276,8 +404,8 @@ describe("HomePage component", () => {
       // The description should be shown in full without ellipsis
       const descriptionElement = screen.getByText(shortDescription);
       expect(descriptionElement).toBeInTheDocument();
-      expect(descriptionElement.tagName.toLowerCase()).toBe('p');
-      expect(descriptionElement.className).toContain('card-text');
+      expect(descriptionElement.tagName.toLowerCase()).toBe("p");
+      expect(descriptionElement.className).toContain("card-text");
 
       // Verify the description is exactly as provided (no truncation or ellipsis)
       expect(descriptionElement.textContent).toBe(shortDescription);
@@ -295,10 +423,16 @@ describe("HomePage component", () => {
           slug: "test-product",
         },
       ];
-      axios.get
-        .mockResolvedValueOnce({ data: { success: true, category: [] } })  // for getAllCategory()
-        .mockResolvedValueOnce({ data: { total: 1 } }) // for getTotal()
-        .mockResolvedValueOnce({ data: { products } }); // for getAllProducts()
+      axios.get.mockImplementation((url) => {
+        if (url.includes("/api/v1/category/get-category")) {
+          return Promise.resolve({ data: { success: true, category: [] } });
+        } else if (url.includes("/api/v1/product/product-count")) {
+          return Promise.resolve({ data: { total: 1 } });
+        } else if (url.includes("/api/v1/product/product-list")) {
+          return Promise.resolve({ data: { products: products } });
+        }
+        return Promise.reject(new Error(`Not found: ${url}`));
+      });
 
       render(<HomePage />);
 
@@ -328,22 +462,45 @@ describe("HomePage component", () => {
     });
 
     it("should display error notification if product fetching fails", async () => {
-      axios.get
-        .mockResolvedValueOnce({ data: { success: true, category: [] } }) // Mock getAllCategory success
-        .mockResolvedValueOnce({ data: { total: 1 } })                      // Mock getTotal success
-        .mockRejectedValueOnce(new Error("Network Error"));                 // Mock getAllProducts failure
-
+      axios.get.mockImplementation((url) => {
+        if (url.includes("/api/v1/category/get-category")) {
+          return Promise.resolve({ data: { success: true, category: [] } });
+        } else if (url.includes("/api/v1/product/product-count")) {
+          return Promise.resolve({ data: { total: 1 } });
+        } else if (url.includes("/api/v1/product/product-list")) {
+          return Promise.reject(new Error("Network Error"));
+        }
+        return Promise.reject(new Error(`Not found: ${url}`));
+      });
       render(<HomePage />);
       await waitFor(() => {
-        expect(toast.error).toHaveBeenCalledWith(expect.stringContaining("Network Error"));
+        expect(toast.error).toHaveBeenCalledWith(
+          expect.stringContaining("Network Error")
+        );
       });
     });
   });
 
   describe("Rapid Clicks on Loadmore Button", () => {
     it("should not trigger multiple API calls on rapid clicking", async () => {
-      const initialProducts = [{ _id: 1, name: "Product 1", price: 100,description: "This is product 1 description",slug: "test-product-1",}];
-      const moreProducts = [{ _id: 2, name: "Product 2" ,price: 200,description: "This is product 2 description",slug: "test-product-2",}];
+      const initialProducts = [
+        {
+          _id: 1,
+          name: "Product 1",
+          price: 100,
+          description: "This is product 1 description",
+          slug: "test-product-1",
+        },
+      ];
+      const moreProducts = [
+        {
+          _id: 2,
+          name: "Product 2",
+          price: 200,
+          description: "This is product 2 description",
+          slug: "test-product-2",
+        },
+      ];
 
       axios.get
         .mockResolvedValueOnce({ data: { products: initialProducts } })
@@ -360,10 +517,12 @@ describe("HomePage component", () => {
       // Simulate rapid clicks
       fireEvent.click(loadMoreButton);
       fireEvent.click(loadMoreButton);
-      
+
       await waitFor(() => {
         // Check that the API call for page 2 is made only once
-        const page2Calls = axios.get.mock.calls.filter(call => call[0] === "/api/v1/product/product-list/2");
+        const page2Calls = axios.get.mock.calls.filter(
+          (call) => call[0] === "/api/v1/product/product-list/2"
+        );
         expect(page2Calls.length).toBe(1);
       });
     });

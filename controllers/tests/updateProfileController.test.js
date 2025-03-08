@@ -198,8 +198,21 @@ describe("Update Profile Controller Tests", () => {
       expect(res.send.mock.lastCall[0].updatedUser.address).toBe(user.address);
     });
 
+    // Test 10: Case where there is an error when trying to update the profile
+    it('should throw an error when there is an error in updating the profile', async () => {
+        userModel.findById = jest.fn().mockImplementation(() => {
+            throw new Error("Error in connecting with database to retrieve user for updating the profile");
+        });
+
+        await updateProfileController(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(500);
+        // Check that the message shows that there is an error
+        expect(res.send.mock.lastCall[0].message).toBe("Error WHile Update profile");
+    });
+
     // Some pairwise testing cases
-    /* Pairwise Combination 2 (Test 10)
+    /* Pairwise Combination 2 (Test 11)
       Name: Non-empty valid
       Pasword: Empty
       Phone: Empty
@@ -227,7 +240,7 @@ describe("Update Profile Controller Tests", () => {
       expect(res.send.mock.lastCall[0].updatedUser.address).toBe(user.address);
     });
 
-    /* Pairwise Combination 2 (Test 11)
+    /* Pairwise Combination 2 (Test 12)
       Name: Non-empty valid
       Password: Non-empty invalid
       Phone: Non-empty invalid
@@ -244,7 +257,7 @@ describe("Update Profile Controller Tests", () => {
     expect(res.json.mock.lastCall[0].error).toBe("Passsword is required and 6 character long");
     });
 
-   /* Pairwise Combination 3 (Test 12)
+   /* Pairwise Combination 3 (Test 13)
     Name: Empty
     Password: Empty 
     Phone: Non-empty invalid
@@ -262,7 +275,7 @@ describe("Update Profile Controller Tests", () => {
       expect(res.send.mock.lastCall[0].message).toBe("The phone number must start with 6,8 or 9 and be 8 digits long");
     });
 
-    /* Pairwise Combination 4 (Test 13)
+    /* Pairwise Combination 4 (Test 14)
       Name: Empty
       Password: Non-empty invalid
       Phone: Non-empty valid
@@ -279,7 +292,7 @@ describe("Update Profile Controller Tests", () => {
       expect(res.json.mock.lastCall[0].error).toBe("Passsword is required and 6 character long");
     });
 
-    /* Pairwise Combination 5 (Test 14)
+    /* Pairwise Combination 5 (Test 15)
       Name: Empty
       Password: Non-empty Valid
       Phone: Empty

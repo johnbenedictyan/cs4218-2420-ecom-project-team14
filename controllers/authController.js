@@ -244,18 +244,18 @@ export const updateProfileController = async (req, res) => {
       return res.json({ error: "Passsword is required and 6 character long" });
     }
 
-    // Add validation for name (Maximum 150 characters long)
+    // Add validation for non-empty name (Maximum 150 characters long)
     if (name && name.length > 150) {
       return res.status(400).send({ message: "The name can only be up to 150 characters long"});
     }
 
-    // Add validation for phone number
+    // Add validation for non-empty phone number
     const phoneRegex = /^[689]\d{7}$/;
     if (phone && !phone.match(phoneRegex)) {
       return res.status(400).send({ message: "The phone number must start with 6,8 or 9 and be 8 digits long"});
     }
 
-    // Add validation for address
+    // Add validation for non-empty address
     if (address && address.length > 150) {
       return res.status(400).send({ message: "The address can only be up to 150 characters long"});
     }
@@ -278,7 +278,8 @@ export const updateProfileController = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(400).send({
+    // Made minor change to error status code to be 500 since 400 is more for bad request rather than for error
+    res.status(500).send({
       success: false,
       message: "Error WHile Update profile",
       error,

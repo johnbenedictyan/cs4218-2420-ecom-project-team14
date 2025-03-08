@@ -1,0 +1,191 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ProductDetails Component matches snapshot 1`] = `
+<div>
+  <div
+    data-testid="mock-layout"
+  >
+    <div
+      class="row container product-details"
+    >
+      <div
+        class="col-md-6"
+      >
+        <img
+          alt="Test Product"
+          class="card-img-top"
+          height="300"
+          src="/api/v1/product/product-photo/1"
+          width="350px"
+        />
+      </div>
+      <div
+        class="col-md-6 product-details-info"
+      >
+        <h1
+          class="text-center"
+        >
+          Product Details
+        </h1>
+        <hr />
+        <h6>
+          Name : 
+          Test Product
+        </h6>
+        <h6>
+          Description : 
+          This is a test product
+        </h6>
+        <h6>
+          Price :
+          $99.99
+        </h6>
+        <h6>
+          Category : 
+          Electronics
+        </h6>
+        <button
+          class="btn btn-secondary ms-1"
+        >
+          ADD TO CART
+        </button>
+      </div>
+    </div>
+    <hr />
+    <div
+      class="row container similar-products"
+    >
+      <h4>
+        Similar Products ➡️
+      </h4>
+      <div
+        class="d-flex flex-wrap"
+      >
+        <div
+          class="card m-2"
+        >
+          <img
+            alt="Short"
+            class="card-img-top"
+            src="/api/v1/product/product-photo/rel1"
+          />
+          <div
+            class="card-body"
+          >
+            <div
+              class="card-name-price"
+            >
+              <h5
+                class="card-title"
+              >
+                Short
+              </h5>
+              <h5
+                class="card-title card-price"
+              >
+                $10.99
+              </h5>
+            </div>
+            <p
+              class="card-text "
+            >
+              Short desc
+            </p>
+            <div
+              class="card-name-price"
+            >
+              <button
+                class="btn btn-info ms-1"
+              >
+                More Details
+              </button>
+            </div>
+          </div>
+        </div>
+        <div
+          class="card m-2"
+        >
+          <img
+            alt="Medium Name Product"
+            class="card-img-top"
+            src="/api/v1/product/product-photo/rel2"
+          />
+          <div
+            class="card-body"
+          >
+            <div
+              class="card-name-price"
+            >
+              <h5
+                class="card-title"
+              >
+                Medium Name Product
+              </h5>
+              <h5
+                class="card-title card-price"
+              >
+                $99.99
+              </h5>
+            </div>
+            <p
+              class="card-text "
+            >
+              This is a medium length description for testing purposes
+            </p>
+            <div
+              class="card-name-price"
+            >
+              <button
+                class="btn btn-info ms-1"
+              >
+                More Details
+              </button>
+            </div>
+          </div>
+        </div>
+        <div
+          class="card m-2"
+        >
+          <img
+            alt="Extremely Long Product Name That Might Cause UI Issues If Not Handled Properly"
+            class="card-img-top"
+            src="/api/v1/product/product-photo/rel3"
+          />
+          <div
+            class="card-body"
+          >
+            <div
+              class="card-name-price"
+            >
+              <h5
+                class="card-title"
+              >
+                Extremely Long Product Name That Might Cause UI Issues If Not Handled Properly
+              </h5>
+              <h5
+                class="card-title card-price"
+              >
+                $100,000.99
+              </h5>
+            </div>
+            <p
+              class="card-text "
+            >
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed...
+            </p>
+            <div
+              class="card-name-price"
+            >
+              <button
+                class="btn btn-info ms-1"
+              >
+                More Details
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

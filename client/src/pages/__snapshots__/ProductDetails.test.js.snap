@@ -165,7 +165,7 @@ exports[`ProductDetails Component matches snapshot 1`] = `
               <h5
                 class="card-title card-price"
               >
-                $999.99
+                $100,000.99
               </h5>
             </div>
             <p

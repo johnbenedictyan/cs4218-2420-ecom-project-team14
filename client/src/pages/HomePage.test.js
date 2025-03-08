@@ -143,6 +143,7 @@ describe("HomePage component", () => {
     it("should update filter state when a category checkbox is toggled", async () => {
       const mockCategories = [
         { _id: "1", name: "Test Category 1", slug: "category-1" },
+        { _id: "2", name: "Test Category 2", slug: "category-2" },
       ];
       axios.get.mockImplementation((url) => {
         if (url === "/api/v1/category/get-category") {
@@ -163,6 +164,9 @@ describe("HomePage component", () => {
       await waitFor(() => {
         expect(screen.getByText("Test Category 1")).toBeInTheDocument();
       });
+      await waitFor(() => {
+        expect(screen.getByText("Test Category 2")).toBeInTheDocument();
+      });
       const checkbox = screen.getByRole("checkbox", { name: /Category 1/i });
       fireEvent.click(checkbox);
       await waitFor(() => {
@@ -174,6 +178,111 @@ describe("HomePage component", () => {
           }
         );
       });
+      // Categories should still be visible after
+      await waitFor(() => {
+        expect(screen.getByText("Test Category 1")).toBeInTheDocument();
+      });
+      await waitFor(() => {
+        expect(screen.getByText("Test Category 2")).toBeInTheDocument();
+      });
+    });
+  });
+
+  it("should display only products from selected category when category is toggled", async () => {
+    // Mock categories
+    const mockCategories = [
+      { _id: "c1", name: "Test Category 1", slug: "category-1" },
+      { _id: "c2", name: "Test Category 2", slug: "category-2" },
+    ];
+
+    // Mock initial products (from both categories)
+    const initialProducts = [
+      {
+        _id: "p1",
+        name: "Product from Category 1",
+        price: 100,
+        description: "This is from category 1",
+        slug: "product-category-1",
+        category: "1",
+      },
+      {
+        _id: "p2",
+        name: "Product from Category 2",
+        price: 200,
+        description: "This is from category 2",
+        slug: "product-category-2",
+        category: "2",
+      },
+    ];
+
+    // Mock filtered products (only from category 1)
+    const filteredProducts = [
+      {
+        _id: "p1",
+        name: "Product from Category 1",
+        price: 100,
+        description: "This is from category 1",
+        slug: "product-category-1",
+        category: "1",
+      },
+    ];
+
+    // Mock API responses
+    axios.get.mockImplementation((url) => {
+      if (url === "/api/v1/category/get-category") {
+        return Promise.resolve({
+          data: { success: true, category: mockCategories },
+        });
+      }
+      if (url === "/api/v1/product/product-count") {
+        return Promise.resolve({ data: { total: 2 } });
+      }
+      if (url.includes("/api/v1/product/product-list")) {
+        return Promise.resolve({ data: { products: initialProducts } });
+      }
+      return Promise.reject(new Error(`Not found: ${url}`));
+    });
+
+    // Mock the filter API response
+    axios.post.mockResolvedValueOnce({
+      data: { products: filteredProducts },
+    });
+
+    render(<HomePage />);
+
+    // Wait for initial products to be displayed
+    await waitFor(() => {
+      expect(screen.getByText("Product from Category 1")).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("Product from Category 2")).toBeInTheDocument();
+    });
+
+    // Select category 1
+    const checkbox = screen.getByRole("checkbox", { name: /Category 1/i });
+    fireEvent.click(checkbox);
+
+    // Verify the API call is made with correct arguments
+    await waitFor(() => {
+      expect(axios.post).toHaveBeenCalledWith(
+        "/api/v1/product/product-filters",
+        {
+          checked: ["c1"],
+          radio: [],
+        }
+      );
+    });
+
+    // Verify only products from category 1 are displayed
+    await waitFor(() => {
+      expect(screen.getByText("Product from Category 1")).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText("Product from Category 2")
+      ).not.toBeInTheDocument();
     });
   });
 

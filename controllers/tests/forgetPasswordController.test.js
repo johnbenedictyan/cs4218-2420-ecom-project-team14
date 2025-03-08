@@ -3,7 +3,7 @@ import { forgotPasswordController } from "../authController";
 import userModel from "../../models/userModel";
 import { ObjectId } from "mongodb";
 
-jest.mock("../../models/userModel.js");
+jest.mock("../../models/userModel");
 
 describe("Forget Password Controller Tests", () => {
     let req, res, user;

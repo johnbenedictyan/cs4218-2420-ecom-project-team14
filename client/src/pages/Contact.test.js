@@ -21,6 +21,14 @@ jest.mock("react-icons/bi", () => ({
 }));
 
 describe("Contact Component", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  afterAll(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+  });
   // Basic Rendering Tests
   describe("Basic Rendering", () => {
     it("renders without crashing", () => {

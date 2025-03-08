@@ -27,6 +27,184 @@ jest.mock("../../components/Form/CategoryForm", () => ({ handleSubmit, value, se
 jest.mock("axios");
 jest.mock("react-hot-toast");
 
+describe("CreateCategory Error Handling", () => {
+  it("handles errors in form submission", async () => {
+    const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
+    
+    axios.post.mockRejectedValueOnce(new Error("Network Error"));
+    
+    await act(async () => {
+      render(<CreateCategory />);
+    });
+    
+    const input = screen.getByTestId("category-input");
+    fireEvent.change(input, { target: { value: "Test Category" } });
+    fireEvent.click(screen.getByText("Submit"));
+    
+    await waitFor(() => {
+      expect(consoleLogSpy).toHaveBeenCalled(); // Check that error is logged
+      expect(toast.error).toHaveBeenCalledWith("somthing went wrong in input form");
+    });
+    
+    consoleLogSpy.mockRestore();
+  });
+  
+  it("handles errors when fetching categories", async () => {
+    const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
+    
+    axios.get.mockRejectedValueOnce(new Error("Failed to fetch categories"));
+    
+    await act(async () => {
+      render(<CreateCategory />);
+    });
+    
+    await waitFor(() => {
+      expect(consoleLogSpy).toHaveBeenCalled();
+      expect(toast.error).toHaveBeenCalledWith("Something wwent wrong in getting catgeory");
+    });
+    
+    consoleLogSpy.mockRestore();
+  });
+  
+  it("handles API errors during category update", async () => {
+    const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
+    
+    axios.get.mockResolvedValueOnce({ 
+      data: { success: true, category: [{ _id: "1", name: "Test Category" }] }
+    });
+    
+    axios.put.mockRejectedValueOnce(new Error("Update failed"));
+    
+    await act(async () => {
+      render(<CreateCategory />);
+    });
+    
+    const editButton = await screen.findByText("Edit");
+    fireEvent.click(editButton);
+    
+    const submitButtons = screen.getAllByText("Submit");
+    fireEvent.click(submitButtons[1]);
+
+    await waitFor(() => {
+      expect(consoleLogSpy).toHaveBeenCalled();
+      expect(toast.error).toHaveBeenCalledWith("Somtihing went wrong");
+    });
+    
+    consoleLogSpy.mockRestore();
+  });
+  
+  it("handles API errors during category deletion", async () => {
+    axios.get.mockResolvedValueOnce({ 
+      data: { success: true, category: [{ _id: "1", name: "Test Category" }] }
+    });
+    
+    axios.delete.mockRejectedValueOnce(new Error("Delete failed"));
+    
+    await act(async () => {
+      render(<CreateCategory />);
+    });
+    
+    const deleteButton = await screen.findByText("Delete");
+    fireEvent.click(deleteButton);
+    
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith("Somtihing went wrong");
+    });
+  });
+});
+
+describe("CreateCategory API Response Handling", () => {
+  
+  it("shows error toast when category creation fails", async () => {
+    axios.post.mockResolvedValueOnce({ 
+      data: { success: false, message: "Category already exists" }
+    });
+    
+    await act(async () => {
+      render(<CreateCategory />);
+    });
+    
+    const input = screen.getByTestId("category-input");
+    fireEvent.change(input, { target: { value: "Test Category" } });
+    fireEvent.click(screen.getByText("Submit"));
+    
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith("Category already exists");
+    });
+  });
+  
+  it("shows error toast when category update fails", async () => {
+    axios.get.mockResolvedValueOnce({ 
+      data: { success: true, category: [{ _id: "1", name: "Test Category" }] }
+    });
+    
+    axios.put.mockResolvedValueOnce({ 
+      data: { success: false, message: "Update failed, name already taken" }
+    });
+    
+    await act(async () => {
+      render(<CreateCategory />);
+    });
+    
+    const editButton = await screen.findByText("Edit");
+    fireEvent.click(editButton);
+    
+    const submitButtons = screen.getAllByText("Submit");
+    fireEvent.click(submitButtons[1]); // Modal submit button
+    
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith("Update failed, name already taken");
+    });
+  });
+  
+  it("shows error toast when category deletion fails", async () => {
+    axios.get.mockResolvedValueOnce({ 
+      data: { success: true, category: [{ _id: "1", name: "Test Category" }] }
+    });
+    
+    axios.delete.mockResolvedValueOnce({ 
+      data: { success: false, message: "Cannot delete, category in use" }
+    });
+    
+    await act(async () => {
+      render(<CreateCategory />);
+    });
+    
+    const deleteButton = await screen.findByText("Delete");
+    fireEvent.click(deleteButton);
+    
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith("Cannot delete, category in use");
+    });
+  });
+});
+
+describe("CreateCategory Modal Functionality", () => {
+  it("closes the modal when cancel is clicked", async () => {
+    axios.get.mockResolvedValueOnce({ 
+      data: { success: true, category: [{ _id: "1", name: "Test Category" }] }
+    });
+    
+    await act(async () => {
+      render(<CreateCategory />);
+    });
+    
+    const editButton = await screen.findByText("Edit");
+    fireEvent.click(editButton);
+    
+    const modalWrap = document.querySelector('.ant-modal-wrap');
+    expect(modalWrap).not.toHaveStyle('display: none');
+    
+    const cancelButton = screen.getByLabelText("Close");
+    fireEvent.click(cancelButton);
+    
+    await waitFor(() => {
+      const modalWrap = document.querySelector('.ant-modal-wrap');
+      expect(modalWrap).toHaveStyle('display: none');
+    });
+  });
+});
+
 describe("CreateCategory Component", () => {
     const mockCategories = [
     { _id: "1", name: "Not Shirt" },

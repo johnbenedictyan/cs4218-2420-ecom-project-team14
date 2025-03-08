@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Orders Component Snapshot matches snapshot with empty orders 1`] = `
+<div>
+  <div
+    data-testid="mock-layout"
+    data-title="Your Orders"
+  >
+    <div
+      class="container-flui p-3 m-3 dashboard"
+    >
+      <div
+        class="row"
+      >
+        <div
+          class="col-md-3"
+        >
+          <div
+            data-testid="mock-user-menu"
+          >
+            User Menu
+          </div>
+        </div>
+        <div
+          class="col-md-9"
+        >
+          <h1
+            class="text-center"
+          >
+            All Orders
+          </h1>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

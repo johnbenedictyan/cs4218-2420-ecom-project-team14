@@ -1,0 +1,45 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Dashboard Component Snapshot matches snapshot 1`] = `
+<div>
+  <div
+    data-testid="mock-layout"
+    data-title="Dashboard - Ecommerce App"
+  >
+    <div
+      class="container-flui m-3 p-3 dashboard"
+    >
+      <div
+        class="row"
+      >
+        <div
+          class="col-md-3"
+        >
+          <div
+            data-testid="mock-user-menu"
+          >
+            User Menu
+          </div>
+        </div>
+        <div
+          class="col-md-9"
+        >
+          <div
+            class="card w-75 p-3"
+          >
+            <h3>
+              Test User
+            </h3>
+            <h3>
+              testuser@example.com
+            </h3>
+            <h3>
+              123 Test Street
+            </h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

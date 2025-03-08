@@ -10,7 +10,7 @@ const ProductDetails = () => {
   const [product, setProduct] = useState({});
   const [relatedProducts, setRelatedProducts] = useState([]);
 
-  //initalp details
+  //inital details
   useEffect(() => {
     if (params?.slug) getProduct();
   }, [params?.slug]);
@@ -53,7 +53,7 @@ const ProductDetails = () => {
           <h1 className="text-center">Product Details</h1>
           <hr />
           <h6>Name : {product.name}</h6>
-          <h6>Description : {product.description}</h6>
+          <h6>Description : {product.description? product.description:"" }</h6>
           <h6>
             Price :
             {product?.price?.toLocaleString("en-US", {
@@ -90,7 +90,8 @@ const ProductDetails = () => {
                   </h5>
                 </div>
                 <p className="card-text ">
-                  {p.description.substring(0, 60)}...
+                  {p.description? (p.description.length > 60 ?
+                  p.description.substring(0, 60)+"...": p.description): ""}
                 </p>
                 <div className="card-name-price">
                   <button

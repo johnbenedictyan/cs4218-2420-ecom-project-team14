@@ -12,13 +12,14 @@ const CartPage = () => {
   const [auth, setAuth] = useAuth();
   const [cart, setCart] = useCart();
   const [clientToken, setClientToken] = useState("");
-  const [instance, setInstance] = useState("");
+  const [instance, setInstance] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   //total price
   const totalPrice = () => {
     try {
+      if (!cart || cart.length === 0) return "$0:00";
       let total = 0;
       // Check if cart exists and is an array
       if (!cart || !Array.isArray(cart)) {
@@ -77,7 +78,9 @@ const CartPage = () => {
     }
   };
   useEffect(() => {
-    getToken();
+    if (auth?.token) {
+      getToken();
+    }
   }, [auth?.token]);
 
   //handle payments

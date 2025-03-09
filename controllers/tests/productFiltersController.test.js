@@ -87,8 +87,8 @@ describe("Product Filters Controller tests", () => {
         category: ["bc7f29ed898fefd6a5f713fd"],
         price: { $gte: 10, $lte: 20 },
       });
-      expect(res.status).toBeCalledWith(200);
-      expect(res.send).toBeCalledWith({
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.send).toHaveBeenCalledWith({
         success: true,
         products: mockProducts,
       });
@@ -106,8 +106,8 @@ describe("Product Filters Controller tests", () => {
       await productFiltersController(req, res);
 
       // Assertions
-      expect(res.status).toBeCalledWith(400);
-      expect(res.send).toBeCalledWith({
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.send).toHaveBeenCalledWith({
         success: false,
         message: "'radio' must an empty array or an array with two numbers",
       });
@@ -125,8 +125,8 @@ describe("Product Filters Controller tests", () => {
       await productFiltersController(req, res);
 
       // Assertions
-      expect(res.status).toBeCalledWith(400);
-      expect(res.send).toBeCalledWith({
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.send).toHaveBeenCalledWith({
         success: false,
         message: "'checked' must be an array with valid category ids",
       });
@@ -144,8 +144,8 @@ describe("Product Filters Controller tests", () => {
       await productFiltersController(req, res);
 
       // Assertions
-      expect(res.status).toBeCalledWith(400);
-      expect(res.send).toBeCalledWith({
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.send).toHaveBeenCalledWith({
         success: false,
         message: "'checked' must be an array with valid category ids",
       });
@@ -187,8 +187,8 @@ describe("Product Filters Controller tests", () => {
       await productFiltersController(req, res);
 
       // Assertions
-      expect(res.status).toBeCalledWith(400);
-      expect(res.send).toBeCalledWith({
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.send).toHaveBeenCalledWith({
         success: false,
         message: "'checked' must be an array with valid category ids",
       });
@@ -206,8 +206,8 @@ describe("Product Filters Controller tests", () => {
       await productFiltersController(req, res);
 
       // Assertions
-      expect(res.status).toBeCalledWith(400);
-      expect(res.send).toBeCalledWith({
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.send).toHaveBeenCalledWith({
         success: false,
         message: "'radio' must an empty array or an array with two numbers",
       });
@@ -229,8 +229,8 @@ describe("Product Filters Controller tests", () => {
       await productFiltersController(req, res);
 
       // Assertions
-      expect(res.status).toBeCalledWith(400);
-      expect(res.send).toBeCalledWith({
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.send).toHaveBeenCalledWith({
         success: false,
         message: "Error WHile Filtering Products",
         error: new Error("Filter products error"),

@@ -58,9 +58,9 @@ describe("Product List Controller tests", () => {
     await productListController(req, res);
 
     // Assertions
-    expect(mockFindProductListSuccess.skip).toBeCalledWith(0);
-    expect(res.status).toBeCalledWith(200);
-    expect(res.send).toBeCalledWith({
+    expect(mockFindProductListSuccess.skip).toHaveBeenCalledWith(0);
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith({
       success: true,
       products: mockProducts.slice(0, PER_PAGE_LIMIT),
     });
@@ -76,9 +76,11 @@ describe("Product List Controller tests", () => {
     await productListController(req, res);
 
     // Assertions
-    expect(mockFindProductListSuccess.skip).toBeCalledWith(PER_PAGE_LIMIT);
-    expect(res.status).toBeCalledWith(200);
-    expect(res.send).toBeCalledWith({
+    expect(mockFindProductListSuccess.skip).toHaveBeenCalledWith(
+      PER_PAGE_LIMIT
+    );
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith({
       success: true,
       products: mockProducts.slice(PER_PAGE_LIMIT),
     });
@@ -91,8 +93,8 @@ describe("Product List Controller tests", () => {
     await productListController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(400);
-    expect(res.send).toBeCalledWith({
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({
       success: false,
       message: "Invalid page number. Page must be positive integer",
     });
@@ -105,8 +107,8 @@ describe("Product List Controller tests", () => {
     await productListController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(400);
-    expect(res.send).toBeCalledWith({
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({
       success: false,
       message: "Invalid page number. Page must be positive integer",
     });
@@ -119,8 +121,8 @@ describe("Product List Controller tests", () => {
     await productListController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(400);
-    expect(res.send).toBeCalledWith({
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({
       success: false,
       message: "Invalid page number. Page must be positive integer",
     });
@@ -133,8 +135,8 @@ describe("Product List Controller tests", () => {
     await productListController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(400);
-    expect(res.send).toBeCalledWith({
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({
       success: false,
       message: "Invalid page number. Page must be positive integer",
     });
@@ -153,8 +155,8 @@ describe("Product List Controller tests", () => {
     await productListController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(400);
-    expect(res.send).toBeCalledWith({
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({
       success: false,
       message: "error in per page ctrl",
       error: new Error("some error"),

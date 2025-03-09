@@ -47,8 +47,8 @@ describe("Delete Product Controller tests", () => {
     await deleteProductController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(200);
-    expect(res.send).toBeCalledWith({
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith({
       success: true,
       message: "Product Deleted successfully",
     });
@@ -63,8 +63,8 @@ describe("Delete Product Controller tests", () => {
     await deleteProductController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(404);
-    expect(res.send).toBeCalledWith({
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.send).toHaveBeenCalledWith({
       success: false,
       message: "Product not found",
     });
@@ -76,8 +76,8 @@ describe("Delete Product Controller tests", () => {
     await deleteProductController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(400);
-    expect(res.send).toBeCalledWith({
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({
       success: false,
       message: "Invalid Product format",
     });
@@ -89,8 +89,8 @@ describe("Delete Product Controller tests", () => {
     await deleteProductController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(400);
-    expect(res.send).toBeCalledWith({
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({
       success: false,
       message: "Invalid Product format",
     });
@@ -107,8 +107,8 @@ describe("Delete Product Controller tests", () => {
     await deleteProductController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(500);
-    expect(res.send).toBeCalledWith({
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith({
       success: false,
       message: "Error while deleting product",
       error: new Error("some error"),

@@ -83,8 +83,8 @@ describe("Get Product Category Controller tests", () => {
     await productCategoryController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(200);
-    expect(res.send).toBeCalledWith({
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith({
       success: true,
       category: mockCategory,
       products: mockProducts,
@@ -97,8 +97,8 @@ describe("Get Product Category Controller tests", () => {
     await productCategoryController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(400);
-    expect(res.send).toBeCalledWith({
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({
       success: false,
       message: "Invalid category slug provided",
     });
@@ -112,8 +112,8 @@ describe("Get Product Category Controller tests", () => {
     await productCategoryController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(404);
-    expect(res.send).toBeCalledWith({
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.send).toHaveBeenCalledWith({
       success: false,
       message: "Category not found",
     });
@@ -132,8 +132,8 @@ describe("Get Product Category Controller tests", () => {
     await productCategoryController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(200);
-    expect(res.send).toBeCalledWith({
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith({
       success: true,
       category: mockCategoryWithNoAssociatedProducts,
       products: [],
@@ -150,8 +150,8 @@ describe("Get Product Category Controller tests", () => {
     await productCategoryController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(400);
-    expect(res.send).toBeCalledWith({
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({
       success: false,
       error: new Error("some error"),
       message: "Error While Getting products",

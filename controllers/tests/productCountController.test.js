@@ -27,8 +27,8 @@ describe("Product Count Controller tests", () => {
     await productCountController({}, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(200);
-    expect(res.send).toBeCalledWith({
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith({
       success: true,
       total: 3,
     });
@@ -45,8 +45,8 @@ describe("Product Count Controller tests", () => {
     await productCountController({}, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(400);
-    expect(res.send).toBeCalledWith({
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({
       message: "Error in product count",
       error: new Error("some error"),
       success: false,

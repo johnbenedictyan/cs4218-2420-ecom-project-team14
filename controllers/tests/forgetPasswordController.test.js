@@ -3,7 +3,7 @@ import { forgotPasswordController } from "../authController";
 import userModel from "../../models/userModel";
 import { ObjectId } from "mongodb";
 
-jest.mock("../../models/userModel.js");
+jest.mock("../../models/userModel");
 
 describe("Forget Password Controller Tests", () => {
     let req, res, user;
@@ -135,8 +135,8 @@ describe("Forget Password Controller Tests", () => {
         expect(res.send.mock.lastCall[0].message).toBe("Wrong Email Or Answer");
     });
 
-    // Test 9: Case where there is an error when connecting to the database
-    it('should throw an error when there is an error in connecting to the database', async () => {
+    // Test 9: Case where there is an error when trying to reset the password
+    it('should throw an error when there is an error in resetting the password', async () => {
         userModel.findOne = jest.fn().mockImplementation(() => {
             throw new Error("Error in connecting with database to retrieve user for resetting password");
         });

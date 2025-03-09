@@ -220,8 +220,8 @@ describe("Register Controller Tests", () => {
       expect(res.send.mock.lastCall[0].message).toBe("Already Register please login");
     });
 
-    // Test 15: Case where error is handled when the user encounters an error connecting to database
-    it('should throw an error when the user faces an error in connecting to database', async () => {
+    // Test 15: Case where error is handled when the user faces an error while trying to register
+    it('should throw an error when the user faces an error while trying to register', async () => {
       userModel.findOne = jest.fn().mockImplementation(() => {
         throw new Error("Error in connecting with database to check for existing user")
       });

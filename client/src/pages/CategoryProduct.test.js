@@ -9,8 +9,8 @@ import axios from "axios";
 jest.mock("axios", () => ({
   __esModule: true,
   default: {
-    get: jest.fn()
-  }
+    get: jest.fn(),
+  },
 }));
 
 // Mock hooks from react-router-dom
@@ -26,11 +26,11 @@ useNavigate.mockReturnValue(jest.fn());
 
 // Mock Layout component
 jest.mock("../components/Layout", () => {
-    return ({ children, title }) => (
-      <div data-testid="mock-layout" data-title={title}>
-        {children}
-      </div>
-    );
+  return ({ children, title }) => (
+    <div data-testid="mock-layout" data-title={title}>
+      {children}
+    </div>
+  );
 });
 
 describe("CategoryProduct render and structure tests", () => {
@@ -40,13 +40,13 @@ describe("CategoryProduct render and structure tests", () => {
 
   it("renders CategoryProduct component with loading state initially", () => {
     axios.get.mockImplementation(() => new Promise(() => {}));
-    
+
     render(
       <MemoryRouter>
         <CategoryProduct />
       </MemoryRouter>
     );
-    
+
     expect(screen.getByTestId("mock-layout")).toBeInTheDocument();
     expect(screen.getByText("Loading...")).toBeInTheDocument();
   });
@@ -57,7 +57,7 @@ describe("CategoryProduct getProductsByCat function tests", () => {
   const mockCategory = {
     _id: "1",
     name: "Test Category",
-    slug: "test-category"
+    slug: "test-category",
   };
 
   const mockProducts = [
@@ -68,7 +68,7 @@ describe("CategoryProduct getProductsByCat function tests", () => {
       description: "Product 1 description",
       price: 99.99,
       category: "1",
-      quantity: 10
+      quantity: 10,
     },
     {
       _id: "102",
@@ -77,8 +77,8 @@ describe("CategoryProduct getProductsByCat function tests", () => {
       description: "Product 2 description",
       price: 199.99,
       category: "1",
-      quantity: 5
-    }
+      quantity: 5,
+    },
   ];
 
   beforeEach(() => {
@@ -92,8 +92,8 @@ describe("CategoryProduct getProductsByCat function tests", () => {
     axios.get.mockResolvedValueOnce({
       data: {
         category: mockCategory,
-        products: mockProducts
-      }
+        products: mockProducts,
+      },
     });
 
     render(
@@ -111,14 +111,20 @@ describe("CategoryProduct getProductsByCat function tests", () => {
     });
 
     // Verify API was called with correct parameter
-    expect(axios.get).toHaveBeenCalledWith("/api/v1/product/product-category/test-category");
-    
+    expect(axios.get).toHaveBeenCalledWith(
+      "/api/v1/product/product-category/test-category"
+    );
+
     // Verify category and products are displayed
-    expect(screen.getByText(`Category - ${mockCategory.name}`)).toBeInTheDocument();
-    expect(screen.getByText(`${mockProducts.length} result found`)).toBeInTheDocument();
-    
+    expect(
+      screen.getByText(`Category - ${mockCategory.name}`)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(`${mockProducts.length} result found`)
+    ).toBeInTheDocument();
+
     // Check if product names are displayed
-    mockProducts.forEach(product => {
+    mockProducts.forEach((product) => {
       expect(screen.getByText(product.name)).toBeInTheDocument();
     });
   });
@@ -128,8 +134,8 @@ describe("CategoryProduct getProductsByCat function tests", () => {
     axios.get.mockRejectedValueOnce({
       response: {
         status: 404,
-        data: { message: "Category not found" }
-      }
+        data: { message: "Category not found" },
+      },
     });
 
     render(
@@ -145,7 +151,9 @@ describe("CategoryProduct getProductsByCat function tests", () => {
     });
 
     // Verify API was called
-    expect(axios.get).toHaveBeenCalledWith("/api/v1/product/product-category/test-category");
+    expect(axios.get).toHaveBeenCalledWith(
+      "/api/v1/product/product-category/test-category"
+    );
   });
 
   it("handles generic error (500) when fetching products", async () => {
@@ -153,8 +161,8 @@ describe("CategoryProduct getProductsByCat function tests", () => {
     axios.get.mockRejectedValueOnce({
       response: {
         status: 500,
-        data: { message: "Server error" }
-      }
+        data: { message: "Server error" },
+      },
     });
 
     render(
@@ -170,7 +178,9 @@ describe("CategoryProduct getProductsByCat function tests", () => {
     });
 
     // Verify API was called
-    expect(axios.get).toHaveBeenCalledWith("/api/v1/product/product-category/test-category");
+    expect(axios.get).toHaveBeenCalledWith(
+      "/api/v1/product/product-category/test-category"
+    );
   });
 
   it("handles network error when fetching products", async () => {
@@ -190,19 +200,21 @@ describe("CategoryProduct getProductsByCat function tests", () => {
     });
 
     // Verify API was called
-    expect(axios.get).toHaveBeenCalledWith("/api/v1/product/product-category/test-category");
+    expect(axios.get).toHaveBeenCalledWith(
+      "/api/v1/product/product-category/test-category"
+    );
   });
 
   it("handles empty products array", async () => {
     // Create an empty products array for this test
     const emptyProducts = [];
-    
+
     // Mock successful API response but with empty products array
     axios.get.mockResolvedValueOnce({
       data: {
         category: mockCategory,
-        products: emptyProducts
-      }
+        products: emptyProducts,
+      },
     });
 
     render(
@@ -217,15 +229,20 @@ describe("CategoryProduct getProductsByCat function tests", () => {
     });
 
     // Verify empty results message
-    expect(screen.getByText(`Category - ${mockCategory.name}`)).toBeInTheDocument();
-    expect(screen.getByText(`${emptyProducts.length} result found`)).toBeInTheDocument();
+    expect(
+      screen.getByText(`Category - ${mockCategory.name}`)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(`${emptyProducts.length} result found`)
+    ).toBeInTheDocument();
   });
 
-  // Boundary value test cases
+  // Edge case handling tests
+
   it("handles null slug parameter", async () => {
     // Mock null slug
     useParams.mockReturnValue({ slug: null });
-    
+
     render(
       <MemoryRouter>
         <CategoryProduct />
@@ -239,7 +256,7 @@ describe("CategoryProduct getProductsByCat function tests", () => {
   it("does not make API call with empty string slug parameter", async () => {
     // Mock empty string slug
     useParams.mockReturnValue({ slug: "" });
-    
+
     render(
       <MemoryRouter>
         <CategoryProduct />
@@ -247,8 +264,8 @@ describe("CategoryProduct getProductsByCat function tests", () => {
     );
 
     // Give some time for promise to resolve
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     // Verify API was NOT called with empty slug
     expect(axios.get).not.toHaveBeenCalled();
   });

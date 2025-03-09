@@ -12,9 +12,9 @@ const CategoryProduct = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (params?.slug) getPrductsByCat();
+    if (params?.slug) getProductsByCat();
   }, [params?.slug]);
-  const getPrductsByCat = async () => {
+  const getProductsByCat = async () => {
     try {
       const { data } = await axios.get(
         `/api/v1/product/product-category/${params.slug}`
@@ -59,14 +59,19 @@ const CategoryProduct = () => {
                         <div className="card-name-price">
                           <h5 className="card-title">{p.name}</h5>
                           <h5 className="card-title card-price">
-                            {p.price.toLocaleString("en-US", {
-                              style: "currency",
-                              currency: "USD",
-                            })}
+                            {p.price
+                              ? p.price.toLocaleString("en-US", {
+                                  style: "currency",
+                                  currency: "USD",
+                                })
+                              : "No Price found"}
                           </h5>
                         </div>
                         <p className="card-text ">
-                          {p.description.substring(0, 60)}...
+                          {p.description
+                            ? p.description.substring(0, 60) + "..."
+                            : ""}
+                          ...
                         </p>
                         <div className="card-name-price">
                           <button

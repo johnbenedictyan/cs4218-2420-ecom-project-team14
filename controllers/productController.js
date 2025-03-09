@@ -38,7 +38,7 @@ export const createProductController = async (req, res) => {
         return res
           .status(400)
           .send({ success: false, message: "Description is Required" });
-      case !price:
+      case !price || price.trim() === "":
         return res
           .status(400)
           .send({ success: false, message: "Price is Required" });
@@ -82,15 +82,21 @@ export const createProductController = async (req, res) => {
     }
 
     // Validate that price must be a number when parsed
-    if (isNaN(parseFloat(price))) {
+    if (
+      !/^\d*\.?\d+$/.test(price) || // Reject non-numeric values
+      parseFloat(price) <= 0 // Reject non-positive numeric values
+    ) {
       return res.status(400).send({
         success: false,
-        message: "Price must be a number when parsed",
+        message: "Price must be a positive number when parsed",
       });
     }
 
     // Validate that quantity must be a stringed positive integer
-    if (!/^-?\d+$/.test(quantity) || parseInt(quantity) <= 0) {
+    if (
+      !/^-?\d+$/.test(quantity) || // Reject non stringed integers
+      parseInt(quantity) <= 0 // Reject non-positive numeric values
+    ) {
       return res.status(400).send({
         success: false,
         message: "Quantity must be a stringed positive integer",

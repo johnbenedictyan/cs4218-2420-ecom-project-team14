@@ -60,7 +60,7 @@ describe("Create Product Controller tests", () => {
    * Equivalence classes tested:
    * 1. name: non-empty string (≤100 characters) (valid)
    * 2. description: non-empty string (≤500 characters) (valid)
-   * 3. price:  valid numeric string (e.g., "10.99", "5") (valid)
+   * 3. price:  positive numeric string (e.g., "10.99", "5") (valid)
    * 4. category: valid and existent category ID (valid)
    * 5. shipping: “0” or “1” (valid)
    * 6. photo: photo where file size <= 1MB
@@ -175,11 +175,12 @@ describe("Create Product Controller tests", () => {
 
   /**
    * Equivalence classes of field "price" identified:
-   * a. Numeric string (e.g., "10.99") (valid): tested above in success case
+   * a. Positive numeric string (e.g., "10.99") (valid): tested above in success case
    * b. Non-numeric string (e.g., "abc") (invalid)
    * c. Empty/null/missing (invalid)
+   * d. Non-positive numeric string (e.g, -1.01) (invalid)
    *
-   * Classes b, c are tested below
+   * Classes b, c, d are tested below
    */
   // Equivalence class tested: field "price" is non-numeric string (invalid)
   it("Should return 400 error when price field is a non-numeric string", async () => {
@@ -190,7 +191,7 @@ describe("Create Product Controller tests", () => {
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send.mock.lastCall[0].success).toBe(false);
     expect(res.send.mock.lastCall[0].message).toBe(
-      "Price must be a number when parsed"
+      "Price must be a positive number when parsed"
     );
   });
 
@@ -203,6 +204,19 @@ describe("Create Product Controller tests", () => {
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send.mock.lastCall[0].success).toBe(false);
     expect(res.send.mock.lastCall[0].message).toBe("Price is Required");
+  });
+
+  // Equivalence class tested: field "price" is non-positive numeric string (invalid)
+  it("Should return 400 error when price field is a non-positive numeric string", async () => {
+    req.fields.price = "-1.01";
+    await createProductController(req, res);
+
+    // Assertions
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send.mock.lastCall[0].success).toBe(false);
+    expect(res.send.mock.lastCall[0].message).toBe(
+      "Price must be a positive number when parsed"
+    );
   });
 
   /**
@@ -263,7 +277,7 @@ describe("Create Product Controller tests", () => {
   });
 
   // Equivalence class tested: field "quantity" is of non-positive numeric string  (invalid)
-  it("Should return 400 error when category field is of valid type but does not exist", async () => {
+  it("Should return 400 error when quantity field is a non-positive numeric string", async () => {
     req.fields.quantity = "-1";
     await createProductController(req, res);
 
@@ -297,7 +311,7 @@ describe("Create Product Controller tests", () => {
   });
 
   // Equivalence class tested: field "shipping" is null/empty (invalid)
-  it("Should create product successfully when shipping field is null/empty", async () => {
+  it("Should return 400 error when shipping field is null/empty", async () => {
     req.fields.shipping = "";
     await createProductController(req, res);
 
@@ -318,7 +332,7 @@ describe("Create Product Controller tests", () => {
    * Classes b, c are tested below
    */
   // Equivalence class tested: field "photo" is null (valid)
-  it("Should return 400 error when there is no photo field in the request", async () => {
+  it("Should create product successfully if no photo field in the request", async () => {
     req.files.photo = null;
     await createProductController(req, res);
 
@@ -331,7 +345,7 @@ describe("Create Product Controller tests", () => {
   });
 
   // Equivalence class tested: Photo with file size > 1MB (invalid)
-  it("Should return 400 error when there is no photo field in the request", async () => {
+  it("Should return 400 error when photo has file size > 1MB", async () => {
     req.files.photo.size = 2000000; // file size exceeds 1MB
     await createProductController(req, res);
 

@@ -149,4 +149,14 @@ describe("Categories Component", () => {
     // Check that there are NO category links
     expect(screen.queryByRole("link")).toBeNull();
   });
+
+  it("handles null categories gracefully", () => {
+    useCategory.mockImplementation(() => null);
+    render(
+      <MemoryRouter>
+        <Categories />
+      </MemoryRouter>
+    );
+    expect(screen.getByText("No Categories Found.")).toBeInTheDocument();
+  });
 });

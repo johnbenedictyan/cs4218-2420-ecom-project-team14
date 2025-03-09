@@ -76,7 +76,8 @@ describe("ProductDetails Component", () => {
   // 1. Related products with varying prices (low, medium, high)
   // 2. Related products with varying description lengths (short, medium, long)
   // 3. Related products with varying names (short, medium, long)
-
+  const longProductName =
+    "Extremely Long Product Name That Might Cause UI Issues If Not Handled Properly But Should Still Be Handled Gracefully By The System Even If This Is Usually Not Very Common";
   const mediumDesc = "This is a medium length description for testing purposes";
   const relatedProducts = [
     {
@@ -97,7 +98,7 @@ describe("ProductDetails Component", () => {
     },
     {
       _id: "rel3",
-      name: "Extremely Long Product Name That Might Cause UI Issues If Not Handled Properly",
+      name: longProductName,
       slug: "related-3",
       description: longDesc,
       price: 100000.99,
@@ -267,11 +268,7 @@ describe("ProductDetails Component", () => {
     // Check that all related products are displayed
     expect(screen.getByText("Short")).toBeInTheDocument();
     expect(screen.getByText("Medium Name Product")).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        "Extremely Long Product Name That Might Cause UI Issues If Not Handled Properly"
-      )
-    ).toBeInTheDocument();
+    expect(screen.getByText(longProductName)).toBeInTheDocument();
 
     // Check price formatting
     expect(screen.getByText("$10.99")).toBeInTheDocument();

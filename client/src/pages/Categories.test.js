@@ -33,6 +33,7 @@ describe("Categories Component", () => {
     useCategory.mockClear();
   });
 
+  // Smoke testing
   it("renders without crashing", () => {
     useCategory.mockImplementation(() => mockCategories);
     render(

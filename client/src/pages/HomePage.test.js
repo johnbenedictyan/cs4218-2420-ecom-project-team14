@@ -286,8 +286,8 @@ describe("HomePage component", () => {
     });
   });
 
-  // Boundary Value Analysis Tests
-  describe("Pagination Boundary Tests", () => {
+  describe("Pagination Tests", () => {
+    // Boundary Value 1 page
     it("should not load more products when page is 1 (lower boundary)", async () => {
       const mockProducts = [
         {
@@ -309,6 +309,7 @@ describe("HomePage component", () => {
       });
     });
 
+    // Equivalence partioning 2 pages
     it("should load more products when page > 1", async () => {
       const initialProducts = [
         {
@@ -350,7 +351,8 @@ describe("HomePage component", () => {
     });
   });
 
-  describe("Products Array Boundary Tests", () => {
+  describe("Products Array Tests", () => {
+    // Boundary value empty products array
     it("should handle empty products array", async () => {
       axios.get.mockResolvedValueOnce({ data: { products: [] } });
 
@@ -365,6 +367,7 @@ describe("HomePage component", () => {
       });
     });
 
+    // Boundary value single product in array
     it("should handle single product (minimal case)", async () => {
       const singleProduct = [
         {
@@ -424,8 +427,8 @@ describe("HomePage component", () => {
     });
   });
 
-  describe("Product Description Boundary Tests", () => {
-    it("should truncate description > 60 characters", async () => {
+  describe("Product Description Tests", () => {
+    it("should truncate description > 60 characters even at 61 characters boundary value", async () => {
       const longDescription =
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
         "Sed facilisis velit non massa luctus, quis elementum sapien semper. " +
@@ -440,7 +443,7 @@ describe("HomePage component", () => {
           _id: 1,
           name: "Test Product",
           price: 100,
-          description: longDescription,
+          description: longDescription.substring(0, 61),
           slug: "test-product",
         },
       ];
@@ -476,6 +479,7 @@ describe("HomePage component", () => {
       expect(descriptionElement.className).toContain("card-text");
     });
 
+    // Equivalence Partition for product description less than 60 characters
     it("should not truncate description <= 60 characters", async () => {
       const shortDescription = "Short description under 60 chars";
       const products = [

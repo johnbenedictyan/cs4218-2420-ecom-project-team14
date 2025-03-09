@@ -147,7 +147,7 @@ exports[`ProductDetails Component matches snapshot 1`] = `
           class="card m-2"
         >
           <img
-            alt="Extremely Long Product Name That Might Cause UI Issues If Not Handled Properly"
+            alt="Extremely Long Product Name That Might Cause UI Issues If Not Handled Properly But Should Still Be Handled Gracefully By The System Even If This Is Usually Not Very Common"
             class="card-img-top"
             src="/api/v1/product/product-photo/rel3"
           />
@@ -160,7 +160,7 @@ exports[`ProductDetails Component matches snapshot 1`] = `
               <h5
                 class="card-title"
               >
-                Extremely Long Product Name That Might Cause UI Issues If Not Handled Properly
+                Extremely Long Product Name That Might Cause UI Issues If Not Handled Properly But Should Still Be Handled Gracefully By The System Even If This Is Usually Not Very Common
               </h5>
               <h5
                 class="card-title card-price"

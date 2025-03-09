@@ -138,7 +138,7 @@ const HomePage = () => {
           <h4 className="text-center mt-4">Filter By Price</h4>
           <div className="d-flex flex-column">
             <Radio.Group onChange={(e) => setRadio(e.target.value)}>
-            {Prices?.map((p, index) => (
+              {Prices?.map((p, index) => (
                 <Radio key={`${p._id}-${index}`} value={p.array}>
                   {p.name}
                 </Radio>
@@ -168,16 +168,20 @@ const HomePage = () => {
                   <div className="card-name-price">
                     <h5 className="card-title">{p.name}</h5>
                     <h5 className="card-title card-price">
-                      {p.price.toLocaleString("en-US", {
-                        style: "currency",
-                        currency: "USD",
-                      })}
+                      {p.price
+                        ? p.price.toLocaleString("en-US", {
+                            style: "currency",
+                            currency: "USD",
+                          })
+                        : "Price not found"}
                     </h5>
                   </div>
                   <p className="card-text ">
-                  {p.description.length > 60
-                      ? `${p.description.substring(0, 60)}...`
-                      : p.description}
+                    {p.description
+                      ? p.description.length > 60
+                        ? `${p.description.substring(0, 60)}...`
+                        : p.description
+                      : ""}
                   </p>
                   <div className="card-name-price">
                     <button

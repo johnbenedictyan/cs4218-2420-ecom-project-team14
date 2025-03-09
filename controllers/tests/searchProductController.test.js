@@ -81,8 +81,8 @@ describe("Search Product Controller tests", () => {
       await searchProductController(req, res);
 
       // Assertions
-      expect(res.status).toBeCalledWith(400);
-      expect(res.json).toBeCalledWith({
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({
         success: false,
         message: "Keyword must not be empty",
       });
@@ -100,8 +100,8 @@ describe("Search Product Controller tests", () => {
       await searchProductController(req, res);
 
       // Assertions
-      expect(res.status).toBeCalledWith(200);
-      expect(res.json).toBeCalledWith({
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({
         success: true,
         results: mockProducts,
       });
@@ -119,8 +119,8 @@ describe("Search Product Controller tests", () => {
       await searchProductController(req, res);
 
       // Assertions
-      expect(res.status).toBeCalledWith(200);
-      expect(res.json).toBeCalledWith({
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({
         success: true,
         results: [mockProducts[2]],
       });
@@ -133,8 +133,8 @@ describe("Search Product Controller tests", () => {
       await searchProductController(req, res);
 
       // Assertions
-      expect(res.status).toBeCalledWith(400);
-      expect(res.json).toBeCalledWith({
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({
         success: false,
         message: "Keyword is too long",
       });
@@ -150,14 +150,14 @@ describe("Search Product Controller tests", () => {
       await searchProductController(req, res);
 
       // Assertions
-      expect(productModel.find).toBeCalledWith({
+      expect(productModel.find).toHaveBeenCalledWith({
         $or: [
           { name: { $regex: "caa\\+", $options: "i" } }, // The "+" is sanitised
           { description: { $regex: "caa\\+", $options: "i" } },
         ],
       });
-      expect(res.status).toBeCalledWith(200);
-      expect(res.json).toBeCalledWith({
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({
         success: true,
         results: [],
       });
@@ -173,8 +173,8 @@ describe("Search Product Controller tests", () => {
       await searchProductController(req, res);
 
       // Assertions
-      expect(res.status).toBeCalledWith(200);
-      expect(res.json).toBeCalledWith({
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({
         success: true,
         results: [mockProducts[0]],
       });
@@ -192,8 +192,8 @@ describe("Search Product Controller tests", () => {
 
       await searchProductController(req, res);
       // Assertions
-      expect(res.status).toBeCalledWith(400);
-      expect(res.json).toBeCalledWith({
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({
         success: false,
         message: "Error In Search Product API",
         error: new Error("Error fetching product"),

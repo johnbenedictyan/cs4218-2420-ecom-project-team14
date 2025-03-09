@@ -69,7 +69,7 @@ describe("Create Product Controller tests", () => {
     await createProductController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(201);
+    expect(res.status).toHaveBeenCalledWith(201);
     expect(res.send.mock.lastCall[0].success).toBe(true);
     expect(res.send.mock.lastCall[0].message).toBe(
       "Product Created Successfully"
@@ -92,7 +92,7 @@ describe("Create Product Controller tests", () => {
     await createProductController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(400);
+    expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send.mock.lastCall[0].success).toBe(false);
     expect(res.send.mock.lastCall[0].message).toBe(
       "Name of product can only be up to 100 characters long"
@@ -123,7 +123,7 @@ describe("Create Product Controller tests", () => {
     await createProductController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(400);
+    expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send.mock.lastCall[0].success).toBe(false);
     expect(res.send.mock.lastCall[0].message).toBe(
       "Product with this name already exists"
@@ -155,7 +155,7 @@ describe("Create Product Controller tests", () => {
     await createProductController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(400);
+    expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send.mock.lastCall[0].success).toBe(false);
     expect(res.send.mock.lastCall[0].message).toBe(
       "Description of product can only be up to 500 characters long"
@@ -168,7 +168,7 @@ describe("Create Product Controller tests", () => {
     await createProductController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(400);
+    expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send.mock.lastCall[0].success).toBe(false);
     expect(res.send.mock.lastCall[0].message).toBe("Description is Required");
   });
@@ -187,7 +187,7 @@ describe("Create Product Controller tests", () => {
     await createProductController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(400);
+    expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send.mock.lastCall[0].success).toBe(false);
     expect(res.send.mock.lastCall[0].message).toBe(
       "Price must be a number when parsed"
@@ -200,7 +200,7 @@ describe("Create Product Controller tests", () => {
     await createProductController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(400);
+    expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send.mock.lastCall[0].success).toBe(false);
     expect(res.send.mock.lastCall[0].message).toBe("Price is Required");
   });
@@ -220,7 +220,7 @@ describe("Create Product Controller tests", () => {
     await createProductController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(400);
+    expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send.mock.lastCall[0].success).toBe(false);
     expect(res.send.mock.lastCall[0].message).toBe(
       "Category id must conform to mongoose object id format"
@@ -233,7 +233,7 @@ describe("Create Product Controller tests", () => {
     await createProductController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(400);
+    expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send.mock.lastCall[0].success).toBe(false);
     expect(res.send.mock.lastCall[0].message).toBe(
       "Category given does not exist"
@@ -255,7 +255,7 @@ describe("Create Product Controller tests", () => {
     await createProductController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(400);
+    expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send.mock.lastCall[0].success).toBe(false);
     expect(res.send.mock.lastCall[0].message).toBe(
       "Quantity must be a stringed positive integer"
@@ -268,7 +268,7 @@ describe("Create Product Controller tests", () => {
     await createProductController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(400);
+    expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send.mock.lastCall[0].success).toBe(false);
     expect(res.send.mock.lastCall[0].message).toBe(
       "Quantity must be a stringed positive integer"
@@ -289,7 +289,7 @@ describe("Create Product Controller tests", () => {
     await createProductController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(400);
+    expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send.mock.lastCall[0].success).toBe(false);
     expect(res.send.mock.lastCall[0].message).toBe(
       "Shipping must either take on values 0 or 1"
@@ -302,7 +302,7 @@ describe("Create Product Controller tests", () => {
     await createProductController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(400);
+    expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send.mock.lastCall[0].success).toBe(false);
     expect(res.send.mock.lastCall[0].message).toBe(
       "Shipping must either take on values 0 or 1"
@@ -323,7 +323,7 @@ describe("Create Product Controller tests", () => {
     await createProductController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(201);
+    expect(res.status).toHaveBeenCalledWith(201);
     expect(res.send.mock.lastCall[0].success).toBe(true);
     expect(res.send.mock.lastCall[0].message).toBe(
       "Product Created Successfully"
@@ -336,7 +336,7 @@ describe("Create Product Controller tests", () => {
     await createProductController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(400);
+    expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send.mock.lastCall[0].success).toBe(false);
     expect(res.send.mock.lastCall[0].message).toBe(
       "photo is Required and should be less then 1mb"
@@ -351,8 +351,8 @@ describe("Create Product Controller tests", () => {
     await createProductController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(500);
-    expect(res.send).toBeCalledWith({
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith({
       success: false,
       error: Error("Error saving product"),
       message: "Error in creating product",

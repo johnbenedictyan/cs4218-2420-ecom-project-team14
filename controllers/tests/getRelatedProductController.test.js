@@ -93,8 +93,8 @@ describe("Get Related Product Controller tests", () => {
       category: "bc7f29ed898fefd6a5f713fd",
       _id: { $ne: "9379452f970cbbd38ac79478" },
     });
-    expect(res.status).toBeCalledWith(200);
-    expect(res.send).toBeCalledWith({
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith({
       success: true,
       products: mockProducts,
     });
@@ -121,8 +121,8 @@ describe("Get Related Product Controller tests", () => {
       category: "bc7f29ed898fefd6a5f713fd",
       _id: { $ne: "242ddde9effa794b93f20688" },
     });
-    expect(res.status).toBeCalledWith(200);
-    expect(res.send).toBeCalledWith({
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith({
       success: true,
       products: mockProducts.slice(0, 1),
     });
@@ -163,8 +163,8 @@ describe("Get Related Product Controller tests", () => {
     await relatedProductController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(400);
-    expect(res.send).toBeCalledWith({
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({
       success: false,
       message: "Pid and Cid must be in a valid format",
     });
@@ -177,8 +177,8 @@ describe("Get Related Product Controller tests", () => {
     await relatedProductController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(400);
-    expect(res.send).toBeCalledWith({
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({
       success: false,
       message: "Pid and Cid must be in a valid format",
     });
@@ -219,8 +219,8 @@ describe("Get Related Product Controller tests", () => {
     await relatedProductController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(400);
-    expect(res.send).toBeCalledWith({
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({
       success: false,
       message: "Pid and Cid must be in a valid format",
     });
@@ -233,8 +233,8 @@ describe("Get Related Product Controller tests", () => {
     await relatedProductController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(400);
-    expect(res.send).toBeCalledWith({
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({
       success: false,
       message: "Pid and Cid must be in a valid format",
     });
@@ -247,8 +247,8 @@ describe("Get Related Product Controller tests", () => {
     await relatedProductController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(400);
-    expect(res.send).toBeCalledWith({
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({
       success: false,
       message: "Pid and Cid must be in a valid format",
     });
@@ -273,8 +273,8 @@ describe("Get Related Product Controller tests", () => {
     await relatedProductController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(400);
-    expect(res.send).toBeCalledWith({
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({
       success: false,
       message: "error while geting related product",
       error: new Error("some error"),

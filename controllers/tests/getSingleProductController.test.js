@@ -52,8 +52,8 @@ describe("Get Single Product Controller tests", () => {
     await getSingleProductController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(200);
-    expect(res.send).toBeCalledWith({
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith({
       success: true,
       message: "Single Product Fetched",
       product: mockProduct,
@@ -66,8 +66,8 @@ describe("Get Single Product Controller tests", () => {
     await getSingleProductController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(200);
-    expect(res.send).toBeCalledWith({
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith({
       success: true,
       message: "Single Product Fetched",
       product: null,
@@ -81,8 +81,8 @@ describe("Get Single Product Controller tests", () => {
     await getSingleProductController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(400);
-    expect(res.send).toBeCalledWith({
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({
       success: false,
       message: "Invalid product slug provided",
     });
@@ -95,8 +95,8 @@ describe("Get Single Product Controller tests", () => {
     await getSingleProductController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(400);
-    expect(res.send).toBeCalledWith({
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({
       success: false,
       message: "Invalid product slug provided",
     });
@@ -116,8 +116,8 @@ describe("Get Single Product Controller tests", () => {
     await getSingleProductController(req, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(500);
-    expect(res.send).toBeCalledWith({
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith({
       success: false,
       message: "Error while getting single product",
       error: new Error("some error"),

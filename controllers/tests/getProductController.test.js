@@ -70,8 +70,8 @@ describe("Get Product Controller tests", () => {
     await getProductController({}, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(200);
-    expect(res.send).toBeCalledWith({
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith({
       success: true,
       counTotal: 2,
       message: "AllProducts",
@@ -86,8 +86,8 @@ describe("Get Product Controller tests", () => {
     await getProductController({}, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(200);
-    expect(res.send).toBeCalledWith({
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith({
       success: true,
       counTotal: 0,
       message: "AllProducts",
@@ -108,8 +108,8 @@ describe("Get Product Controller tests", () => {
     await getProductController({}, res);
 
     // Assertions
-    expect(res.status).toBeCalledWith(500);
-    expect(res.send).toBeCalledWith({
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith({
       success: false,
       message: "Error in getting products",
       error: "some error",

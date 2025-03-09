@@ -113,6 +113,15 @@ describe("CartPage component", () => {
     mockRequestPaymentMethod.mockResolvedValue({ nonce: "test-payment-nonce" });
   });
 
+  // Check if empty cart renders (BVA: when cart is empty)
+  it("displays empty cart message when cart is empty", async () => {
+    useCart.mockReturnValue([[], mockSetCart]);
+    await act(async () => {
+      render(<CartPage />);
+    });
+    expect(screen.getByText("Your Cart Is Empty")).toBeInTheDocument();
+  });
+
   it("renders cart items correctly", async () => {
     useCart.mockReturnValue([mockCart, mockSetCart]);
     await act(async () => {

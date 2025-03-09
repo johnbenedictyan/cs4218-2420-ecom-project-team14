@@ -70,8 +70,8 @@ const ProductDetails = () => {
                 })
               : "Price not found"}
           </h6>
-          <h6>Category : {product?.category?.name}</h6>
-          <button class="btn btn-secondary ms-1">ADD TO CART</button>
+          <h6>Category : {product?.category?.name || "Category not found"}</h6>
+          <button className="btn btn-secondary ms-1">ADD TO CART</button>
         </div>
       </div>
       <hr />
@@ -86,7 +86,7 @@ const ProductDetails = () => {
               <img
                 src={`/api/v1/product/product-photo/${p._id}`}
                 className="card-img-top"
-                alt={p.name}
+                alt={p.name || "No name found"}
               />
               <div className="card-body">
                 <div className="card-name-price">

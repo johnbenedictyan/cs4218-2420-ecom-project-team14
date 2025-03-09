@@ -1,6 +1,6 @@
 import React from "react";
 import CategoryProduct from "./CategoryProduct";
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, useParams, useNavigate } from "react-router-dom"; // Used for testing links
 import "@testing-library/jest-dom";
 import axios from "axios";
@@ -33,9 +33,67 @@ jest.mock("../components/Layout", () => {
   );
 });
 
-describe("CategoryProduct render and structure tests", () => {
+describe("CategoryProduct General Tests", () => {
+  const mockCategory = {
+    _id: "1",
+    name: "Test Category",
+    slug: "test-category",
+  };
+
+  const mockProducts = [
+    {
+      _id: "101",
+      name: "Product 1",
+      slug: "product-1",
+      description: "Product 1 description",
+      price: 99.99,
+      category: "1",
+      quantity: 10,
+    },
+    {
+      _id: "102",
+      name: "Product 2",
+      slug: "product-2",
+      description: "Product 2 description",
+      price: 199.99,
+      category: "1",
+      quantity: 5,
+    },
+  ];
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  // Test for navigability to Product Details page
+  it("navigates to product details page when More Details button is clicked", async () => {
+    const mockNavigate = jest.fn();
+    useNavigate.mockReturnValue(mockNavigate);
+
+    axios.get.mockResolvedValueOnce({
+      data: {
+        categories: mockCategory,
+        products: mockProducts,
+      },
+    });
+
+    render(
+      <MemoryRouter>
+        <CategoryProduct />
+      </MemoryRouter>
+    );
+    // Wait for promise to resolve
+    await waitFor(() => {
+      expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
+    });
+
+    const moreDetailsButtons = screen.getAllByRole("button", {
+      name: "More Details",
+    });
+    const firstMoreDetailsButton = moreDetailsButtons[0];
+
+    fireEvent.click(firstMoreDetailsButton);
+
+    expect(mockNavigate).toHaveBeenCalledWith("/product/product-1");
   });
 
   it("renders CategoryProduct component with loading state initially", () => {
@@ -238,7 +296,6 @@ describe("CategoryProduct getProductsByCat function tests", () => {
   });
 
   // Edge case handling tests
-
   it("handles null slug parameter", async () => {
     // Mock null slug
     useParams.mockReturnValue({ slug: null });

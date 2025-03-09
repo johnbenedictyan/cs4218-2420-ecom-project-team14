@@ -72,7 +72,7 @@ const HomePage = () => {
       setLoading(true);
       const { data } = await axios.get(`/api/v1/product/product-list/${page}`);
       setLoading(false);
-      setProducts([...products, ...data?.products]);
+      setProducts((prevProducts) => [...prevProducts, ...data?.products]);
     } catch (error) {
       console.log(error);
       toast.error(`Error fetching product list: ${error.message}`);
@@ -91,8 +91,8 @@ const HomePage = () => {
     setChecked(all);
   };
   useEffect(() => {
-    if (!checked.length || !radio.length) getAllProducts();
-  }, [checked.length, radio.length]);
+    if (checked.length === 0 && radio.length === 0) getAllProducts();
+  }, [checked, radio]);
 
   useEffect(() => {
     if (checked.length || radio.length) filterProduct();

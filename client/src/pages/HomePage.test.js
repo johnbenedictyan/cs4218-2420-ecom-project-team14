@@ -98,6 +98,17 @@ describe("HomePage component", () => {
       window.location = originalLocation;
     });
 
+    it("should fetch all products when both radio and checkboxes are not selected", async () => {
+      axios.get.mockResolvedValueOnce({ data: { products: [] } });
+      render(<HomePage />);
+
+      await waitFor(() => {
+        expect(axios.get).toHaveBeenCalledWith(
+          "/api/v1/product/product-list/1"
+        );
+      });
+    });
+
     it("should call product filters API when a price range is selected", async () => {
       const mockCategories = [];
       axios.get.mockImplementation((url) => {
@@ -352,7 +363,19 @@ describe("HomePage component", () => {
   });
 
   describe("Products Array Tests", () => {
-    // Boundary value empty products array
+    // Edge case when API returns null as products
+    it("should handle null product list gracefully", async () => {
+      axios.get.mockResolvedValueOnce({ data: { products: null } });
+      render(<HomePage />);
+      // Wait for all products to be displayed
+      await waitFor(() => {
+        expect(screen.getByText("All Products")).toBeInTheDocument();
+      });
+
+      expect(screen.queryByTestId("product-card")).not.toBeInTheDocument();
+    });
+
+    // Boundary Value empty products array
     it("should handle empty products array", async () => {
       axios.get.mockResolvedValueOnce({ data: { products: [] } });
 

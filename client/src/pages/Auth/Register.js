@@ -55,9 +55,10 @@ const Register = () => {
   // form function
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrors({});
 
     const errors = validateFormData();
-    if (errors.keys().length > 0) {
+    if (Object.keys(errors).length > 0) {
       setErrors(errors);
       return;
     }

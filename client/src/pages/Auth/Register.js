@@ -132,7 +132,7 @@ const Register = () => {
               placeholder="Enter Your Password"
               required
             />
-            {errors.name && (
+            {errors.password && (
               <p style={{ color: "red" }}>
                 The password must be more than 6 characters long
               </p>
@@ -148,7 +148,7 @@ const Register = () => {
               placeholder="Enter Your Phone"
               required
             />
-            {errors.name && (
+            {errors.phone && (
               <p style={{ color: "red" }}>
                 The phone number is not valid. The phone number must start with
                 6,8 or 9 and be 8 digits long
@@ -165,7 +165,7 @@ const Register = () => {
               placeholder="Enter Your Address"
               required
             />
-            {errors.name && (
+            {errors.address && (
               <p style={{ color: "red" }}>
                 The address can only be up to 150 characters long
               </p>
@@ -181,7 +181,7 @@ const Register = () => {
               placeholder="What is Your Favorite sports"
               required
             />
-            {errors.name && (
+            {errors.answer && (
               <p style={{ color: "red" }}>
                 The answer can only be up to 100 characters long
               </p>

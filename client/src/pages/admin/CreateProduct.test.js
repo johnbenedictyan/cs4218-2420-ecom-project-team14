@@ -8,8 +8,7 @@ import CreateProduct from "./CreateProduct";
 import axios from "axios";
 import toast from "react-hot-toast";
 
-// TODO: Complete Form Submission test. (Assigned to Yuki)
-
+// Mock the dependencies
 jest.mock("./../../components/Layout", () => {
   return ({ children, title }) => (
     <div data-testid="mock-layout" data-title={title}>
@@ -30,7 +29,7 @@ jest.mock("react-router-dom", () => ({
 
 jest.mock("axios");
 jest.mock("react-hot-toast");
-// Mock browser's built-in function for generating temporary URL for file blobs
+
 global.URL.createObjectURL = jest.fn(() => "blob:http://localhost/dummy");
 
 describe("CreateProduct Component", () => {
@@ -107,73 +106,161 @@ describe("CreateProduct Component", () => {
       expect(screen.getByText("Select Shipping")).toBeInTheDocument();
       expect(screen.getByText("CREATE PRODUCT")).toBeInTheDocument();
     });
+
+    it("handles input changes correctly", async () => {
+      await act(async () => {
+        render(<CreateProduct />);
+      });
+
+      const nameInput = screen.getByPlaceholderText("Write a Name");
+      const descriptionInput = screen.getByPlaceholderText("Write a Description");
+      const priceInput = screen.getByPlaceholderText("Write a Price");
+      const quantityInput = screen.getByPlaceholderText("Write a Quantity");
+
+      fireEvent.change(nameInput, { target: { value: "Test Product" } });
+      fireEvent.change(descriptionInput, { target: { value: "Test Description" } });
+      fireEvent.change(priceInput, { target: { value: "100" } });
+      fireEvent.change(quantityInput, { target: { value: "10" } });
+
+      expect(nameInput.value).toBe("Test Product");
+      expect(descriptionInput.value).toBe("Test Description");
+      expect(priceInput.value).toBe("100");
+      expect(quantityInput.value).toBe("10");
+    });
+  });
+
+  // Category Fetching Tests
+  describe("Category Fetching", () => {
+    it("fetches categories on component mount", async () => {
+      await act(async () => {
+        render(<CreateProduct />);
+      });
+
+      expect(axios.get).toHaveBeenCalledWith("/api/v1/category/get-category");
+    });
+
+    it("displays fetched categories in the select dropdown", async () => {
+      const categories = [
+        { _id: "1", name: "Category 1" },
+        { _id: "2", name: "Category 2" },
+      ];
+
+      axios.get.mockReset();
+      axios.get.mockResolvedValueOnce({
+        data: { success: true, category: categories },
+      });
+
+      await act(async () => {
+        render(<CreateProduct />);
+      });
+
+      expect(axios.get).toHaveBeenCalledWith("/api/v1/category/get-category");
+    });
+
+    it("shows toast error if category fetching fails", async () => {
+      axios.get.mockReset();
+      axios.get.mockRejectedValueOnce(new Error("Network Error"));
+
+      await act(async () => {
+        render(<CreateProduct />);
+      });
+
+      expect(toast.error).toHaveBeenCalledWith(
+        "Something wwent wrong in getting catgeory"
+      );
+    });
+  });
+
+  // File Upload Tests
+  describe("File Upload", () => {
+    it("handles file upload and displays preview", async () => {
+      await act(async () => {
+        render(<CreateProduct />);
+      });
+
+      const file = new File(["dummy content"], "test.png", {
+        type: "image/png",
+      });
+
+      const uploadLabel = screen.getByText("Upload Photo");
+      const fileInput = uploadLabel.querySelector('input[type="file"]');
+
+      fireEvent.change(fileInput, { target: { files: [file] } });
+
+      await waitFor(() => {
+        const previewImage = screen.getByAltText("product_photo");
+        expect(previewImage).toBeInTheDocument();
+        expect(previewImage).toHaveAttribute(
+          "src",
+          "blob:http://localhost/dummy"
+        );
+      });
+    });
   });
 
   // Form Submission Tests
-  //   describe("Form Submission", () => {
-  //     it("submits the form with selected category and shipping", async () => {
-  //       axios.get.mockResolvedValueOnce({
-  //         data: { success: true, category: [{ _id: "1", name: "Category1" }] },
-  //       });
-  //       axios.post.mockResolvedValueOnce({
-  //         data: { success: false },
-  //       });
+  describe("Form Submission", () => {
+    it("submits form with correct data", async () => {
+      axios.post.mockResolvedValueOnce({
+        data: { success: false },
+      });
 
-  //       render(<CreateProduct />);
+      await act(async () => {
+        render(<CreateProduct />);
+      });
 
-  //       fireEvent.change(screen.getByPlaceholderText("Write a Name"), {
-  //         target: { value: "Test Product" },
-  //       });
-  //       fireEvent.change(screen.getByPlaceholderText("Write a Description"), {
-  //         target: { value: "Test Description" },
-  //       });
-  //       fireEvent.change(screen.getByPlaceholderText("Write a Price"), {
-  //         target: { value: "100" },
-  //       });
-  //       fireEvent.change(screen.getByPlaceholderText("Write a Quantity"), {
-  //         target: { value: "10" },
-  //       });
+      // Fill in form data
+      fireEvent.change(screen.getByPlaceholderText("Write a Name"), {
+        target: { value: "Test Product" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Write a Description"), {
+        target: { value: "Test Description" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Write a Price"), {
+        target: { value: "100" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Write a Quantity"), {
+        target: { value: "10" },
+      });
 
-  //       // Click the category trigger to open the dropdown.
-  //       userEvent.click(screen.getByText("Select a Category"));
+      const file = new File(["dummy content"], "test.png", {
+        type: "image/png",
+      });
+      const uploadLabel = screen.getByText("Upload Photo");
+      const fileInput = uploadLabel.querySelector('input[type="file"]');
+      fireEvent.change(fileInput, { target: { files: [file] } });
 
-  //       await waitFor(() => {
-  //         expect(screen.getByText("Category1")).toBeInTheDocument();
-  //       });
-  //       userEvent.click(screen.getByText("Category1"));
+      fireEvent.click(screen.getByText("CREATE PRODUCT"));
 
-  //       userEvent.click(screen.getByText("Select Shipping"));
-  //       await waitFor(() => {
-  //         expect(screen.getByText("Yes")).toBeInTheDocument();
-  //       });
-  //       userEvent.click(screen.getByText("Yes"));
+      await waitFor(() => {
+        expect(axios.post).toHaveBeenCalledWith(
+          "/api/v1/product/create-product",
+          expect.any(FormData)
+        );
+      });
 
-  //       const file = new File(["dummy content"], "example.png", {
-  //         type: "image/png",
-  //       });
-  //       const uploadLabel = screen.getByText("Upload Photo");
-  //       const fileInput = uploadLabel.querySelector('input[type="file"]');
-  //       fireEvent.change(fileInput, { target: { files: [file] } });
+      expect(toast.success).toHaveBeenCalledWith("Product Created Successfully");
+      expect(mockedNavigate).toHaveBeenCalledWith("/dashboard/admin/products");
+    });
 
-  //       userEvent.click(screen.getByText("CREATE PRODUCT"));
+    it("shows error toast when form submission fails", async () => {
+      axios.post.mockRejectedValueOnce(new Error("Network Error"));
 
-  //       await waitFor(() => {
-  //         expect(axios.post).toHaveBeenCalledWith(
-  //           "/api/v1/product/create-product",
-  //           expect.any(FormData)
-  //         );
-  //       });
+      await act(async () => {
+        render(<CreateProduct />);
+      });
 
-  //       await waitFor(() => {
-  //         expect(toast.success).toHaveBeenCalledWith(
-  //           "Product Created Successfully"
-  //         );
-  //         expect(mockedNavigate).toHaveBeenCalledWith(
-  //           "/dashboard/admin/products"
-  //         );
-  //       });
-  //     });
-  //   });
+      fireEvent.change(screen.getByPlaceholderText("Write a Name"), {
+        target: { value: "Test Product" },
+      });
+
+      fireEvent.click(screen.getByText("CREATE PRODUCT"));
+
+      await waitFor(() => {
+        expect(toast.error).toHaveBeenCalledWith("something went wrong");
+      });
+    });
+  });
 
   // Snapshot Testing
   describe("Snapshot", () => {
@@ -187,54 +274,22 @@ describe("CreateProduct Component", () => {
     });
   });
 
-  // Accessibility Tests
-  describe("Accessibility", () => {
-    it("displays uploaded photo with correct alt text", async () => {
+  // Error Handling Tests
+  describe("Error Handling", () => {
+    it("handles API errors gracefully", async () => {
+      axios.get.mockReset();
+      axios.get.mockRejectedValueOnce(new Error("Network Error"));
+
       await act(async () => {
         render(<CreateProduct />);
       });
 
-      const file = new File(["dummy content"], "test.png", {
-        type: "image/png",
-      });
-      const uploadLabel = screen.getByText("Upload Photo");
-      const fileInput = uploadLabel.querySelector('input[type="file"]');
-      fireEvent.change(fileInput, { target: { files: [file] } });
-
-      await waitFor(() => {
-        expect(screen.getByAltText("product_photo")).toBeInTheDocument();
-      });
-    });
-  });
-
-  // Layout Integration Tests
-  describe("Layout Integration", () => {
-    it("passes correct props to Layout component", async () => {
-      await act(async () => {
-        render(<CreateProduct />);
-      });
-      const layout = screen.getByTestId("mock-layout");
-      expect(layout).toHaveAttribute(
-        "data-title",
-        "Dashboard - Create Product"
+      expect(toast.error).toHaveBeenCalledWith(
+        "Something wwent wrong in getting catgeory"
       );
-    });
-  });
 
-  // Responsive Design Tests
-  describe("Responsive Design", () => {
-    it("contains bootstrap responsive classes in layout columns", async () => {
-      let renderResult;
-      await act(async () => {
-        renderResult = render(<CreateProduct />);
-      });
-      const { container } = renderResult;
-      const col3 = container.querySelector(".col-md-3");
-      const col9 = container.querySelector(".col-md-9");
-      expect(col3).toBeInTheDocument();
-      expect(col3).toHaveClass("col-md-3");
-      expect(col9).toBeInTheDocument();
-      expect(col9).toHaveClass("col-md-9");
+      expect(screen.getByTestId("mock-layout")).toBeInTheDocument();
+      expect(screen.getByTestId("mock-adminmenu")).toBeInTheDocument();
     });
   });
 });

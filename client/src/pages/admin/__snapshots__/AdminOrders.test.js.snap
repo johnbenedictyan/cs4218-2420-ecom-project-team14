@@ -1,0 +1,320 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AdminOrders Component Snapshot matches snapshot 1`] = `
+<div>
+  <div
+    data-testid="mock-layout"
+    data-title="All Orders Data"
+  >
+    <div
+      class="row dashboard"
+    >
+      <div
+        class="col-md-3"
+      >
+        <div
+          data-testid="mock-admin-menu"
+        >
+          Admin Menu
+        </div>
+      </div>
+      <div
+        class="col-md-9"
+      >
+        <h1
+          class="text-center"
+        >
+          All Orders
+        </h1>
+        <div
+          class="border shadow"
+        >
+          <table
+            class="table"
+          >
+            <thead>
+              <tr>
+                <th
+                  scope="col"
+                >
+                  #
+                </th>
+                <th
+                  scope="col"
+                >
+                  Status
+                </th>
+                <th
+                  scope="col"
+                >
+                  Buyer
+                </th>
+                <th
+                  scope="col"
+                >
+                   date
+                </th>
+                <th
+                  scope="col"
+                >
+                  Payment
+                </th>
+                <th
+                  scope="col"
+                >
+                  Quantity
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  1
+                </td>
+                <td>
+                  <div
+                    data-default-value="Not Processed"
+                    data-testid="mock-select"
+                  >
+                    <select>
+                      <option
+                        selected=""
+                        value="Not Processed"
+                      >
+                        Not Processed
+                      </option>
+                      <option
+                        value="Processing"
+                      >
+                        Processing
+                      </option>
+                      <option
+                        value="Shipped"
+                      >
+                        Shipped
+                      </option>
+                      <option
+                        value="Delivered"
+                      >
+                        Delivered
+                      </option>
+                      <option
+                        value="Cancelled"
+                      >
+                        Cancelled
+                      </option>
+                    </select>
+                  </div>
+                </td>
+                <td>
+                  John Doe
+                </td>
+                <td>
+                  a few seconds ago
+                </td>
+                <td>
+                  Success
+                </td>
+                <td>
+                  1
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div
+            class="container"
+          >
+            <div
+              class="row mb-2 p-3 card flex-row"
+            >
+              <div
+                class="col-md-4"
+              >
+                <img
+                  alt="Test Product"
+                  class="card-img-top"
+                  height="100px"
+                  src="/api/v1/product/product-photo/prod1"
+                  width="100px"
+                />
+              </div>
+              <div
+                class="col-md-8"
+              >
+                <p>
+                  Test Product
+                </p>
+                <p>
+                  Test description for product
+                </p>
+                <p>
+                  Price : 
+                  99
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="border shadow"
+        >
+          <table
+            class="table"
+          >
+            <thead>
+              <tr>
+                <th
+                  scope="col"
+                >
+                  #
+                </th>
+                <th
+                  scope="col"
+                >
+                  Status
+                </th>
+                <th
+                  scope="col"
+                >
+                  Buyer
+                </th>
+                <th
+                  scope="col"
+                >
+                   date
+                </th>
+                <th
+                  scope="col"
+                >
+                  Payment
+                </th>
+                <th
+                  scope="col"
+                >
+                  Quantity
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  2
+                </td>
+                <td>
+                  <div
+                    data-default-value="Processing"
+                    data-testid="mock-select"
+                  >
+                    <select>
+                      <option
+                        value="Not Processed"
+                      >
+                        Not Processed
+                      </option>
+                      <option
+                        selected=""
+                        value="Processing"
+                      >
+                        Processing
+                      </option>
+                      <option
+                        value="Shipped"
+                      >
+                        Shipped
+                      </option>
+                      <option
+                        value="Delivered"
+                      >
+                        Delivered
+                      </option>
+                      <option
+                        value="Cancelled"
+                      >
+                        Cancelled
+                      </option>
+                    </select>
+                  </div>
+                </td>
+                <td>
+                  Jane Smith
+                </td>
+                <td>
+                  a few seconds ago
+                </td>
+                <td>
+                  Failed
+                </td>
+                <td>
+                  2
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div
+            class="container"
+          >
+            <div
+              class="row mb-2 p-3 card flex-row"
+            >
+              <div
+                class="col-md-4"
+              >
+                <img
+                  alt="Another Product"
+                  class="card-img-top"
+                  height="100px"
+                  src="/api/v1/product/product-photo/prod2"
+                  width="100px"
+                />
+              </div>
+              <div
+                class="col-md-8"
+              >
+                <p>
+                  Another Product
+                </p>
+                <p>
+                  Another description
+                </p>
+                <p>
+                  Price : 
+                  199
+                </p>
+              </div>
+            </div>
+            <div
+              class="row mb-2 p-3 card flex-row"
+            >
+              <div
+                class="col-md-4"
+              >
+                <img
+                  alt="Third Product"
+                  class="card-img-top"
+                  height="100px"
+                  src="/api/v1/product/product-photo/prod3"
+                  width="100px"
+                />
+              </div>
+              <div
+                class="col-md-8"
+              >
+                <p>
+                  Third Product
+                </p>
+                <p>
+                  Third description
+                </p>
+                <p>
+                  Price : 
+                  299
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

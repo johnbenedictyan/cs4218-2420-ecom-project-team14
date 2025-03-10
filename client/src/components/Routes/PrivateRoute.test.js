@@ -48,7 +48,7 @@ describe("Private Route Component", () => {
   });
 
   describe("when a non existent user is logged in", () => {
-    it("should allow the user to access to child page", async () => {
+    it("should not allow the user to access to child page", async () => {
       useAuth.mockReturnValue([mockLoggedInUser]);
       axios.get.mockRejectedValue({
         response: {

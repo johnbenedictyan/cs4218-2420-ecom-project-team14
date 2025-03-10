@@ -133,7 +133,7 @@ export const createProductController = async (req, res) => {
       });
     }
 
-    // Truncate price to 2 decmial places
+    // Truncate price to 2 decimal places
     const priceTruncated = parseFloat(price).toFixed(2);
     const products = new productModel({
       ...req.fields,
@@ -279,44 +279,130 @@ export const deleteProductController = async (req, res) => {
   }
 };
 
-//upate producta
+//update products
 export const updateProductController = async (req, res) => {
   try {
     const { name, description, price, category, quantity, shipping } =
       req.fields;
     const { photo } = req.files;
-    //alidation
+    //validation
     switch (true) {
-      case !name:
-        return res.status(500).send({ error: "Name is Required" });
+      case !name || name.trim() == "":
+        return res
+          .status(400)
+          .send({ success: false, message: "Name is Required" });
       case !description:
-        return res.status(500).send({ error: "Description is Required" });
+        return res
+          .status(400)
+          .send({ success: false, message: "Description is Required" });
       case !price:
-        return res.status(500).send({ error: "Price is Required" });
+        return res
+          .status(400)
+          .send({ success: false, message: "Price is Required" });
       case !category:
-        return res.status(500).send({ error: "Category is Required" });
+        return res
+          .status(400)
+          .send({ success: false, message: "Category is Required" });
       case !quantity:
-        return res.status(500).send({ error: "Quantity is Required" });
+        return res
+          .status(400)
+          .send({ success: false, message: "Quantity is Required" });
+      case !shipping:
+        return res
+          .status(400)
+          .send({ success: false, message: "Shipping is Required" });
       case photo && photo.size > 1000000:
         return res
-          .status(500)
-          .send({ error: "photo is Required and should be less then 1mb" });
+          .status(400)
+          .send({ success: false, message: "Photo should be less then 1mb" });
     }
 
-    const products = await productModel.findByIdAndUpdate(
+    // Validate that product name cannot be more than 100 characters
+    if (name.length > 100) {
+      return res.status(400).send({
+        success: false,
+        message: "Name of product can only be up to 100 characters long",
+      });
+    }
+
+    // Validate that product description cannot be more than 500 characters
+    if (description.length > 500) {
+      return res.status(400).send({
+        success: false,
+        message: "Description of product can only be up to 500 characters long",
+      });
+    }
+
+    // Validate that category id must conform to mongoose object id format
+    if (!mongoose.Types.ObjectId.isValid(category)) {
+      return res.status(400).send({
+        success: false,
+        message: "Category id must conform to mongoose object id format",
+      });
+    }
+
+    // Validate that price must be a number when parsed
+    if (
+      !/^\d*\.?\d+$/.test(price) || // Reject non-numeric values
+      parseFloat(price) <= 0 // Reject non-positive numeric values
+    ) {
+      return res.status(400).send({
+        success: false,
+        message: "Price must be a positive number when parsed",
+      });
+    }
+
+    // Validate that quantity must be a stringed positive integer
+    if (
+      !/^-?\d+$/.test(quantity) || // Reject non stringed integers
+      parseInt(quantity) <= 0 // Reject non-positive numeric values
+    ) {
+      return res.status(400).send({
+        success: false,
+        message: "Quantity must be a stringed positive integer",
+      });
+    }
+
+    // Validate that shipping can only take values 0 or 1
+    if (parseInt(shipping) !== 0 && parseInt(shipping) !== 1) {
+      return res.status(400).send({
+        success: false,
+        message: "Shipping must either take on values 0 or 1",
+      });
+    }
+
+    // Check whether categoryId exists
+    const existingCategory = await categoryModel.findById(category);
+    // Return error if category id does not exist
+    if (!existingCategory) {
+      return res.status(400).send({
+        success: false,
+        message: "Category given does not exist",
+      });
+    }
+
+    // Truncate price to 2 decimal places
+    const priceTruncated = parseFloat(price).toFixed(2);
+
+    const updatedProduct = await productModel.findByIdAndUpdate(
       req.params.pid,
-      { ...req.fields, slug: slugify(name) },
+      {
+        ...req.fields,
+        slug: slugify(name),
+        price: priceTruncated,
+        shipping: parseInt(shipping),
+      },
       { new: true }
     );
     if (photo) {
-      products.photo.data = fs.readFileSync(photo.path);
-      products.photo.contentType = photo.type;
+      updatedProduct.photo.data = fs.readFileSync(photo.path);
+      updatedProduct.photo.contentType = photo.type;
     }
-    await products.save();
+    await updatedProduct.save();
     res.status(201).send({
       success: true,
       message: "Product Updated Successfully",
-      products,
+      product: updatedProduct,
     });
   } catch (error) {
     console.log(error);

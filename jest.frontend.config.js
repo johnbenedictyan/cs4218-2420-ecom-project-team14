@@ -21,7 +21,6 @@ export default {
 
   // only run these tests
   testMatch: [
-    "<rootDir>/client/src/pages/**/*.test.js",
     "<rootDir>/client/src/components/**/*.test.js",
     "<rootDir>/client/src/context/**/*.test.js",
     "<rootDir>/client/src/pages/**/*.test.js",
@@ -38,7 +37,6 @@ export default {
     "client/src/pages/**/*.js",
     "!client/src/pages/**/*.test.js",
     "client/src/components/**",
-    "client/src/pages/**",
     "client/src/context/**",
   ],
   coverageThreshold: {

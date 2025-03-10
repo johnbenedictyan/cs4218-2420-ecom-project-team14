@@ -4,7 +4,6 @@ import { useCart } from "../context/cart";
 import { useAuth } from "../context/auth";
 import { useNavigate } from "react-router-dom";
 import DropIn from "braintree-web-drop-in-react";
-import { AiFillWarning } from "react-icons/ai";
 import axios from "axios";
 import toast from "react-hot-toast";
 import "../styles/CartStyles.css";
@@ -13,35 +12,59 @@ const CartPage = () => {
   const [auth, setAuth] = useAuth();
   const [cart, setCart] = useCart();
   const [clientToken, setClientToken] = useState("");
-  const [instance, setInstance] = useState("");
+  const [instance, setInstance] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   //total price
   const totalPrice = () => {
     try {
+      if (!cart || cart.length === 0) return "$0:00";
       let total = 0;
-      cart?.map((item) => {
-        total = total + item.price;
+      // Check if cart exists and is an array
+      if (!cart || !Array.isArray(cart)) {
+        return total.toLocaleString("en-US", {
+          style: "currency",
+          currency: "USD",
+        });
+      }
+
+      // Use forEach, we are not using the returned array
+      cart.forEach((item) => {
+        // Check if price exists and is a number
+        if (item && typeof item.price === "number") {
+          // Ensure we only add positive values
+          total = total + Math.max(0, item.price);
+        }
       });
+
       return total.toLocaleString("en-US", {
         style: "currency",
         currency: "USD",
       });
     } catch (error) {
       console.log(error);
+      // Return a default value in case of error
+      return "$0.00";
     }
   };
-  //detele item
+  //delete item
   const removeCartItem = (pid) => {
     try {
       let myCart = [...cart];
       let index = myCart.findIndex((item) => item._id === pid);
-      myCart.splice(index, 1);
-      setCart(myCart);
+      // If index is valid splice the cart
+      if (index !== -1) {
+        myCart.splice(index, 1);
+        setCart(myCart);
+      } else {
+        console.log(`Item with pid ${pid} not found in cart.`);
+        throw new Error("Failed to remove item from cart.");
+      }
       localStorage.setItem("cart", JSON.stringify(myCart));
     } catch (error) {
       console.log(error);
+      toast.error(error.message);
     }
   };
 
@@ -55,7 +78,9 @@ const CartPage = () => {
     }
   };
   useEffect(() => {
-    getToken();
+    if (auth?.token) {
+      getToken();
+    }
   }, [auth?.token]);
 
   //handle payments
@@ -74,6 +99,7 @@ const CartPage = () => {
       toast.success("Payment Completed Successfully ");
     } catch (error) {
       console.log(error);
+      toast.error("Payment has failed, please try again");
       setLoading(false);
     }
   };
@@ -112,7 +138,7 @@ const CartPage = () => {
                   </div>
                   <div className="col-md-4">
                     <p>{p.name}</p>
-                    <p>{p.description.substring(0, 30)}</p>
+                    <p>{p.description ? p.description.substring(0, 30) : ""}</p>
                     <p>Price : {p.price}</p>
                   </div>
                   <div className="col-md-4 cart-remove-btn">

@@ -10,7 +10,7 @@ const ProductDetails = () => {
   const [product, setProduct] = useState({});
   const [relatedProducts, setRelatedProducts] = useState([]);
 
-  //initalp details
+  //inital details
   useEffect(() => {
     if (params?.slug) getProduct();
   }, [params?.slug]);
@@ -32,9 +32,14 @@ const ProductDetails = () => {
       const { data } = await axios.get(
         `/api/v1/product/related-product/${pid}/${cid}`
       );
-      setRelatedProducts(data?.products);
+      // Set default to empty array if data is not truthy
+      setRelatedProducts(data?.products || []);
     } catch (error) {
       console.log(error);
+      setRelatedProducts([]);
+      setDefaultResultOrder(
+        "Failed to load similar products. Please try again."
+      );
     }
   };
   return (
@@ -52,17 +57,21 @@ const ProductDetails = () => {
         <div className="col-md-6 product-details-info">
           <h1 className="text-center">Product Details</h1>
           <hr />
-          <h6>Name : {product.name}</h6>
-          <h6>Description : {product.description}</h6>
+          <h6>Name : {product.name || "Name not found"}</h6>
+          <h6>
+            Description : {product.description ? product.description : ""}
+          </h6>
           <h6>
             Price :
-            {product?.price?.toLocaleString("en-US", {
-              style: "currency",
-              currency: "USD",
-            })}
+            {product?.price
+              ? product.price.toLocaleString("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                })
+              : "Price not found"}
           </h6>
-          <h6>Category : {product?.category?.name}</h6>
-          <button class="btn btn-secondary ms-1">ADD TO CART</button>
+          <h6>Category : {product?.category?.name || "Category not found"}</h6>
+          <button className="btn btn-secondary ms-1">ADD TO CART</button>
         </div>
       </div>
       <hr />
@@ -77,20 +86,26 @@ const ProductDetails = () => {
               <img
                 src={`/api/v1/product/product-photo/${p._id}`}
                 className="card-img-top"
-                alt={p.name}
+                alt={p.name || "No name found"}
               />
               <div className="card-body">
                 <div className="card-name-price">
-                  <h5 className="card-title">{p.name}</h5>
+                  <h5 className="card-title">{p.name || "Name not found"}</h5>
                   <h5 className="card-title card-price">
-                    {p.price.toLocaleString("en-US", {
-                      style: "currency",
-                      currency: "USD",
-                    })}
+                    {p.price
+                      ? p.price.toLocaleString("en-US", {
+                          style: "currency",
+                          currency: "USD",
+                        })
+                      : "Price not found"}
                   </h5>
                 </div>
                 <p className="card-text ">
-                  {p.description.substring(0, 60)}...
+                  {p.description
+                    ? p.description.length > 60
+                      ? p.description.substring(0, 60) + "..."
+                      : p.description
+                    : ""}
                 </p>
                 <div className="card-name-price">
                   <button

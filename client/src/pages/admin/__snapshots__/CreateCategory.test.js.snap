@@ -1,0 +1,72 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CreateCategory Component Snapshot matches snapshot 1`] = `
+<div>
+  <div
+    data-testid="mock-layout"
+  >
+    <div
+      class="container-fluid m-3 p-3"
+    >
+      <div
+        class="row"
+      >
+        <div
+          class="col-md-3"
+        >
+          <div
+            data-testid="mock-admin-menu"
+          >
+            Admin Menu
+          </div>
+        </div>
+        <div
+          class="col-md-9"
+        >
+          <h1>
+            Manage Category
+          </h1>
+          <div
+            class="p-3 w-50"
+          >
+            <div
+              data-testid="mock-category-form"
+            >
+              <input
+                data-testid="category-input"
+                value=""
+              />
+              <button>
+                Submit
+              </button>
+            </div>
+          </div>
+          <div
+            class="w-75"
+          >
+            <table
+              class="table"
+            >
+              <thead>
+                <tr>
+                  <th
+                    scope="col"
+                  >
+                    Name
+                  </th>
+                  <th
+                    scope="col"
+                  >
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody />
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

@@ -51,6 +51,8 @@ describe('Create Category Backend Integration Testing', () => {
         await mongoose.disconnect();
         // Stopping the in memory mongodb server since test has ended
         await mongoInMemoryServer.stop();
+        // Reset env after all tests have finished
+        process.env = normalEnv;
     });
 
     // Check that the user is able to successfully create category with valid category name

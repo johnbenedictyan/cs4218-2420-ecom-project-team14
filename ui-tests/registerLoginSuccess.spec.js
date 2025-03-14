@@ -9,7 +9,7 @@ test.beforeEach(async ({ page }) => {
     // Connecting to db which is needed for deleting the user later
     await mongoose.connect(process.env.MONGO_URL);
     // Navigating to home page
-    await page.goto('http://localhost:3000');
+    await page.goto('http://localhost:3000', { waitUntil: 'commit' });
 });
 
 test.afterEach(async () => {

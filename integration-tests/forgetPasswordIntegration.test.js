@@ -5,17 +5,10 @@ import userModel from "../models/userModel";
 import app from "../server"
 
 describe('Forget Password Backend Integration Testing', () => {
-    const normalEnv = process.env;
     let mongoInMemoryServer, reqBodyData, userid;
     const hashedPassword = "$2b$10$u/a/pMmAY0Iezeuna3W1OOiggduh3sEla8jhXvg0hUDW6vBIeTeWa";
 
     beforeAll(async () => {
-        // Setting node env to test
-        process.env = {
-            ...normalEnv,
-            NODE_ENV: "test"
-        }
-
         // Connecting to in memory mongodb database
         mongoInMemoryServer = await MongoMemoryServer.create();
         const uri = mongoInMemoryServer.getUri();
@@ -40,8 +33,6 @@ describe('Forget Password Backend Integration Testing', () => {
         await mongoose.disconnect();
         // Stopping the in memory mongodb server since test has ended
         await mongoInMemoryServer.stop();
-        // Reset env after all tests have finished
-        process.env = normalEnv;
     });
 
     beforeEach(() => {

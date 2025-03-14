@@ -38,11 +38,9 @@ test.describe("Authenticated user is still logged in after page refresh", () => 
         // Logging user in first so that user is authenticated
         // Navigating to login page
         await page.getByRole('link', { name: 'Login' }).click();
-
         // Inputting user details in login page to login
         await page.getByRole('textbox', { name: 'Enter Your Email' }).fill('douglas.lim@mail.com');
         await page.getByRole('textbox', { name: 'Enter Your Password' }).fill('Exact6');
-
         // Click on the login button
         await page.getByRole('button', { name: 'LOGIN' }).click();
       

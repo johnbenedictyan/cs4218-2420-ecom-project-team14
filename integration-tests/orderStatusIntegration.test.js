@@ -9,17 +9,10 @@ import productModel from "../models/productModel";
 import { ObjectId } from "mongodb";
 
 describe('Order Status Backend Integration Testing', () => {
-    const normalEnv = process.env;
     const hashedPassword = "$2b$10$u/a/pMmAY0Iezeuna3W1OOiggduh3sEla8jhXvg0hUDW6vBIeTeWa";
     let mongoInMemoryServer, orderId, jwtToken;
 
     beforeAll(async () => {
-        // Setting node env to test
-        process.env = {
-            ...normalEnv,
-            NODE_ENV: "test"
-        }
-
         // Connecting to in memory mongodb database
         mongoInMemoryServer = await MongoMemoryServer.create();
         const uri = mongoInMemoryServer.getUri();

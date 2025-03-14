@@ -40,6 +40,8 @@ describe('Forget Password Backend Integration Testing', () => {
         await mongoose.disconnect();
         // Stopping the in memory mongodb server since test has ended
         await mongoInMemoryServer.stop();
+        // Reset env after all tests have finished
+        process.env = normalEnv;
     });
 
     beforeEach(() => {

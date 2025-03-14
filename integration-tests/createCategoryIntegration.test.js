@@ -7,17 +7,10 @@ import categoryModel from "../models/categoryModel";
 import userModel from "../models/userModel";
 
 describe('Create Category Backend Integration Testing', () => {
-    const normalEnv = process.env;
     const hashedPassword = "$2b$10$u/a/pMmAY0Iezeuna3W1OOiggduh3sEla8jhXvg0hUDW6vBIeTeWa";
     let mongoInMemoryServer, jwtToken;
 
     beforeAll(async () => {
-        // Setting node env to test
-        process.env = {
-            ...normalEnv,
-            NODE_ENV: "test"
-        }
-
         // Connecting to in memory mongodb database
         mongoInMemoryServer = await MongoMemoryServer.create();
         const uri = mongoInMemoryServer.getUri();
@@ -51,8 +44,6 @@ describe('Create Category Backend Integration Testing', () => {
         await mongoose.disconnect();
         // Stopping the in memory mongodb server since test has ended
         await mongoInMemoryServer.stop();
-        // Reset env after all tests have finished
-        process.env = normalEnv;
     });
 
     // Check that the user is able to successfully create category with valid category name

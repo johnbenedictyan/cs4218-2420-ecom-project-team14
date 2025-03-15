@@ -78,7 +78,7 @@ test.describe("Unauthorised access to admin features", () => {
       // Navigating to login page
       await page.getByRole("link", { name: "Login" }).click();
 
-      // Keying in correct email address but wrong password
+      // Login as a non-admin user
       await page
         .getByRole("textbox", { name: "Enter Your Email" })
         .fill("notadmin@mail.com");
@@ -116,33 +116,53 @@ test.describe("Unauthorised access to admin features", () => {
       );
     });
 
-    // TODO: Might change to redirecting to forbidden page instead since user is technically logged in
-    test("should redirect to login page", async ({ page }) => {
-      // Admin dashboard should not be accessible to unauthenticated users
+    // Non-admin users redirected to forbidden page instead since user is technically logged in
+    test("should redirect to forbidden page", async ({ page }) => {
+      // Navigating to login page
+      await page.getByRole("link", { name: "Login" }).click();
+      // Login as a non-admin user
+      await page
+        .getByRole("textbox", { name: "Enter Your Email" })
+        .fill("notadmin@mail.com");
+      await page
+        .getByRole("textbox", { name: "Enter Your Password" })
+        .fill("cs4218");
+      await page.getByRole("button", { name: "Login" }).click();
+
+      // Wait for login to complete by checking for name
+      await expect(
+        page.getByRole("button", { name: "Test User" })
+      ).toBeVisible();
+
+      // Admin dashboard should not be accessible to non-admin signed in users
       await page.goto("http://localhost:3000/dashboard/admin", {
-        waitUntil: "domcontentloaded",
+        waitUntil: "networkidle",
       });
-      await expect(page).toHaveURL("http://localhost:3000/login");
-      // Create category page should not be accessible to unauthenticated users
+      await expect(page).toHaveURL("http://localhost:3000/forbidden");
+
+      // Create category page should not be accessible to non-admin signed in users
       await page.goto("http://localhost:3000/dashboard/admin/create-category", {
-        waitUntil: "domcontentloaded",
+        waitUntil: "networkidle",
       });
-      await expect(page).toHaveURL("http://localhost:3000/login");
-      // Create product page should not be accessible to unathenticated users
+      await expect(page).toHaveURL("http://localhost:3000/forbidden");
+
+      // Create product page should not be accessible to non-admin signed in users
       await page.goto("http://localhost:3000/dashboard/admin/create-product", {
-        waitUntil: "domcontentloaded",
+        waitUntil: "networkidle",
       });
-      await expect(page).toHaveURL("http://localhost:3000/login");
-      // Admin products page should not be accessible to unauthenticated users
+      await expect(page).toHaveURL("http://localhost:3000/forbidden");
+
+      // Admin products page should not be accessible to non-admin signed in users
       await page.goto("http://localhost:3000/dashboard/admin/products", {
-        waitUntil: "domcontentloaded",
+        waitUntil: "networkidle",
       });
-      await expect(page).toHaveURL("http://localhost:3000/login");
-      //Admin orders page should not be accessible to uauthenticated users
+      await expect(page).toHaveURL("http://localhost:3000/forbidden");
+
+      //Admin orders page should not be accessible to non-admin signed in users
       await page.goto("http://localhost:3000/dashboard/admin/orders", {
-        waitUntil: "domcontentloaded",
+        waitUntil: "networkidle",
       });
-      await expect(page).toHaveURL("http://localhost:3000/login");
+      await expect(page).toHaveURL("http://localhost:3000/forbidden");
     });
   });
 });

@@ -100,16 +100,20 @@ describe("Admin Route Component", () => {
   });
 
   it("should render the loading spinner correctly", () => {
-    const { getByRole } = render(
-      <MemoryRouter initialEntries={["/dashboard"]}>
-        <Routes>
-          <Route path="/dashboard" element={<AdminRoute />}>
-            <Route path="" element={<p>Test Dashboard Route</p>} />
-          </Route>
-        </Routes>
+    // Mock auth with test token
+    useAuth.mockReturnValue([{ token: "test-token" }, jest.fn()]);
+
+    // Mock axios to never resolve during the test duration, so that Spinner will stay
+    axios.get.mockImplementation(() => new Promise(() => {}));
+
+    // Render the component
+    const { getByText } = render(
+      <MemoryRouter>
+        <AdminRoute />
       </MemoryRouter>
     );
 
-    expect(getByRole("status")).toBeInTheDocument();
+    // Check if mocked spinner is rendered
+    expect(getByText("Loading...")).toBeInTheDocument();
   });
 });

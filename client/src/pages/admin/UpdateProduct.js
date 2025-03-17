@@ -70,6 +70,7 @@ const UpdateProduct = () => {
       productData.append("quantity", quantity);
       photo && productData.append("photo", photo);
       productData.append("category", category);
+      productData.append('shipping', shipping);
       const { data } = await axios.put(
         `/api/v1/product/update-product/${id}`,
         productData
@@ -208,7 +209,6 @@ const UpdateProduct = () => {
                   onChange={(value) => {
                     setShipping(value);
                   }}
-                  value={shipping ? "yes" : "No"}
                 >
                   <Option value="0">No</Option>
                   <Option value="1">Yes</Option>

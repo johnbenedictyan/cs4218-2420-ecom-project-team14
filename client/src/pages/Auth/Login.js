@@ -44,8 +44,12 @@ const Login = () => {
         toast.error(res.data.message);
       }
     } catch (error) {
+      if (error.response && error.response.status === 400) {
+        toast.error(error.response?.data?.message);
+      } else {
       console.log(error);
       toast.error("Something went wrong");
+      }
     }
   };
   return (

@@ -1,37 +1,57 @@
-import React from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "axios";
-import { useEffect, useMemo, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/auth";
 import Spinner from "../Spinner";
 
 export default function AdminRoute() {
-  const [auth] = useAuth();
-  const token = useMemo(() => auth?.token, [auth]); // Avoid unnecessary re-renders
+  const [auth, setAuth] = useAuth();
   const [state, setState] = useState({ loading: true, ok: false });
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      if (!token) {
-        navigate("/login");
-        return;
-      }
+  const checkAuth = useCallback(async () => {
+    try {
+      // Check if auth context has token already
+      let token = auth?.token;
 
-      try {
-        const { data } = await axios.get("/api/v1/auth/admin-auth");
-        setState({ loading: false, ok: data.ok });
-      } catch (error) {
-        console.error("Admin auth check failed:", error);
-        if (error.response.status == 401) {
-          navigate("/forbidden");
+      // If not, try to get it from local storage
+      if (!token) {
+        const storedAuth = localStorage.getItem("auth");
+        if (storedAuth) {
+          const parsedAuth = JSON.parse(storedAuth);
+          setAuth(parsedAuth); // Update auth context
+          token = parsedAuth.token;
+        } else {
+          // Update state before navigating to login
+          // Unauthenticated users (no token) go to login page
+          setState({ loading: false, ok: false });
+          navigate("/login");
           return;
         }
       }
-    };
 
+      const response = await axios.get("/api/v1/auth/admin-auth", {
+        headers: {
+          Authorization: token,
+        },
+      });
+
+      setState({ loading: false, ok: response.data.ok });
+    } catch (error) {
+      if (error.response?.status === 401) {
+        // Signed-in but non-admins, go to forbidden page
+        navigate("/forbidden");
+      } else {
+        // Other general errors (eg. Network error)
+        navigate("/login");
+      }
+      setState({ loading: false, ok: false });
+    }
+  }, [auth?.token, navigate, setAuth]);
+
+  useEffect(() => {
     checkAuth();
-  }, [token]);
+  }, [checkAuth]);
 
   return state.loading ? <Spinner /> : <Outlet />;
 }

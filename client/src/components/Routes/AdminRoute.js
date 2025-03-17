@@ -29,7 +29,7 @@ export default function AdminRoute() {
 
             setState({ loading: false, ok: response.data.ok });
           } catch (error) {
-            if (error.response) {
+            if (error.response.status === 401) {
               // Failed token authorization check
               navigate("/forbidden");
             } else {
@@ -50,7 +50,7 @@ export default function AdminRoute() {
           });
           setState({ loading: false, ok: response.data.ok });
         } catch (error) {
-          if (error.response) {
+          if (error.response.status === 401) {
             // Failed token authorization check
             navigate("/forbidden");
           } else {

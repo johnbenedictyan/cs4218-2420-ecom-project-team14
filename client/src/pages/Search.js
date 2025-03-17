@@ -1,8 +1,11 @@
 import React from "react";
-import Layout from "./../components/Layout";
+import { useCart } from "../context/cart";
 import { useSearch } from "../context/search";
+import Layout from "./../components/Layout";
+
 const Search = () => {
   const [values, setValues] = useSearch();
+  const { addToCart } = useCart();
 
   return (
     <Layout title={"Search results"}>
@@ -36,7 +39,12 @@ const Search = () => {
                     $ {p.price ? p.price : "Price not found"}
                   </p>
                   <button class="btn btn-primary ms-1">More Details</button>
-                  <button class="btn btn-secondary ms-1">ADD TO CART</button>
+                  <button
+                    class="btn btn-secondary ms-1"
+                    onClick={addToCart(p.slug)}
+                  >
+                    ADD TO CART
+                  </button>
                 </div>
               </div>
             ))}

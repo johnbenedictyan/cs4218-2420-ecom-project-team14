@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from "react";
-import Layout from "./../components/Layout";
 import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useCart } from "../context/cart";
 import "../styles/ProductDetailsStyles.css";
+import Layout from "./../components/Layout";
 
 const ProductDetails = () => {
+  const { addToCart } = useCart();
   const params = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState({});
@@ -14,6 +16,7 @@ const ProductDetails = () => {
   useEffect(() => {
     if (params?.slug) getProduct();
   }, [params?.slug]);
+
   //getProduct
   const getProduct = async () => {
     try {
@@ -26,6 +29,7 @@ const ProductDetails = () => {
       console.log(error);
     }
   };
+
   //get similar product
   const getSimilarProduct = async (pid, cid) => {
     try {
@@ -37,11 +41,12 @@ const ProductDetails = () => {
     } catch (error) {
       console.log(error);
       setRelatedProducts([]);
-      setDefaultResultOrder(
-        "Failed to load similar products. Please try again."
-      );
+      //   setDefaultResultOrder(
+      //     "Failed to load similar products. Please try again."
+      //   );
     }
   };
+
   return (
     <Layout>
       <div className="row container product-details">
@@ -71,7 +76,12 @@ const ProductDetails = () => {
               : "Price not found"}
           </h6>
           <h6>Category : {product?.category?.name || "Category not found"}</h6>
-          <button className="btn btn-secondary ms-1">ADD TO CART</button>
+          <button
+            className="btn btn-secondary ms-1"
+            onClick={addToCart(product.slug)}
+          >
+            ADD TO CART
+          </button>
         </div>
       </div>
       <hr />
@@ -114,19 +124,6 @@ const ProductDetails = () => {
                   >
                     More Details
                   </button>
-                  {/* <button
-                  className="btn btn-dark ms-1"
-                  onClick={() => {
-                    setCart([...cart, p]);
-                    localStorage.setItem(
-                      "cart",
-                      JSON.stringify([...cart, p])
-                    );
-                    toast.success("Item Added to cart");
-                  }}
-                >
-                  ADD TO CART
-                </button> */}
                 </div>
               </div>
             </div>

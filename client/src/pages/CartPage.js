@@ -1,72 +1,42 @@
-import React, { useState, useEffect } from "react";
-import Layout from "./../components/Layout";
-import { useCart } from "../context/cart";
-import { useAuth } from "../context/auth";
-import { useNavigate } from "react-router-dom";
-import DropIn from "braintree-web-drop-in-react";
 import axios from "axios";
+import DropIn from "braintree-web-drop-in-react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/auth";
+import { useCart } from "../context/cart";
 import "../styles/CartStyles.css";
+import Layout from "./../components/Layout";
 
 const CartPage = () => {
   const [auth, setAuth] = useAuth();
-  const [cart, setCart] = useCart();
+  const { cart, removeFromCart, clearCart } = useCart();
   const [clientToken, setClientToken] = useState("");
   const [instance, setInstance] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [cartItems, setCartItems] = useState([]);
   const navigate = useNavigate();
 
-  //total price
-  const totalPrice = () => {
-    try {
-      if (!cart || cart.length === 0) return "$0:00";
-      let total = 0;
-      // Check if cart exists and is an array
-      if (!cart || !Array.isArray(cart)) {
-        return total.toLocaleString("en-US", {
-          style: "currency",
-          currency: "USD",
-        });
-      }
-
-      // Use forEach, we are not using the returned array
-      cart.forEach((item) => {
-        // Check if price exists and is a number
-        if (item && typeof item.price === "number") {
-          // Ensure we only add positive values
-          total = total + Math.max(0, item.price);
-        }
-      });
-
-      return total.toLocaleString("en-US", {
-        style: "currency",
-        currency: "USD",
-      });
-    } catch (error) {
-      console.log(error);
-      // Return a default value in case of error
-      return "$0.00";
-    }
-  };
-  //delete item
-  const removeCartItem = (pid) => {
-    try {
-      let myCart = [...cart];
-      let index = myCart.findIndex((item) => item._id === pid);
-      // If index is valid splice the cart
-      if (index !== -1) {
-        myCart.splice(index, 1);
-        setCart(myCart);
-      } else {
-        console.log(`Item with pid ${pid} not found in cart.`);
-        throw new Error("Failed to remove item from cart.");
-      }
-      localStorage.setItem("cart", JSON.stringify(myCart));
-    } catch (error) {
-      console.log(error);
-      toast.error(error.message);
-    }
-  };
+  useEffect(() => {
+    Promise.all(
+      Object.keys(cart).map((productSlug) =>
+        axios
+          .get(`/api/v1/product/get-product/${productSlug}`)
+          .then((res) => ({
+            ...res.data.product,
+            inventory: res.data.product.quantity,
+            quantity: cart[productSlug].quantity,
+            subtotal: res.data.product.price * cart[productSlug].quantity,
+          }))
+          .catch((err) => {
+            console.error(err);
+          })
+      )
+    ).then((cartItems) => {
+      console.log(cartItems);
+      setCartItems(cartItems);
+    });
+  }, [cart]);
 
   //get payment gateway token
   const getToken = async () => {
@@ -83,6 +53,9 @@ const CartPage = () => {
     }
   }, [auth?.token]);
 
+  // check inventory
+  const checkInventory = async () => {};
+
   //handle payments
   const handlePayment = async () => {
     try {
@@ -93,8 +66,7 @@ const CartPage = () => {
         cart,
       });
       setLoading(false);
-      localStorage.removeItem("cart");
-      setCart([]);
+      clearCart();
       navigate("/dashboard/user/orders");
       toast.success("Payment Completed Successfully ");
     } catch (error) {
@@ -103,6 +75,7 @@ const CartPage = () => {
       setLoading(false);
     }
   };
+
   return (
     <Layout>
       <div className=" cart-page">
@@ -113,8 +86,8 @@ const CartPage = () => {
                 ? "Hello Guest"
                 : `Hello  ${auth?.token && auth?.user?.name}`}
               <p className="text-center">
-                {cart?.length
-                  ? `You Have ${cart.length} items in your cart ${
+                {cartItems.length
+                  ? `You have ${cartItems.length > 1 ? cartItems.length + " products" : cartItems.length + " product"} in your cart ${
                       auth?.token ? "" : "please login to checkout !"
                     }`
                   : " Your Cart Is Empty"}
@@ -124,8 +97,8 @@ const CartPage = () => {
         </div>
         <div className="container ">
           <div className="row ">
-            <div className="col-md-7  p-0 m-0">
-              {cart?.map((p) => (
+            <div className="col-md-7 p-0 m-0">
+              {cartItems.map((p) => (
                 <div className="row card flex-row" key={p._id}>
                   <div className="col-md-4">
                     <img
@@ -139,12 +112,26 @@ const CartPage = () => {
                   <div className="col-md-4">
                     <p>{p.name}</p>
                     <p>{p.description ? p.description.substring(0, 30) : ""}</p>
-                    <p>Price : {p.price}</p>
+                    <p>
+                      Price :{" "}
+                      {p.price.toLocaleString("en-US", {
+                        style: "currency",
+                        currency: "USD",
+                      })}
+                    </p>
+                    <p>Quantity: {p.quantity}</p>
+                    <p>
+                      Subtotal:{" "}
+                      {p.subtotal.toLocaleString("en-US", {
+                        style: "currency",
+                        currency: "USD",
+                      })}
+                    </p>
                   </div>
                   <div className="col-md-4 cart-remove-btn">
                     <button
                       className="btn btn-danger"
-                      onClick={() => removeCartItem(p._id)}
+                      onClick={() => removeFromCart(p.slug)}
                     >
                       Remove
                     </button>
@@ -156,7 +143,15 @@ const CartPage = () => {
               <h2>Cart Summary</h2>
               <p>Total | Checkout | Payment</p>
               <hr />
-              <h4>Total : {totalPrice()} </h4>
+              <h4>
+                Total :{" "}
+                {cartItems
+                  .reduce((prev, curr) => prev + curr.subtotal, 0)
+                  .toLocaleString("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  })}
+              </h4>
               {auth?.user?.address ? (
                 <>
                   <div className="mb-3">

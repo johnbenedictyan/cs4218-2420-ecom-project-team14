@@ -9,7 +9,7 @@ import "../styles/Header.css";
 
 const Header = ({ searchInput }) => {
   const [auth, setAuth] = useAuth();
-  const [cart, setCart] = useCart();
+  const { cart } = useCart();
   const categories = useCategory();
 
   const handleLogout = () => {

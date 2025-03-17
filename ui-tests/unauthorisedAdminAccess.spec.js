@@ -8,7 +8,7 @@ import userModel from "../models/userModel";
 dotenv.config();
 
 test.beforeEach(async ({ page }) => {
-  // Connect to DB so as to delete test user later
+  // Connect to DB so as to create and delete test user later
   await mongoose.connect(process.env.MONGO_URL);
   // Navigate to Home Page
   await page.goto("http://localhost:3000", { waitUntil: "commit" });

@@ -1,67 +1,57 @@
-import React from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "axios";
-import { useEffect, useMemo, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/auth";
 import Spinner from "../Spinner";
 
 export default function AdminRoute() {
   const [auth, setAuth] = useAuth();
-  const token = useMemo(() => auth?.token, [auth]); // Avoid unnecessary re-renders
   const [state, setState] = useState({ loading: true, ok: false });
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      if (!auth?.token) {
+  const checkAuth = useCallback(async () => {
+    try {
+      // Check if auth context has token already
+      let token = auth?.token;
+
+      // If not, try to get it from local storage
+      if (!token) {
         const storedAuth = localStorage.getItem("auth");
         if (storedAuth) {
           const parsedAuth = JSON.parse(storedAuth);
-          setAuth(parsedAuth);
-          const token = parsedAuth.token;
-
-          try {
-            const response = await axios.get("/api/v1/auth/admin-auth", {
-              headers: {
-                Authorization: token,
-              },
-            });
-
-            setState({ loading: false, ok: response.data.ok });
-          } catch (error) {
-            if (error.response.status === 401) {
-              // Failed token authorization check
-              navigate("/forbidden");
-            } else {
-              // Potentially network error
-              navigate("/login");
-            }
-          }
+          setAuth(parsedAuth); // Update auth context
+          token = parsedAuth.token;
         } else {
-          // No token in local storage and in auth context
+          // Update state before navigating to login
+          // Unauthenticated users (no token) go to login page
+          setState({ loading: false, ok: false });
           navigate("/login");
-        }
-      } else {
-        try {
-          const response = await axios.get("/api/v1/auth/admin-auth", {
-            headers: {
-              Authorization: token,
-            },
-          });
-          setState({ loading: false, ok: response.data.ok });
-        } catch (error) {
-          if (error.response.status === 401) {
-            // Failed token authorization check
-            navigate("/forbidden");
-          } else {
-            // Potentially network error
-            navigate("/login");
-          }
+          return;
         }
       }
-    };
+
+      const response = await axios.get("/api/v1/auth/admin-auth", {
+        headers: {
+          Authorization: token,
+        },
+      });
+
+      setState({ loading: false, ok: response.data.ok });
+    } catch (error) {
+      if (error.response?.status === 401) {
+        // Signed-in but non-admins, go to forbidden page
+        navigate("/forbidden");
+      } else {
+        // Other general errors (eg. Network error)
+        navigate("/login");
+      }
+      setState({ loading: false, ok: false }); //set state in case of error
+    }
+  }, [auth?.token, navigate, setAuth]);
+
+  useEffect(() => {
     checkAuth();
-  }, [auth?.token, token, navigate, setAuth]);
+  }, [checkAuth]);
 
   return state.loading ? <Spinner /> : <Outlet />;
 }

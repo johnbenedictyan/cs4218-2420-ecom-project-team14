@@ -133,6 +133,18 @@ export const createProductController = async (req, res) => {
       });
     }
 
+    // Check that no other product exists with the same slug
+    const productSlug = slugify(name);
+    const productWithSameSlug = await productModel.findOne({
+      slug: productSlug,
+    });
+    if (productWithSameSlug) {
+      return res.status(400).send({
+        success: false,
+        message: `Product with this name format or slug already exists: ${productSlug}`,
+      });
+    }
+
     // Truncate price to 2 decimal places
     const priceTruncated = parseFloat(price).toFixed(2);
     const products = new productModel({
@@ -145,6 +157,7 @@ export const createProductController = async (req, res) => {
       products.photo.data = fs.readFileSync(photo.path);
       products.photo.contentType = photo.type;
     }
+
     await products.save();
     res.status(201).send({
       success: true,

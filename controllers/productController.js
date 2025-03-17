@@ -133,10 +133,10 @@ export const createProductController = async (req, res) => {
       });
     }
 
-    // Check that no other product exists with the same slug
+    // Do a case-insensitive check that no other product exists with the same slug
     const productSlug = slugify(name);
     const productWithSameSlug = await productModel.findOne({
-      slug: productSlug,
+      slug: { $regex: new RegExp(`^${productSlug}$`, "i") },
     });
     if (productWithSameSlug) {
       return res.status(400).send({
@@ -150,7 +150,7 @@ export const createProductController = async (req, res) => {
     const products = new productModel({
       ...req.fields,
       price: priceTruncated,
-      slug: slugify(name),
+      slug: productSlug,
     });
 
     if (photo) {

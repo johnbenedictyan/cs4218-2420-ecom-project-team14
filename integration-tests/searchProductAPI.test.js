@@ -21,7 +21,7 @@ describe("Search Product Integration Tests", () => {
     product1 = await productModel.create({
       name: "First product 1",
       slug: "first-product-1",
-      description: "first product desc " + "a".repeat(100),
+      description: "a".repeat(101),
       quantity: "10",
       shipping: "1",
       category: categoryId,

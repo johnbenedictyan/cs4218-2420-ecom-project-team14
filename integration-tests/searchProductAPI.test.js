@@ -19,8 +19,8 @@ describe("Search Product Integration Tests", () => {
     categoryId = new ObjectId("bc7f29ed898fefd6a5f713fd");
 
     product1 = await productModel.create({
-      name: "First product",
-      slug: "first-product",
+      name: "First product 1",
+      slug: "first-product-1",
       description: "first product desc " + "a".repeat(100),
       quantity: "10",
       shipping: "1",
@@ -28,8 +28,8 @@ describe("Search Product Integration Tests", () => {
       price: 10,
     });
     product2 = await productModel.create({
-      name: "Second product",
-      slug: "second-product",
+      name: "Second product 2",
+      slug: "second-product-2",
       description: "second product desc ",
       quantity: "11",
       shipping: "0",
@@ -37,8 +37,8 @@ describe("Search Product Integration Tests", () => {
       price: 20,
     });
     product3 = await productModel.create({
-      name: "Third product",
-      slug: "third-product",
+      name: "Third product 3",
+      slug: "third-product-3",
       description: "third product desc",
       quantity: "12",
       shipping: "1",
@@ -70,20 +70,20 @@ describe("Search Product Integration Tests", () => {
     // 1. smallest valid input (1 character)
     // 2. No capital letter
     it("Should fetch associated products given minimum valid input that matches product name or description", async () => {
-      const keyword = "o"; // smallest valid input, no capital letter
+      const keyword = "1"; // smallest valid input, no capital letter
       const response = await request(app).get(
         `${productPath}/search/${keyword}`
       );
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
-      expect(response.body.results.length).toBe(3);
+      expect(response.body.results.length).toBe(1);
     });
 
     // BVA test:
     // 1. Maximum valid input (100 characters)
     it("Should fetch associated products given maximum valid input that matches product name or description", async () => {
-      const keyword = "a".repeat(100); // max valid input
+      const keyword = "a".repeat(100); // max valid input, no capital letter
       const response = await request(app).get(
         `${productPath}/search/${keyword}`
       );

@@ -128,7 +128,16 @@ const CartPage = () => {
                       })}
                     </p>
                   </div>
-                  <div className="col-md-4 cart-remove-btn">
+                  <div className="col-md-2">
+                    <select className="form-select">
+                      {Array.from({ length: p.inventory }, (_, i) => i + 1).map(
+                        (x) => (
+                          <option value={x}>{x}</option>
+                        )
+                      )}
+                    </select>
+                  </div>
+                  <div className="col-md-2 cart-remove-btn">
                     <button
                       className="btn btn-danger"
                       onClick={() => removeFromCart(p.slug)}

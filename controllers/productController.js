@@ -50,10 +50,14 @@ export const createProductController = async (req, res) => {
         return res
           .status(400)
           .send({ success: false, message: "Quantity is Required" });
+      case !shipping:
+        return res
+          .status(400)
+          .send({ success: false, message: "Shipping is Required" });
       case photo && photo.size > 1000000:
         return res.status(400).send({
           success: false,
-          message: "photo is Required and should be less then 1mb",
+          message: "Photo should be less then 1mb",
         });
     }
 
@@ -378,6 +382,37 @@ export const updateProductController = async (req, res) => {
       return res.status(400).send({
         success: false,
         message: "Category given does not exist",
+      });
+    }
+
+    // Find the current un-updated product
+    const oldProduct = await productModel.findById(req.params.pid);
+
+    // Find all products with the same name (case-insensitive)
+    const existingProduct = await productModel.findOne({
+      name: { $regex: new RegExp(`^${name}$`, "i") },
+    });
+
+    // Return error if there is a change in name and another product already has this name
+    // No error returned if no change in product name (oldName === name)
+    if (oldProduct.name !== name && existingProduct) {
+      return res.status(400).send({
+        success: false,
+        message: "Another product already has this name",
+      });
+    }
+
+    // Do a case-insensitive check that no other product exists with the same slug
+    const productSlug = slugify(name);
+    const productWithSameSlug = await productModel.findOne({
+      slug: { $regex: new RegExp(`^${productSlug}$`, "i") },
+    });
+    // Return error if there is a change in name (and thus slug) and another product already has this corresponding slug
+    // No error returned if no change in product name, as that implies no change in slug (means slug is valid)
+    if (oldProduct.name !== name && productWithSameSlug) {
+      return res.status(400).send({
+        success: false,
+        message: `Product with this name format or slug already exists: ${productSlug}`,
       });
     }
 

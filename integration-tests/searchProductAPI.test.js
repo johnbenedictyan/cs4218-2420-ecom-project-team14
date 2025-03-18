@@ -66,9 +66,7 @@ describe("Search Product Integration Tests", () => {
    *
    */
   describe("Boundary Value Analysis test cases", () => {
-    // BVA test:
-    // 1. smallest valid input (1 character)
-    // 2. No capital letter
+    // BVA test: smallest valid input (1 character)
     it("Should fetch associated products given minimum valid input that matches product name or description", async () => {
       const keyword = "1"; // smallest valid input, no capital letter
       const response = await request(app).get(
@@ -82,6 +80,7 @@ describe("Search Product Integration Tests", () => {
 
     // BVA test:
     // 1. Maximum valid input (100 characters)
+    // 2. No capital letter
     it("Should fetch associated products given maximum valid input that matches product name or description", async () => {
       const keyword = "a".repeat(100); // max valid input, no capital letter
       const response = await request(app).get(

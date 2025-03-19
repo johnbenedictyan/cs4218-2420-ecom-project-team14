@@ -45,6 +45,16 @@ test.beforeEach(async ({ page }) => {
     price: 20,
   });
   await page.goto("http://localhost:3000", { waitUntil: "commit" });
+
+  await page.getByRole("link", { name: "Login" }).click();
+
+  await page
+    .getByRole("textbox", { name: "Enter Your Email" })
+    .fill("deleteproductadmin@mail.com");
+  await page
+    .getByRole("textbox", { name: "Enter Your Password" })
+    .fill("cs4218@test.com");
+  await page.getByRole("button", { name: "LOGIN" }).click();
 });
 
 test.afterEach(async () => {
@@ -59,17 +69,6 @@ test.describe("Admin Delete Product", () => {
   test("should allow admin to delete products from the database", async ({
     page,
   }) => {
-    //TODO: Might want to change this to beforeEach
-    await page.getByRole("link", { name: "Login" }).click();
-
-    await page
-      .getByRole("textbox", { name: "Enter Your Email" })
-      .fill("deleteproductadmin@mail.com");
-    await page
-      .getByRole("textbox", { name: "Enter Your Password" })
-      .fill("cs4218@test.com");
-    await page.getByRole("button", { name: "LOGIN" }).click();
-
     // Check both items are visible
     await expect(
       page.locator('.card-body:has-text("Test Product 1")')
@@ -83,21 +82,21 @@ test.describe("Admin Delete Product", () => {
     await page.getByRole("link", { name: "Dashboard" }).click();
     await page.getByRole("link", { name: "Products" }).click();
     await page.getByRole("link", { name: "Test Product 1" }).click();
-    // await page.waitForSelector('text=Update Product');
+
+    // Handle dialog confirmation for when we click DELET PRODUCT
     page.once("dialog", (dialog) => {
       console.log(`Dialog message: ${dialog.message()}`);
       dialog.accept("yes").catch(() => {});
     });
     await page.getByRole("button", { name: "DELETE PRODUCT" }).click();
-
-    await page.getByText("HOME");
-
     await page.waitForResponse((response) => {
       if (response.status() === 200) {
         return true;
       }
     });
-    await page.waitForTimeout(2000);
+
+    // Navigate back HOME
+    await page.getByText("HOME").click();
 
     await expect(
       page.locator('.card-body:has-text("Test Product 2")')
@@ -107,4 +106,12 @@ test.describe("Admin Delete Product", () => {
       page.locator('.card-body:has-text("Test Product 1")')
     ).not.toBeVisible({ timeout: 10000 });
   });
+
+  test("should redirect to 'all products list' page after delete", async ({
+    page,
+  }) => {});
+
+  test("should not delete product when dialog is not accepted with a 'yes'", async ({
+    page,
+  }) => {});
 });

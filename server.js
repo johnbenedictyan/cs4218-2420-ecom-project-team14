@@ -36,7 +36,6 @@ app.get("/", (req, res) => {
 });
 
 const PORT = process.env.PORT || 6060;
-
 if (process.env.NODE_ENV !== "test") {
   // There is conflict of port during the integration testing so this line is only used for dev
   app.listen(PORT, () => {

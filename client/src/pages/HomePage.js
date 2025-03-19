@@ -34,9 +34,13 @@ const HomePage = () => {
   };
 
   useEffect(() => {
-    getAllCategory();
     getTotal();
+  }, [checked, radio]);
+
+  useEffect(() => {
+    getAllCategory();
   }, []);
+
   //get products
   const getAllProducts = async () => {
     try {
@@ -54,7 +58,10 @@ const HomePage = () => {
   //getTotal Count
   const getTotal = async () => {
     try {
-      const { data } = await axios.get("/api/v1/product/product-count");
+      const filtersApplied = { checked, radio };
+      const { data } = await axios.get("/api/v1/product/product-count", {
+        params: filtersApplied,
+      });
       setTotal(data?.total);
     } catch (error) {
       console.log(error);

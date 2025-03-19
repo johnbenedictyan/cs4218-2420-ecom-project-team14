@@ -473,7 +473,14 @@ export const productFiltersController = async (req, res) => {
 // product count
 export const productCountController = async (req, res) => {
   try {
-    const total = await productModel.find({}).estimatedDocumentCount();
+    const { checked, radio } = req.query;
+
+    let args = {};
+
+    if (checked && checked.length > 0) args.category = checked;
+    if (radio && radio.length > 0)
+      args.price = { $gte: radio[0], $lte: radio[1] };
+    const total = await productModel.countDocuments(args);
     res.status(200).send({
       success: true,
       total,

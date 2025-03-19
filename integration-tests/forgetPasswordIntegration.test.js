@@ -100,7 +100,7 @@ describe('Forget Password Backend Integration Testing', () => {
 
     // Test 5: User should not be able to reset their password with non-empty new password of length less than 6 (Non-empty, invalid new password)
     // This test also covers the case for just below the lower boundary for BVA for new password (5 characters)
-    test('response returns 400 and the user is unable to reset their password with password with length of 5', async () => {
+    it('should not allow the user to reset their password with password with length of 5', async () => {
         reqBodyData.newPassword = "5char";
 
         const response = await request(app).post('/api/v1/auth/forgot-password').send(reqBodyData);
@@ -127,7 +127,7 @@ describe('Forget Password Backend Integration Testing', () => {
 
     // Test 7: User should not be able to reset their password with non-empty answer with length more than 100 characters (Non-empty, invalid answer)
     // This test also covers the case for just above upper boundary for BVA for answer (101 characters)
-    test('should not allow the user is to reset their password with answer of length 101', async () => {
+    it('should not allow the user is to reset their password with answer of length 101', async () => {
         reqBodyData.answer = "Basketball, Triple Jump, Cross country running, Half Marathon, Decathlon, Baseball, Volleyball, Rugby";
 
         const response = await request(app).post('/api/v1/auth/forgot-password').send(reqBodyData);
@@ -140,7 +140,7 @@ describe('Forget Password Backend Integration Testing', () => {
 
     // Test 8: User should not be able to reset their password when valid email, password and answer 
     // is provided but the provided email and answer are wrong (do not match user in database)
-    test('should not allow the user to reset their password if provided email and answer does not match user in database', async () => {
+    it('should not allow the user to reset their password if provided email and answer do not match user in database', async () => {
         reqBodyData.email = "some.person@mail.com";
         reqBodyData.answer = "Clearly a wrong Answer";
 

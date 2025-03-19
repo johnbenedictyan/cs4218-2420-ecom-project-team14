@@ -1,11 +1,18 @@
 import React from "react";
+import { useState } from "react";
 import Layout from "./../components/Layout";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { useSearch } from "../context/search";
+import { useNavigate } from "react-router-dom";
+import { useCart } from "../context/cart";
 
 const Search = () => {
-  const [values, setValues] = useSearch();
+  const [values, setValues] = useState({
+    keyword: "",
+    results: [],
+  });
+  const navigate = useNavigate();
+  const [cart, setCart] = useCart();
 
   const handleSearch = async () => {
     try {
@@ -24,11 +31,12 @@ const Search = () => {
       const response = await axios.get(
         `/api/v1/product/search/${values.keyword}`
       );
-      const data = response.data;
-      if (data.success) {
-        setValues({ ...values, results: data.results });
+      const data = response?.data;
+      console.log(data);
+      if (data?.success) {
+        setValues({ ...values, results: data?.results });
       } else {
-        console.log(data.message);
+        console.log(data?.message);
         toast.error("An issue with the server occured");
       }
     } catch (error) {
@@ -81,8 +89,25 @@ const Search = () => {
                     {" "}
                     $ {p.price ? p.price : "Price not found"}
                   </p>
-                  <button class="btn btn-primary ms-1">More Details</button>
-                  <button class="btn btn-secondary ms-1">ADD TO CART</button>
+                  <button
+                    class="btn btn-primary ms-1"
+                    onClick={() => navigate(`/product/${p.slug}`)}
+                  >
+                    More Details
+                  </button>
+                  <button
+                    class="btn btn-secondary ms-1"
+                    onClick={() => {
+                      setCart([...cart, p]);
+                      localStorage.setItem(
+                        "cart",
+                        JSON.stringify([...cart, p])
+                      );
+                      toast.success("Item Added to cart");
+                    }}
+                  >
+                    ADD TO CART
+                  </button>
                 </div>
               </div>
             ))}

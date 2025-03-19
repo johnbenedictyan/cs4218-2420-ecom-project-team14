@@ -10,14 +10,49 @@ import { ObjectId } from "mongodb";
 
 describe('Get All Orders Backend Integration Testing', () => {
     const hashedPassword = "$2b$10$u/a/pMmAY0Iezeuna3W1OOiggduh3sEla8jhXvg0hUDW6vBIeTeWa";
-    let mongoInMemoryServer;
+    let mongoInMemoryServer, jwtToken;
 
     beforeAll(async () => {
         // Connecting to in memory mongodb database
         mongoInMemoryServer = await MongoMemoryServer.create();
         const uri = mongoInMemoryServer.getUri();
         await mongoose.connect(uri);
-        
+    });
+
+    beforeEach(async () => {
+        // Creating the admin account (Used later in JWT creation)
+        const admin = await new userModel({
+            name: "Admin Account",
+            email: "admin.account@mail.cpm",
+            phone: "91292838",
+            address: "Admin place somewhere",
+            password: hashedPassword,
+            answer: "Swimming",
+            role: 1
+        }).save();
+
+        // Creating the JWT Token needed to call the getAllOrdersController
+        jwtToken = await JWT.sign({ _id: admin._id }, process.env.JWT_SECRET, {
+                expiresIn: "7d",
+        });
+    });
+
+    afterAll(async () => {
+        // Disconnecting from database after test has finished
+        await mongoose.disconnect();
+        // Stopping the in memory mongodb server since test has ended
+        await mongoInMemoryServer.stop();
+    });
+
+    afterEach(async () => {
+        // Clearing the database after each test
+        await orderModel.deleteMany({});
+        await userModel.deleteMany({});
+        await productModel.deleteMany({});
+    })
+
+    // Test 1: When there are multiple orders, check that all orders are returned and sorted by createdAt
+    it('should return all the orders which are sorted by createdAt when there are multiple orders in the database', async () => {
         // Creating category id needed for creating products
         const categoryId = new ObjectId("67d3e462339aeb35c28f1be3");
 
@@ -62,41 +97,15 @@ describe('Get All Orders Backend Integration Testing', () => {
         }).save();
 
         // Adding the orders to database
-        const firstOrder = await new orderModel({
+        await new orderModel({
             products: [firstProduct._id],
             buyer: firstBuyer._id,
         }).save();
 
-        const secondOrder = await new orderModel({
+        await new orderModel({
             products: [secondProduct._id],
             buyer: secondBuyer._id
         }).save();
-    });
-
-    afterAll(async () => {
-        // Disconnecting the connection to database after test has finished
-        await mongoose.disconnect();
-        // Stopping the in memory mongodb server since test has ended
-        await mongoInMemoryServer.stop();
-    });
-
-    // Check that all orders are returned and sorted by createdAt when called by admin
-    test('response returns all the orders which are sorted by createdAt when called by admin', async () => {
-        // Creating the admin account (Used later in JWT creation)
-        const admin = await new userModel({
-            name: "Admin Account",
-            email: "admin.account@mail.cpm",
-            phone: "91292838",
-            address: "Admin place somewhere",
-            password: hashedPassword,
-            answer: "Swimming",
-            role: 1
-        }).save();
-
-        // Creating the JWT Token needed to call the getAllOrdersController
-        const jwtToken = await JWT.sign({ _id: admin._id }, process.env.JWT_SECRET, {
-              expiresIn: "7d",
-        });
 
         const response = await request(app).get('/api/v1/auth/all-orders').set("Authorization", jwtToken);
         
@@ -105,6 +114,14 @@ describe('Get All Orders Backend Integration Testing', () => {
 
         // Check that the orders are sorted correctly with the first order being later than the second one
         expect(new Date(firstOrder.createdAt).getTime()).toBeGreaterThan(new Date(secondOrder.createdAt).getTime());
+    });
+
+    // Test 2: Check that empty array is returned when there are no orders in the database
+    it('should return an empty array when there are no orders which have been made', async () => {
+        const response = await request(app).get('/api/v1/auth/all-orders').set("Authorization", jwtToken);
+
+        // Check that the response returns an empty array since no orders have been made
+        expect(response.body).toEqual([]);
     });
 
 })

@@ -448,7 +448,7 @@ export const productFiltersController = async (req, res) => {
     if (radio.length) args.price = { $gte: radio[0], $lte: radio[1] };
 
     // Convert page to number using decimal parsing and validate
-    const pageNum = parseInt(page, 10) || 1;
+    const pageNum = Math.max(parseInt(page, 10) || 1, 1);
 
     const products = await productModel
       .find(args)

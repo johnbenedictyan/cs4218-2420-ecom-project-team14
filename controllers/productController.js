@@ -453,7 +453,7 @@ export const productFiltersController = async (req, res) => {
     const products = await productModel
       .find(args)
       .select("-photo")
-      .skip((pageNum - 1) * PER_PAGE_LIMIT)
+      .skip((pageNum - 1) * PER_PAGE_LIMIT) // Use Offset of 1 because we don't want to skip one page
       .limit(PER_PAGE_LIMIT); // Consistent with productListController
 
     res.status(200).send({

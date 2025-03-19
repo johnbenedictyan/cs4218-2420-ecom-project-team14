@@ -181,6 +181,10 @@ describe("Search Product Controller tests", () => {
     });
   });
 
+  // Additional BVA test identified (future additions):
+  // Maximum products returns is less than or equal per page product limit
+  // (Test at the boundary of per page product limit and one more than per page product limit)
+
   describe("Test cases with regards to model errors", () => {
     it("Should return error response when there is error fetching associated products", async () => {
       req = { params: { keyword: "a" } };

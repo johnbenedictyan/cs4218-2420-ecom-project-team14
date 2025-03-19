@@ -544,7 +544,8 @@ export const searchProductController = async (req, res) => {
           { description: { $regex: safeKeyword, $options: "i" } },
         ],
       })
-      .select("-photo");
+      .select("-photo")
+      .limit(PER_PAGE_LIMIT);
     res.status(200).json({ success: true, results });
   } catch (error) {
     console.log(error);

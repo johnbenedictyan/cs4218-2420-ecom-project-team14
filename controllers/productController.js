@@ -417,7 +417,7 @@ export const updateProductController = async (req, res) => {
 // filters
 export const productFiltersController = async (req, res) => {
   try {
-    const { checked, radio } = req.body;
+    const { checked, radio, page = 1 } = req.body;
     let args = {};
     // checked validations
     if (
@@ -446,7 +446,16 @@ export const productFiltersController = async (req, res) => {
     }
     if (checked.length > 0) args.category = checked;
     if (radio.length) args.price = { $gte: radio[0], $lte: radio[1] };
-    const products = await productModel.find(args);
+
+    // Convert page to number using decimal parsing and validate
+    const pageNum = parseInt(page, 10) || 1;
+
+    const products = await productModel
+      .find(args)
+      .select("-photo")
+      .skip((pageNum - 1) * PER_PAGE_LIMIT)
+      .limit(PER_PAGE_LIMIT); // Consistent with productListController
+
     res.status(200).send({
       success: true,
       products,

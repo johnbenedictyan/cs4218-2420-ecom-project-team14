@@ -90,7 +90,7 @@ describe("Order Status Controller Tests", () => {
     // Order ID (Equivalence Partitioning) (There are 2 equivalence classes: Valid Order ID and Invalid Order ID)
     // Valid Order ID is already covered
     // Test 3 (Invalid OrderId): Case where user provides invalid order id when updating the order status
-    it('should send an error message that there is no order that can be found to update', async () => {
+    it('should return an error message that there is no order that can be found to update', async () => {
         req.params.orderId = "67b1f4870377ccbad412899e";
         
         await orderStatusController(req, res);

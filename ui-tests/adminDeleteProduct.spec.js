@@ -122,7 +122,7 @@ test.describe("Admin Delete Product", () => {
       page.locator('.card-body:has-text("Test Product 2")')
     ).toBeVisible();
 
-    // Navigate to Product detail
+    // Navigate to Product detail for cancellation of delete test
     await page.getByRole("button", { name: "deleteproductadmin" }).click();
     await page.getByRole("link", { name: "Dashboard" }).click();
     await page.getByRole("link", { name: "Products" }).click();
@@ -159,7 +159,7 @@ test.describe("Admin Delete Product", () => {
       page.locator('.card-body:has-text("Test Product 2")')
     ).toBeVisible();
 
-    // Navigate to Product detail
+    // Navigate to Product detail that is to be deleted
     await page.getByRole("button", { name: "deleteproductadmin" }).click();
     await page.getByRole("link", { name: "Dashboard" }).click();
     await page.getByRole("link", { name: "Products" }).click();

@@ -2,10 +2,14 @@ import { jest } from "@jest/globals";
 import productModel from "../../models/productModel.js";
 import { productFiltersController } from "../productController.js";
 import { ObjectId } from "mongodb";
+import { PER_PAGE_LIMIT } from "../constants/productConstants.js";
 
-jest.mock("../../models/productModel");
+// Mock the productModel module
+jest.mock("../../models/productModel.js");
+
 describe("Product Filters Controller tests", () => {
   let res, req;
+  let mockChain;
 
   const mockProducts = [
     {
@@ -42,11 +46,26 @@ describe("Product Filters Controller tests", () => {
       send: jest.fn(),
     };
 
-    productModel.find = jest.fn().mockResolvedValue(mockProducts);
+    // Create mock functions for the chained methods
+    mockChain = {
+      select: jest.fn().mockReturnThis(),
+      skip: jest.fn().mockReturnThis(),
+      limit: jest.fn().mockResolvedValue(mockProducts),
+    };
+
+    // Set up the find method to return the mock chain
+    jest.spyOn(productModel, "find").mockImplementation(() => {
+      return mockChain;
+    });
   });
 
   beforeAll(() => {
     jest.resetModules();
+  });
+
+  // Clean up mocks after all tests
+  afterAll(() => {
+    jest.restoreAllMocks();
   });
 
   /**
@@ -77,16 +96,24 @@ describe("Product Filters Controller tests", () => {
         body: {
           checked: ["bc7f29ed898fefd6a5f713fd"], // valid
           radio: [10, 20], // valid
+          page: 1,
         },
       };
 
       await productFiltersController(req, res);
 
-      // Assertions
+      // Assertions for the find arguments
       expect(productModel.find).toHaveBeenCalledWith({
         category: ["bc7f29ed898fefd6a5f713fd"],
         price: { $gte: 10, $lte: 20 },
       });
+
+      // Assertions for the chained methods
+      expect(mockChain.select).toHaveBeenCalledWith("-photo");
+      expect(mockChain.skip).toHaveBeenCalledWith(0);
+      expect(mockChain.limit).toHaveBeenCalledWith(PER_PAGE_LIMIT);
+
+      // Response assertions
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.send).toHaveBeenCalledWith({
         success: true,
@@ -222,7 +249,8 @@ describe("Product Filters Controller tests", () => {
           radio: [10, 20], // valid
         },
       };
-      productModel.find = jest.fn().mockImplementation(() => {
+
+      jest.spyOn(productModel, "find").mockImplementationOnce(() => {
         throw new Error("Filter products error");
       });
 
@@ -232,7 +260,7 @@ describe("Product Filters Controller tests", () => {
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.send).toHaveBeenCalledWith({
         success: false,
-        message: "Error WHile Filtering Products",
+        message: "Error While Filtering Products",
         error: new Error("Filter products error"),
       });
     });

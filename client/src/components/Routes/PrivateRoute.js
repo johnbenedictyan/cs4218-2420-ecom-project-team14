@@ -18,7 +18,9 @@ export default function PrivateRoute() {
       }
 
       try {
-        const { data } = await axios.get("/api/v1/auth/user-auth");
+        const { data } = await axios.get(
+          "http://127.0.0.1:6060/api/v1/auth/user-auth"
+        );
         setState({ loading: false, ok: data.ok });
       } catch (error) {
         console.error("User auth check failed:", error);

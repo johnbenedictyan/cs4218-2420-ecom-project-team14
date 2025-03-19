@@ -20,7 +20,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("/api/v1/auth/login", {
+      const res = await axios.post("http://127.0.0.1:6060/api/v1/auth/login", {
         email,
         password,
       });
@@ -44,8 +44,12 @@ const Login = () => {
         toast.error(res.data.message);
       }
     } catch (error) {
+      if (error.response && error.response.status === 400) {
+        toast.error(error.response?.data?.message);
+      } else {
       console.log(error);
       toast.error("Something went wrong");
+      }
     }
   };
   return (

@@ -7,7 +7,7 @@ import { useCart } from "../context/cart";
 import useCategory from "../hooks/useCategory";
 import "../styles/Header.css";
 
-const Header = ({ searchInput }) => {
+const Header = () => {
   const [auth, setAuth] = useAuth();
   const [cart, setCart] = useCart();
   const categories = useCategory();
@@ -41,7 +41,6 @@ const Header = ({ searchInput }) => {
             🛒 Virtual Vault
           </Link>
           <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
-            {searchInput}
             <li className="nav-item">
               <NavLink to="/" className="nav-link ">
                 Home

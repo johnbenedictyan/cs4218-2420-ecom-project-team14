@@ -93,9 +93,10 @@ describe("Search Product Controller tests", () => {
     // 2. No capital letter
     it("Should fetch associated products given minimum valid input that matches product name or description", async () => {
       req = { params: { keyword: "a" } }; // minimum input of 1 character
-      productModel.find = jest
-        .fn()
-        .mockReturnValue({ select: jest.fn().mockResolvedValue(mockProducts) });
+      productModel.find = jest.fn().mockReturnValue({
+        select: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockResolvedValue(mockProducts),
+      });
 
       await searchProductController(req, res);
 
@@ -113,7 +114,8 @@ describe("Search Product Controller tests", () => {
     it("Should fetch associated products given maximum valid input that matches product name or description", async () => {
       req = { params: { keyword: "a".repeat(100) } }; // maximum input of 100 characters
       productModel.find = jest.fn().mockReturnValue({
-        select: jest.fn().mockResolvedValue([mockProducts[2]]),
+        select: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockResolvedValue([mockProducts[2]]),
       });
 
       await searchProductController(req, res);
@@ -144,7 +146,8 @@ describe("Search Product Controller tests", () => {
     it("Should deal with input appropriately that has one special character", async () => {
       req = { params: { keyword: "caa+" } }; // input with special characters
       productModel.find = jest.fn().mockReturnValue({
-        select: jest.fn().mockResolvedValue([]),
+        select: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockResolvedValue([]),
       });
 
       await searchProductController(req, res);
@@ -167,7 +170,8 @@ describe("Search Product Controller tests", () => {
     it("Should fetch associated products given valid input with one capital letter that matches product name or description, regardless of case", async () => {
       req = { params: { keyword: "F" } }; // input with 1 capital letter
       productModel.find = jest.fn().mockReturnValue({
-        select: jest.fn().mockResolvedValue([mockProducts[0]]),
+        select: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockResolvedValue([mockProducts[0]]),
       });
 
       await searchProductController(req, res);

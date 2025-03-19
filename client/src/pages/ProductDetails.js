@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useCart } from "../context/cart";
 import "../styles/ProductDetailsStyles.css";
-import Layout from "./../components/Layout";
+import toast from "react-hot-toast";
 
 const ProductDetails = () => {
   const { addToCart } = useCart();
@@ -41,9 +41,7 @@ const ProductDetails = () => {
     } catch (error) {
       console.log(error);
       setRelatedProducts([]);
-      //   setDefaultResultOrder(
-      //     "Failed to load similar products. Please try again."
-      //   );
+      toast.error("Failed to load similar products. Please try again.");
     }
   };
 

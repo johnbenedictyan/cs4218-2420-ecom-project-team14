@@ -35,10 +35,10 @@ app.get("/", (req, res) => {
   res.send("<h1>Welcome to ecommerce app</h1>");
 });
 
-//database config
-if (process.env.NODE_ENV !== "test") {
-  const PORT = process.env.PORT || 6060;
+const PORT = process.env.PORT || 6060;
 
+if (process.env.NODE_ENV !== "test") {
+  // There is conflict of port during the integration testing so this line is only used for dev
   app.listen(PORT, () => {
     console.log(
       `Server running on ${process.env.DEV_MODE} mode on ${PORT}`.bgCyan.white

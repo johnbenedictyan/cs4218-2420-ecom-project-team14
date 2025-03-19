@@ -82,8 +82,9 @@ describe("Create Product Controller tests", () => {
    * b. String <= 100 characters product name already exists (invalid)
    * c. Empty/null/missing (invalid)
    * d. String > 100 characters (invalid)
+   * e. String <= 100 characters and slugified product name already exists (invalid)
    *
-   * Classes b, d are tested below, while c can be added on additionally in the future
+   * Classes b, d are tested below, while c, e can be added on additionally in the future
    */
   // Equivalence class tested: field "name" is string > 100 characters (invalid)
   it("Should return 400 error when name field is a string of more than 100 characters", async () => {

@@ -40,51 +40,60 @@ describe('Create Category Backend Integration Testing', () => {
     })
 
     afterAll(async () => {
-        // Disconnecting the connection to database after test has finished
+        // Disconnecting from database after test has finished
         await mongoose.disconnect();
         // Stopping the in memory mongodb server since test has ended
         await mongoInMemoryServer.stop();
     });
 
-    // Check that the user is able to successfully create category with valid category name
-    test('response returns 201 when the admin is able to successfully create category with valid category name', async () => {
+    // Test 1: Check that the admin is able to successfully create category with unused valid category name
+    it('should allow the admin to successfully create category with unused valid category name', async () => {
         const response = await request(app).post('/api/v1/category/create-category')
             .set("Authorization", jwtToken)
             .send({
                 name: "Pikmin Series"
             });
         
+        // Check that the response status code is 201
         expect(response.status).toBe(201);
+        // Check that the message shows that the new category is created
         expect(response.body.message).toBe("new category created");
         expect(response.body.category.name).toBe("Pikmin Series");
     });
 
-    // Check that the user is unable to create category with empty name
-    test('response returns 401 when the admin is trying to create category with empty name', async () => {
+    // Name (Equivalence Partitioning) (There are 4 equivalence classes: Empty name, Non-empty invalid name, Already used valid name, Unused valid name)
+    // Unused valid name is already covered in Test 1
+    // Test 2: Check that the admin is unable to create category with empty name
+    it('should not allow the admin is trying to create category with empty name', async () => {
         const response = await request(app).post('/api/v1/category/create-category')
             .set("Authorization", jwtToken)
             .send({
                 name: ""
             });
 
+        // Check that the response status code is 401
         expect(response.status).toBe(401);
+        // Check that the message shows that the name is required
         expect(response.body.message).toBe("Name is required");
     });
 
-    // Check that the user is unable to create category with name of length greater than 100
-    test('response returns 401 when the admin is trying to create category with name of length 101', async () => {
+    // Test 3: Check that the admin is unable to create category with name of length greater than 100 (Non-empty invalid name)
+    it('should not allow the admin is trying to create category with name of length 101', async () => {
         const response = await request(app).post('/api/v1/category/create-category')
             .set("Authorization", jwtToken)
             .send({
                 name: "Electronics and Toys for Kids: Video Games, Lego, Board Games, Card Games, Action Figures and Puzzles"
             });
         
+        // Check that the response status code is 401
         expect(response.status).toBe(401);
+        // Check that the message shows that the name can only be up to 100 characters long
         expect(response.body.message).toBe("Name of category can only be up to 100 characters long");
     });
 
-    // Check that the user is unable to create category when the category name already exists
-    test('response returns 401 when the admin is trying to create category with name that already exists', async () => {
+    // Test 4: Check that the admin is unable to create category when the category name already exists (Already used valid name)
+    it('should not allow the admin is trying to create category with name that already exists', async () => {
+        // Create new category which is stored in the database (Checked against later during test)
         await new categoryModel({
             name: "Pikmin Series",
             slug: "pikmin-series"
@@ -97,7 +106,9 @@ describe('Create Category Backend Integration Testing', () => {
             name: "Pikmin Series"
         });
 
+        // Check that the response status code is 401
         expect(response.status).toBe(401);
+        // Check that the message shows that the name already exists
         expect(response.body.message).toBe("The name of the category already exists");
     });
 

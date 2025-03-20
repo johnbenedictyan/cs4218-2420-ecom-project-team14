@@ -196,10 +196,7 @@ const HomePage = () => {
                     </button>
                     <button
                       className="btn btn-dark ms-1"
-                      onClick={() => {
-                        addToCart(p.slug);
-                        toast.success("Item Added to cart");
-                      }}
+                      onClick={() => addToCart(p.slug)}
                     >
                       ADD TO CART
                     </button>

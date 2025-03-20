@@ -10,7 +10,7 @@ import Layout from "./../components/Layout";
 
 const CartPage = () => {
   const [auth, setAuth] = useAuth();
-  const { cart, removeFromCart, clearCart } = useCart();
+  const { cart, removeFromCart, clearCart, updateQuantity } = useCart();
   const [clientToken, setClientToken] = useState("");
   const [instance, setInstance] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -129,7 +129,15 @@ const CartPage = () => {
                     </p>
                   </div>
                   <div className="col-md-2">
-                    <select className="form-select">
+                    <select
+                      className="form-select"
+                      onChange={(e) =>
+                        updateQuantity(
+                          p.slug,
+                          parseInt(e.target.value, 10) ?? 1
+                        )
+                      }
+                    >
                       {Array.from({ length: p.inventory }, (_, i) => i + 1).map(
                         (x) => (
                           <option value={x}>{x}</option>

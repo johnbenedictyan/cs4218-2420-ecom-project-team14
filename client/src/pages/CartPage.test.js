@@ -115,7 +115,13 @@ describe("CartPage component", () => {
 
   // Check if empty cart renders (BVA: when cart is empty)
   it("displays empty cart message when cart is empty", async () => {
-    useCart.mockReturnValue([[], mockSetCart]);
+    useCart.mockReturnValue({
+      cart: [],
+      addToCart: jest.fn(),
+      removeFromCart: jest.fn(),
+      updateQuantity: jest.fn(),
+      clearCart: jest.fn(),
+    });
     await act(async () => {
       render(<CartPage />);
     });
@@ -123,7 +129,14 @@ describe("CartPage component", () => {
   });
 
   it("renders cart items correctly", async () => {
-    useCart.mockReturnValue([mockCart, mockSetCart]);
+    useCart.mockReturnValue({
+      cart: mockCart,
+      addToCart: jest.fn(),
+      removeFromCart: jest.fn(),
+      updateQuantity: jest.fn(),
+      clearCart: jest.fn(),
+    });
+
     await act(async () => {
       render(<CartPage />);
     });
@@ -136,7 +149,14 @@ describe("CartPage component", () => {
   });
 
   it("makes API call to get token on mount", async () => {
-    useCart.mockReturnValue([mockCart, mockSetCart]);
+    useCart.mockReturnValue({
+      cart: mockCart,
+      addToCart: jest.fn(),
+      removeFromCart: jest.fn(),
+      updateQuantity: jest.fn(),
+      clearCart: jest.fn(),
+    });
+
     await act(async () => {
       render(<CartPage />);
     });
@@ -160,7 +180,14 @@ describe("CartPage component", () => {
           description: "Test description 2",
         },
       ];
-      useCart.mockReturnValue([cartWithTwoItems, mockSetCart]);
+      useCart.mockReturnValue({
+        cart: cartWithTwoItems,
+        addToCart: jest.fn(),
+        removeFromCart: jest.fn(),
+        updateQuantity: jest.fn(),
+        clearCart: jest.fn(),
+      });
+
       render(<CartPage />);
       const removeButton = screen.getAllByText("Remove")[0];
       await act(async () => {
@@ -187,7 +214,14 @@ describe("CartPage component", () => {
     };
 
     it("successfully processes payment", async () => {
-      useCart.mockReturnValue([mockCart, mockSetCart]);
+      useCart.mockReturnValue({
+        cart: mockCart,
+        addToCart: jest.fn(),
+        removeFromCart: jest.fn(),
+        updateQuantity: jest.fn(),
+        clearCart: jest.fn(),
+      });
+
       render(<CartPage />);
 
       await waitForDropIn();
@@ -220,7 +254,14 @@ describe("CartPage component", () => {
 
     it("handles payment error", async () => {
       axios.post.mockRejectedValueOnce(new Error("Payment failed"));
-      useCart.mockReturnValue([mockCart, mockSetCart]);
+      useCart.mockReturnValue({
+        cart: mockCart,
+        addToCart: jest.fn(),
+        removeFromCart: jest.fn(),
+        updateQuantity: jest.fn(),
+        clearCart: jest.fn(),
+      });
+
       render(<CartPage />);
       const consoleSpy = jest.spyOn(console, "log");
       await waitForDropIn();
@@ -251,7 +292,14 @@ describe("CartPage component", () => {
         resolvePaymentMethod = resolve;
       });
       mockRequestPaymentMethod.mockReturnValueOnce(paymentPromise);
-      useCart.mockReturnValue([mockCart, mockSetCart]);
+      useCart.mockReturnValue({
+        cart: mockCart,
+        addToCart: jest.fn(),
+        removeFromCart: jest.fn(),
+        updateQuantity: jest.fn(),
+        clearCart: jest.fn(),
+      });
+
       await act(async () => {
         render(<CartPage />);
       });

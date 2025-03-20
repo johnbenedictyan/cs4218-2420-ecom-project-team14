@@ -1,25 +1,18 @@
-import React from "react";
-import { screen, render, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import HomePage from "./HomePage";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import axios from "axios";
+import React from "react";
 import toast from "react-hot-toast";
+import { useCart } from "../context/cart";
+import HomePage from "./HomePage";
 
 // Mock modules
 jest.mock("axios");
 jest.mock("react-hot-toast");
 
-jest.mock("react-router-dom", () => ({
-  useNavigate: () => jest.fn(),
-}));
+jest.mock("react-router-dom", () => ({ useNavigate: jest.fn() }));
 
-jest.mock("../context/cart", () => ({
-  useCart: () => {
-    const cart = [];
-    const setCart = jest.fn();
-    return [cart, setCart];
-  },
-}));
+jest.mock("../context/cart", () => ({ useCart: jest.fn() }));
 
 jest.mock("../components/Layout", () => {
   return ({ children, title }) => (
@@ -33,10 +26,22 @@ jest.mock("react-icons/ai", () => ({
   AiOutlineReload: () => <span>ReloadIcon</span>,
 }));
 
+const mockCart = {};
+const mockAddToCart = jest.fn();
+const mockRemoveFromCart = jest.fn();
+const mockUpdateQuantity = jest.fn();
+const mockClearCart = jest.fn();
+
 describe("HomePage component", () => {
   beforeEach(() => {
-    localStorage.clear();
     jest.clearAllMocks();
+    useCart.mockReturnValue({
+      cart: mockCart,
+      addToCart: mockAddToCart,
+      removeFromCart: mockRemoveFromCart,
+      updateQuantity: mockUpdateQuantity,
+      clearCart: mockClearCart,
+    });
   });
 
   // UI Navigation tests
@@ -573,12 +578,14 @@ describe("HomePage component", () => {
       render(<HomePage />);
 
       await waitFor(() => {
-        expect(screen.getByText("ADD TO CART")).toBeInTheDocument();
+        expect(
+          screen.getByRole("button", { name: "ADD TO CART" })
+        ).toBeInTheDocument();
       });
 
-      fireEvent.click(screen.getByText("ADD TO CART"));
+      fireEvent.click(screen.getByRole("button", { name: "ADD TO CART" }));
 
-      expect(localStorage.getItem("cart")).toBeTruthy();
+      expect(mockAddToCart).toHaveBeenCalledWith("test-product");
     });
   });
 

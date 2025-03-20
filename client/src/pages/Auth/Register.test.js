@@ -15,7 +15,13 @@ jest.mock("../../context/auth", () => ({
 }));
 
 jest.mock("../../context/cart", () => ({
-  useCart: jest.fn(() => [null, jest.fn()]), // Mock useCart hook to return null state and a mock function
+  useCart: jest.fn(() => ({
+    cart: {},
+    addToCart: jest.fn(),
+    removeFromCart: jest.fn(),
+    updateQuantity: jest.fn(),
+    clearCart: jest.fn(),
+  })), // Mock useCart hook to return null state and a mock function
 }));
 
 jest.mock("../../context/search", () => ({

@@ -39,7 +39,7 @@ describe("Search Component", () => {
     // Setup default mock returns
     useAuth.mockReturnValue([{ user: null, token: "" }, jest.fn()]);
     useCart.mockReturnValue({
-      cart: [],
+      cart: {},
       addToCart: jest.fn(),
       removeFromCart: jest.fn(),
       updateQuantity: jest.fn(),
@@ -97,7 +97,7 @@ describe("Search Component", () => {
     expect(screen.getByText("product 1 description")).toBeInTheDocument();
     expect(screen.getByText("$ 10")).toBeInTheDocument();
     expect(screen.getByText("More Details")).toBeInTheDocument();
-    expect(screen.getByText("ADD TO CART")).toBeInTheDocument();
+    expect(screen.getByRole("button", {name: "ADD TO CART"})).toBeInTheDocument();
 
     // The buttons shouldn be visible when there are no results
     expect(screen.queryByText("More Details")).toBeInTheDocument();

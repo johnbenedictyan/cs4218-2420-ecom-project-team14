@@ -22,18 +22,19 @@ const CartPage = () => {
       Object.keys(cart).map((productSlug) =>
         axios
           .get(`/api/v1/product/get-product/${productSlug}`)
-          .then((res) => ({
-            ...res.data.product,
-            inventory: res.data.product.quantity,
-            quantity: cart[productSlug].quantity,
-            subtotal: res.data.product.price * cart[productSlug].quantity,
-          }))
+          .then((res) => {
+            return {
+              ...res.data.product,
+              inventory: res.data.product.quantity,
+              quantity: cart[productSlug].quantity,
+              subtotal: res.data.product.price * cart[productSlug].quantity,
+            };
+          })
           .catch((err) => {
             console.error(err);
           })
       )
     ).then((cartItems) => {
-      console.log(cartItems);
       setCartItems(cartItems);
     });
   }, [cart]);
@@ -42,16 +43,16 @@ const CartPage = () => {
   const getToken = async () => {
     try {
       const { data } = await axios.get("/api/v1/product/braintree/token");
-      setClientToken(data?.clientToken);
+      setClientToken(data.clientToken ?? "");
     } catch (error) {
       console.log(error);
     }
   };
   useEffect(() => {
-    if (auth?.token) {
+    if (auth && auth.token) {
       getToken();
     }
-  }, [auth?.token]);
+  }, [auth]);
 
   // check inventory
   const checkInventory = async () => {};
@@ -61,7 +62,7 @@ const CartPage = () => {
     try {
       setLoading(true);
       const { nonce } = await instance.requestPaymentMethod();
-      const { data } = await axios.post("/api/v1/product/braintree/payment", {
+      await axios.post("/api/v1/product/braintree/payment", {
         nonce,
         cart,
       });
@@ -206,9 +207,7 @@ const CartPage = () => {
                 </div>
               )}
               <div className="mt-2">
-                {!clientToken || !auth?.token || !cart?.length ? (
-                  ""
-                ) : (
+                {clientToken && auth.token && cartItems.length && (
                   <>
                     <DropIn
                       options={{

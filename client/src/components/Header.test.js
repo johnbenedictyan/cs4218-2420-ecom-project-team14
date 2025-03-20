@@ -41,7 +41,13 @@ describe("Header Component", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    useCart.mockReturnValue([mockCart, mockSetCart]);
+    useCart.mockReturnValue({
+      cart: mockCart,
+      addToCart: jest.fn(),
+      removeFromCart: jest.fn(),
+      updateQuantity: jest.fn(),
+      clearCart: jest.fn(),
+    });
   });
 
   it("renders correctly", () => {

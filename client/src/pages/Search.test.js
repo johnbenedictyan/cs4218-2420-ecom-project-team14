@@ -38,7 +38,13 @@ describe("Search Component", () => {
   beforeEach(() => {
     // Setup default mock returns
     useAuth.mockReturnValue([{ user: null, token: "" }, jest.fn()]);
-    useCart.mockReturnValue([[], jest.fn()]);
+    useCart.mockReturnValue({
+      cart: [],
+      addToCart: jest.fn(),
+      removeFromCart: jest.fn(),
+      updateQuantity: jest.fn(),
+      clearCart: jest.fn(),
+    });
   });
 
   afterEach(() => {
@@ -52,18 +58,17 @@ describe("Search Component", () => {
 
   // Helper function to render with all required context providers
   const renderWithProviders = (component) => {
-    return render(
-      <BrowserRouter>
-        {component}
-      </BrowserRouter>
-    );
+    return render(<BrowserRouter>{component}</BrowserRouter>);
   };
 
   it("renders 'No Products Found' when results array is empty (BVA: length=0)", () => {
     mockUseSearch({ results: [] });
     renderWithProviders(<Search />);
 
-    expect(screen.getByTestId("mock-layout")).toHaveAttribute("data-title", "Search results");
+    expect(screen.getByTestId("mock-layout")).toHaveAttribute(
+      "data-title",
+      "Search results"
+    );
     expect(screen.getByText("Search Results")).toBeInTheDocument();
     expect(screen.getByText("No Products Found")).toBeInTheDocument();
     // The buttons shouldn't be visible when there are no results
@@ -136,13 +141,13 @@ describe("Search Component", () => {
   });
 
   it("handles short description (less than 30 characters) by displaying all characters", () => {
-    const shortDesc = "Lorem ipsum dolor sit amet."
+    const shortDesc = "Lorem ipsum dolor sit amet.";
     mockUseSearch({
       results: [
         {
           _id: "pShort",
           name: "ShortDesc Product",
-          description: shortDesc, 
+          description: shortDesc,
           price: 99,
         },
       ],
@@ -153,30 +158,29 @@ describe("Search Component", () => {
   });
 
   it("handles long description by displaying only first 30 characters", () => {
-    const longDesc = 
-    `Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-    Sed facilisis velit non massa luctus, quis elementum sapien semper. 
-    Curabitur tristique fringilla risus, sit amet porttitor felis pharetra vel. 
-    Fusce eget suscipit augue. Sed laoreet a orci ut porta. 
-    Etiam accumsan augue a mi maximus gravida tempor non nisl. Lorem ipsum dolor sit amet, 
-    consectetur adipiscing elit. Pellentesque a augue in tellus sollicitudin blandit. Nam 
-    sollicitudin libero et posuere placerat. Curabitur sit amet diam eu ligula fermentum pulvinar non mattis urna. 
-    Maecenas mattis convallis dictum. Vestibulum 
+    const longDesc = `Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+    Sed facilisis velit non massa luctus, quis elementum sapien semper.
+    Curabitur tristique fringilla risus, sit amet porttitor felis pharetra vel.
+    Fusce eget suscipit augue. Sed laoreet a orci ut porta.
+    Etiam accumsan augue a mi maximus gravida tempor non nisl. Lorem ipsum dolor sit amet,
+    consectetur adipiscing elit. Pellentesque a augue in tellus sollicitudin blandit. Nam
+    sollicitudin libero et posuere placerat. Curabitur sit amet diam eu ligula fermentum pulvinar non mattis urna.
+    Maecenas mattis convallis dictum. Vestibulum
     ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Pellentesque eleifend quam.
-    `
+    `;
     mockUseSearch({
       results: [
         {
           _id: "pLong",
           name: "LongDesc Product",
-          description: longDesc, 
+          description: longDesc,
           price: 99,
         },
       ],
     });
     renderWithProviders(<Search />);
     expect(screen.getByText("Found 1")).toBeInTheDocument();
-    const expectedSubstring = longDesc.substring(0, 30) + "..."; 
+    const expectedSubstring = longDesc.substring(0, 30) + "...";
     expect(screen.getByText(expectedSubstring)).toBeInTheDocument();
   });
 
@@ -184,7 +188,7 @@ describe("Search Component", () => {
     // For example, if useSearch returns null
     mockUseSearch(null);
     renderWithProviders(<Search />);
-    
+
     // Check that we see "Found undefined" so we know it handles missing data gracefully
     expect(screen.getByText("Found undefined")).toBeInTheDocument();
   });
@@ -218,7 +222,9 @@ describe("Search Component", () => {
     expect(screen.getByText("$ 50")).toBeInTheDocument();
 
     // Since there is no description, it should render as an empty string.
-    const descriptionElement = renderedSearch.container.querySelector(".card-body .card-text");
+    const descriptionElement = renderedSearch.container.querySelector(
+      ".card-body .card-text"
+    );
     expect(descriptionElement).toBeInTheDocument();
     expect(descriptionElement.textContent.trim()).toBe("");
   });

@@ -76,7 +76,7 @@ const ForgetPassword = () => {
             }
         } catch (error) {
             if (error.response && (error.response.status === 400 || error.response.status === 404)) {
-                toast.error(error.response?.data?.message);
+                toast.error(error.response.data?.message ?? "Error encountered when resetting password");
             } else {
                 console.log(error);
                 toast.error("An error has been encountered");

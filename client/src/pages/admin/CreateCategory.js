@@ -27,10 +27,10 @@ const CreateCategory = () => {
       }
     } catch (error) {
       if (error.response && error.response.status === 401) {
-        toast.error(error.response?.data?.message);
+        toast.error(error.response.data?.message ?? "Error encountered when creating category");
       } else {
         console.log(error);
-        toast.error("somthing went wrong in input form");
+        toast.error("Something went wrong in input form");
       }
     }
   };
@@ -73,10 +73,10 @@ const CreateCategory = () => {
       }
     } catch (error) {
       if (error.response && error.response.status === 401) {
-        toast.error(error.response?.data?.message);
+        toast.error(error.response.data?.message ?? "Error encountered when updating category");
       } else {
         console.log("Error in API call:", error);
-        toast.error("Somtihing went wrong");
+        toast.error("Something went wrong");
       }
     }
   };
@@ -94,7 +94,7 @@ const CreateCategory = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error("Somtihing went wrong");
+      toast.error("Something went wrong");
     }
   };
   return (

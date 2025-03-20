@@ -87,7 +87,7 @@ const Profile = () => {
       }
     } catch (error) {
       if (error.response && error.response.status === 400) {
-        toast.error(error.response?.data?.message);
+        toast.error(error.response.data?.message ?? "Error encountered when updating profile");
       } else {
         console.log(error);
         toast.error("Something went wrong");
@@ -112,7 +112,7 @@ const Profile = () => {
                     onChange={(e) => setName(e.target.value)}
                     className="form-control"
                     id="exampleInputEmail1"
-                    placeholder="Enter Your Name"
+                    placeholder="Enter Your Name (Required)"
                     required
                     autoFocus
                   />
@@ -154,7 +154,7 @@ const Profile = () => {
                     className="form-control"
                     id="exampleInputEmail1"
                     required
-                    placeholder="Enter Your Phone"
+                    placeholder="Enter Your Phone (Required)"
                   />
                   {errors.phone && (
                   <p style={{ color: "red" }}>
@@ -169,7 +169,7 @@ const Profile = () => {
                     className="form-control"
                     id="exampleInputEmail1"
                     required
-                    placeholder="Enter Your Address"
+                    placeholder="Enter Your Address (Required)"
                   />
                   {errors.address && (
                   <p style={{ color: "red" }}>

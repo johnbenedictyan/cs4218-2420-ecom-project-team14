@@ -47,7 +47,7 @@ const Login = () => {
       }
     } catch (error) {
       if (error.response && error.response.status === 400) {
-        toast.error(error.response?.data?.message);
+        toast.error(error.response.data?.message ?? "Error encountered when logging in");
       } else {
       console.log(error);
       toast.error("Something went wrong");

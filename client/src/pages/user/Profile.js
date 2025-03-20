@@ -63,12 +63,17 @@ const Profile = () => {
         return;
     }
 
+    const trimmedName = name.trim();
+    const trimmedPassword = password.trim();
+    const trimmedPhone = phone.trim();
+    const trimmedAddress = address.trim();
+
     try {
       const { data } = await axios.put("/api/v1/auth/profile", {
-        name,
-        password,
-        phone,
-        address,
+        name: trimmedName,
+        password: trimmedPassword,
+        phone: trimmedPhone,
+        address: trimmedAddress,
       });
       if (data?.error) {
         toast.error(data?.error);

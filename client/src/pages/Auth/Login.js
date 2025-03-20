@@ -19,10 +19,12 @@ const Login = () => {
   // form function
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
     try {
       const res = await axios.post("http://127.0.0.1:6060/api/v1/auth/login", {
-        email,
-        password,
+        email: trimmedEmail,
+        password: trimmedPassword,
       });
       if (res && res.data.success) {
         toast.success(res.data && res.data.message, {

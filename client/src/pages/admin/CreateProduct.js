@@ -40,8 +40,8 @@ const CreateProduct = () => {
     e.preventDefault();
     try {
       const productData = new FormData();
-      productData.append("name", name);
-      productData.append("description", description);
+      productData.append("name", name.trim());
+      productData.append("description", description.trim());
       productData.append("price", price);
       productData.append("quantity", quantity);
       productData.append("photo", photo);
@@ -58,8 +58,12 @@ const CreateProduct = () => {
         navigate("/dashboard/admin/products");
       }
     } catch (error) {
-      console.log(error);
-      toast.error("something went wrong");
+      if (error.response && error.response.status === 400) {
+        toast.error(error.response?.data?.message);
+      } else {
+        console.log(error);
+        toast.error("something went wrong");
+      }
     }
   };
 

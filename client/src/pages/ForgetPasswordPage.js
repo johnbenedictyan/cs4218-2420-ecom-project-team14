@@ -57,9 +57,16 @@ const ForgetPassword = () => {
             toast.error("There are invalid fields in the Forget Password Form")
             return;
         }
+
+        const trimmedEmail = email.trim();
+        const trimmedNewPassword = newPassword.trim();
+        const trimmedAnswer = answer.trim();
+
         try {
             const response = await axios.post("/api/v1/auth/forgot-password", {
-                email, newPassword, answer
+                email: trimmedEmail, 
+                newPassword: trimmedNewPassword, 
+                answer: trimmedAnswer
             });
             if (response && response.data.success) {
                 toast.success("Password has been successfully resetted");
@@ -68,8 +75,12 @@ const ForgetPassword = () => {
                 toast.error(response.data.message);
             }
         } catch (error) {
-            console.log(error);
-            toast.error("An error has been encountered");
+            if (error.response && (error.response.status === 400 || error.response.status === 404)) {
+                toast.error(error.response?.data?.message);
+            } else {
+                console.log(error);
+                toast.error("An error has been encountered");
+            }
         }
     };
 

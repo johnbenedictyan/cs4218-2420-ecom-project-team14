@@ -98,7 +98,20 @@ describe("Get All Categories Integration Tests", () => {
     });
 
     // Test case 3: Get categories (boundary -> one category)
-    it("should return one when a single category exists", async () => {});
+    it("should return one when a single category exists", async () => {
+      // Delete all categories
+      await categoryModel.deleteMany({});
+      await categoryModel.create({
+        name: "Test Category",
+        slug: "test-category",
+      });
+
+      const response = await request(app).get(getAllCategoryPath).expect(200);
+      expect(response.body.success).toBe(true);
+      expect(response.body.message).toBe("All Categories List");
+      expect(response.body.category.length).toBe(1);
+      expect(response.body.category[0].name).toBe("Test Category");
+    });
 
     // Test case 4: Get categories (boundary - 100 categories for this test case but could be a few 100s practically)
     it("should return correct count with multiple categories", async () => {

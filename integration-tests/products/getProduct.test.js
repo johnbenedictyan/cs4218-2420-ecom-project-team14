@@ -1,8 +1,8 @@
 import { ObjectId } from "mongodb";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
+import productModel from "../../models/productModel.js";
 import app from "../../server.js";
-import productModel from "../models/productModel.js";
 
 describe("Get Product Integration Tests", () => {
   let mongoMemServer;

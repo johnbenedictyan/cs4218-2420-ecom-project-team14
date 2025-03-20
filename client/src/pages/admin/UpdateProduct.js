@@ -30,7 +30,6 @@ const UpdateProduct = () => {
       setId(data.product._id);
       setDescription(data.product.description);
       setPrice(data.product.price);
-      setPrice(data.product.price);
       setQuantity(data.product.quantity);
       setShipping(data.product.shipping);
       setCategory(data.product.category._id);
@@ -51,7 +50,7 @@ const UpdateProduct = () => {
       }
     } catch (error) {
       console.log(error);
-      toast.error("Something wwent wrong in getting catgeory");
+      toast.error("Something went wrong in getting category");
     }
   };
 
@@ -64,13 +63,13 @@ const UpdateProduct = () => {
     e.preventDefault();
     try {
       const productData = new FormData();
-      productData.append("name", name);
-      productData.append("description", description);
+      productData.append("name", name.trim());
+      productData.append("description", description.trim());
       productData.append("price", price);
       productData.append("quantity", quantity);
       photo && productData.append("photo", photo);
       productData.append("category", category);
-      productData.append('shipping', shipping);
+      productData.append("shipping", shipping);
       const { data } = await axios.put(
         `/api/v1/product/update-product/${id}`,
         productData
@@ -82,23 +81,57 @@ const UpdateProduct = () => {
         toast.error(data?.message || "Failed to update product");
       }
     } catch (error) {
-      console.log(error);
-      toast.error("something went wrong");
+      if (error.response && error.response.status === 400) {
+        toast.error(error.response.data?.message ?? "Error encountered when updating product");
+      } else {
+        console.log(error);
+        toast.error("something went wrong");
+      }
     }
   };
 
   //delete a product
   const handleDelete = async () => {
     try {
-      let answer = window.prompt("Are You Sure want to delete this product ? ");
-      if (!answer) return;
-      const { data } = await axios.delete(
-        `/api/v1/product/delete-product/${id}`
+      let answer = window.prompt(
+        "Are You Sure want to delete this product ? Type 'yes' to confirm"
       );
-      toast.success("Product DEleted Succfully");
+      if (!answer || answer.toLowerCase() !== "yes") {
+        return;
+      }
+      if (!id) {
+        toast.error("Cannot delete product: ID is missing");
+        return;
+      }
+
+      // Get the product ID directly if it's not already set
+      if (!id && params.slug) {
+        try {
+          const { data } = await axios.get(
+            `/api/v1/product/get-product/${params.slug}`
+          );
+          if (data?.product?._id) {
+            setId(data.product._id);
+          }
+        } catch (fetchError) {
+          console.error("Error fetching product ID:", fetchError);
+          toast.error("Cannot delete product: failed to fetch ID");
+        }
+      }
+
+      // Double-check we have an ID before proceeding
+      if (!id) {
+        toast.error("Cannot delete: Product ID still missing after retry");
+        return;
+      }
+
+      const deleteUrl = `/api/v1/product/delete-product/${id}`;
+
+      const { data } = await axios.delete(deleteUrl);
+      toast.success("Product Deleted Successfully");
       navigate("/dashboard/admin/products");
     } catch (error) {
-      console.log(error);
+      console.log("Delete error:", error);
       toast.error("Something went wrong");
     }
   };
@@ -205,6 +238,7 @@ const UpdateProduct = () => {
                   placeholder="Select Shipping "
                   size="large"
                   showSearch
+                  value={shipping}
                   className="form-select mb-3"
                   onChange={(value) => {
                     setShipping(value);
@@ -220,9 +254,11 @@ const UpdateProduct = () => {
                 </button>
               </div>
               <div className="mb-3">
-                <button className="btn btn-danger" onClick={handleDelete}>
-                  DELETE PRODUCT
-                </button>
+                {id && (
+                  <button className="btn btn-danger" onClick={handleDelete}>
+                    DELETE PRODUCT
+                  </button>
+                )}
               </div>
             </div>
           </div>

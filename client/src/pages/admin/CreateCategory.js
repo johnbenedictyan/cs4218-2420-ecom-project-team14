@@ -14,19 +14,24 @@ const CreateCategory = () => {
   //handle Form
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const trimmedName = name.trim();
     try {
       const { data } = await axios.post("/api/v1/category/create-category", {
-        name,
+        name: trimmedName,
       });
       if (data?.success) {
-        toast.success(`${name} is created`);
+        toast.success(`${trimmedName} is created`);
         getAllCategory();
       } else {
         toast.error(data.message);
       }
     } catch (error) {
-      console.log(error);
-      toast.error("somthing went wrong in input form");
+      if (error.response && error.response.status === 401) {
+        toast.error(error.response.data?.message ?? "Error encountered when creating category");
+      } else {
+        console.log(error);
+        toast.error("Something went wrong in input form");
+      }
     }
   };
 
@@ -50,14 +55,15 @@ const CreateCategory = () => {
   //update category
   const handleUpdate = async (e) => {
     e.preventDefault();
+    const trimmedUpdatedName = updatedName.trim();
     try {
       const { data } = await axios.put(
         `/api/v1/category/update-category/${selected._id}`,
-        { name: updatedName }
+        { name: trimmedUpdatedName }
       );
       if (data.success) {
         console.log("API called successfully!");
-        toast.success(`${updatedName} is updated`);
+        toast.success(`${trimmedUpdatedName} is updated`);
         setSelected(null);
         setUpdatedName("");
         setVisible(false);
@@ -66,8 +72,12 @@ const CreateCategory = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      console.log("Error in API call:", error);
-      toast.error("Somtihing went wrong");
+      if (error.response && error.response.status === 401) {
+        toast.error(error.response.data?.message ?? "Error encountered when updating category");
+      } else {
+        console.log("Error in API call:", error);
+        toast.error("Something went wrong");
+      }
     }
   };
   //delete category
@@ -84,7 +94,7 @@ const CreateCategory = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error("Somtihing went wrong");
+      toast.error("Something went wrong");
     }
   };
   return (

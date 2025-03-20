@@ -9,8 +9,6 @@ jest.mock("react-router-dom", () => ({
   useLocation: jest.fn(),
 }));
 
-jest.mock("../context/search", () => ({ useSearch: jest.fn() }));
-
 describe("Spinner Component", () => {
   const mockNavigate = jest.fn();
   const mockLocation = { pathname: "/current-path" };

@@ -319,9 +319,7 @@ describe("Create Product Controller tests", () => {
     // Assertions
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send.mock.lastCall[0].success).toBe(false);
-    expect(res.send.mock.lastCall[0].message).toBe(
-      "Shipping must either take on values 0 or 1"
-    );
+    expect(res.send.mock.lastCall[0].message).toBe("Shipping is Required");
   });
 
   /**
@@ -354,7 +352,7 @@ describe("Create Product Controller tests", () => {
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send.mock.lastCall[0].success).toBe(false);
     expect(res.send.mock.lastCall[0].message).toBe(
-      "photo is Required and should be less then 1mb"
+      "Photo should be less then 1mb"
     );
   });
 

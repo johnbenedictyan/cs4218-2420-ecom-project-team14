@@ -50,10 +50,14 @@ export const createProductController = async (req, res) => {
         return res
           .status(400)
           .send({ success: false, message: "Quantity is Required" });
+      case !shipping:
+        return res
+          .status(400)
+          .send({ success: false, message: "Shipping is Required" });
       case photo && photo.size > 1000000:
         return res.status(400).send({
           success: false,
-          message: "photo is Required and should be less then 1mb",
+          message: "Photo should be less then 1mb",
         });
     }
 
@@ -394,6 +398,37 @@ export const updateProductController = async (req, res) => {
       });
     }
 
+    // Find the current un-updated product
+    const oldProduct = await productModel.findById(req.params.pid);
+
+    // Find all products with the same name (case-insensitive)
+    const existingProduct = await productModel.findOne({
+      name: { $regex: new RegExp(`^${name}$`, "i") },
+    });
+
+    // Return error if there is a change in name and another product already has this name
+    // No error returned if no change in product name (oldName === name)
+    if (oldProduct.name !== name && existingProduct) {
+      return res.status(400).send({
+        success: false,
+        message: "Another product already has this name",
+      });
+    }
+
+    // Do a case-insensitive check that no other product exists with the same slug
+    const productSlug = slugify(name);
+    const productWithSameSlug = await productModel.findOne({
+      slug: { $regex: new RegExp(`^${productSlug}$`, "i") },
+    });
+    // Return error if there is a change in name (and thus slug) and another product already has this corresponding slug
+    // No error returned if no change in product name, as that implies no change in slug (means slug is valid)
+    if (oldProduct.name !== name && productWithSameSlug) {
+      return res.status(400).send({
+        success: false,
+        message: `Product with this name format or slug already exists: ${productSlug}`,
+      });
+    }
+
     // Truncate price to 2 decimal places
     const priceTruncated = parseFloat(price).toFixed(2);
 
@@ -533,7 +568,7 @@ export const productListController = async (req, res) => {
 // search product
 export const searchProductController = async (req, res) => {
   try {
-    const { keyword } = req.params;
+    const { keyword, page = 1 } = req.params;
     if (!keyword || keyword.trim().length === 0) {
       return res
         .status(400)
@@ -547,6 +582,8 @@ export const searchProductController = async (req, res) => {
         .json({ success: false, message: "Keyword is too long" });
     }
 
+    const pageNum = Math.max(parseInt(page, 10) || 1, 1);
+
     // Prevents regex injection attacks: Prefix special characters with "\"
     const safeKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -557,7 +594,11 @@ export const searchProductController = async (req, res) => {
           { description: { $regex: safeKeyword, $options: "i" } },
         ],
       })
-      .select("-photo");
+      .select("-photo")
+      .sort({ createdAt: -1 })
+      .skip((pageNum - 1) * PER_PAGE_LIMIT)
+      .limit(PER_PAGE_LIMIT);
+
     res.status(200).json({ success: true, results });
   } catch (error) {
     console.log(error);
@@ -670,6 +711,8 @@ export const brainTreePaymentController = async (req, res) => {
     cart.map((i) => {
       total += i.price;
     });
+    // Truncate price to 2dp
+    total = total.toFixed(2);
     let newTransaction = gateway.transaction.sale(
       {
         amount: total,
@@ -680,11 +723,38 @@ export const brainTreePaymentController = async (req, res) => {
       },
       function (error, result) {
         if (result) {
-          const order = new orderModel({
-            products: cart,
-            payment: result,
-            buyer: req.user._id,
-          }).save();
+          if (result.success) {
+            // Create order with processing order status
+            const order = new orderModel({
+              products: cart,
+              payment: result,
+              buyer: req.user._id,
+              status: "Processing"
+            }).save();
+
+            const productCount = new Map();
+            // Getting the quantity of each product in the order (To avoid making too many API calls)
+            cart.forEach((product) => {
+              if (productCount.get(product._id)) {
+                productCount.set(product._id, productCount.get(product._id) + 1);
+              } else {
+                productCount.set(product._id, 1);
+              }
+            });
+            
+            // Decrementing product count for each product
+            productCount.forEach((value, key) => {
+              productModel.findByIdAndUpdate(key, 
+                {$inc: {quantity: -value}}
+              ).exec();
+            });
+          } else {
+            const order = new orderModel({
+              products: cart,
+              payment: result,
+              buyer: req.user._id
+            }).save();
+          }
           res.json({ ok: true });
         } else {
           res.status(500).send(error);

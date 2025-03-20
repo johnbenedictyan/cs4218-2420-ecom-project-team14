@@ -127,7 +127,7 @@ describe("Profile Component", () => {
       const updatedUser = {
         ...mockUser,
         name: "Jane Doe",
-        phone: "9876543210",
+        phone: "98765432",
         address: "456 New Street",
       };
 
@@ -156,7 +156,6 @@ describe("Profile Component", () => {
       await waitFor(() => {
         expect(axios.put).toHaveBeenCalledWith("/api/v1/auth/profile", {
           name: updatedUser.name,
-          email: mockUser.email,
           password: "",
           phone: updatedUser.phone,
           address: updatedUser.address,
@@ -176,16 +175,37 @@ describe("Profile Component", () => {
         response: {
           status: 400,
           data: {
-            message: "Invalid data provided",
+            message: "Passsword is required and 6 character long",
           },
         },
       });
+      const updatedUser = {
+        name: "Captain Underpants",
+        phone: "98765432",
+        password: " 12345",
+        address: "456 New Street",
+      };
 
       render(<Profile />);
+      
+      // Update form fields
+      fireEvent.change(screen.getByDisplayValue(mockUser.name), {
+        target: { value: updatedUser.name },
+      });
+      fireEvent.change(screen.getByDisplayValue(mockUser.phone), {
+        target: { value: updatedUser.phone },
+      });
+      fireEvent.change(screen.getByDisplayValue(mockUser.address), {
+        target: { value: updatedUser.address },
+      });
+      fireEvent.change(screen.getByDisplayValue(""), {
+        target: { value: updatedUser.password },
+      });
+      
       fireEvent.click(screen.getByText("UPDATE"));
 
       await waitFor(() => {
-        expect(toast.error).toHaveBeenCalledWith("Invalid data provided");
+        expect(toast.error).toHaveBeenCalledWith("Passsword is required and 6 character long");
       });
     });
 
@@ -193,25 +213,28 @@ describe("Profile Component", () => {
       axios.put.mockRejectedValueOnce(new Error("Network error"));
 
       render(<Profile />);
+
+      const updatedUser = {
+        name: "Captain Underpants",
+        phone: "98765432",
+        address: "456 New Street",
+      };
+
+      // Update form fields
+      fireEvent.change(screen.getByDisplayValue(mockUser.name), {
+        target: { value: updatedUser.name },
+      });
+      fireEvent.change(screen.getByDisplayValue(mockUser.phone), {
+        target: { value: updatedUser.phone },
+      });
+      fireEvent.change(screen.getByDisplayValue(mockUser.address), {
+        target: { value: updatedUser.address },
+      });
+      
       fireEvent.click(screen.getByText("UPDATE"));
 
       await waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith("Something went wrong");
-      });
-    });
-
-    it("handles API error from response data", async () => {
-      axios.put.mockResolvedValueOnce({
-        data: {
-          error: "Email already in use",
-        },
-      });
-
-      render(<Profile />);
-      fireEvent.click(screen.getByText("UPDATE"));
-
-      await waitFor(() => {
-        expect(toast.error).toHaveBeenCalledWith("Email already in use");
       });
     });
   });

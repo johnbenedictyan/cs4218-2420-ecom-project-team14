@@ -23,10 +23,6 @@ const Search = () => {
       // Reset key states everytime search button is clicked
       setPage(1);
       setNoMorePage(false);
-      setValues({
-        keyword: "",
-        results: [],
-      });
 
       // Validate keyword cannot be empty
       if (values.keyword.trim().length === 0) {
@@ -80,10 +76,10 @@ const Search = () => {
       // Relevant key states are updated
       setPage(newPage);
       // Adds new searched products to the results array
-      setValues({
-        ...values,
-        results: [...values.results, ...(data?.results || [])],
-      });
+      setValues((prev) => ({
+        ...prev,
+        results: [...prev.results, ...(data?.results || [])],
+      }));
     } catch (error) {
       console.log(error);
       toast.error(`Error fetching product list: ${error.message}`);
@@ -167,7 +163,7 @@ const Search = () => {
           {
             // If products list is non-empty and there may still be potential products to be searched,
             // render loadMore button
-            values.results.length > 0 && !noMorePage && (
+            values?.results?.length > 0 && !noMorePage && (
               <button
                 className="btn loadmore"
                 onClick={(e) => {

@@ -568,7 +568,7 @@ export const productListController = async (req, res) => {
 // search product
 export const searchProductController = async (req, res) => {
   try {
-    const { keyword } = req.params;
+    const { keyword, page = 1 } = req.params;
     if (!keyword || keyword.trim().length === 0) {
       return res
         .status(400)
@@ -582,6 +582,8 @@ export const searchProductController = async (req, res) => {
         .json({ success: false, message: "Keyword is too long" });
     }
 
+    const pageNum = Math.max(parseInt(page, 10) || 1, 1);
+
     // Prevents regex injection attacks: Prefix special characters with "\"
     const safeKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -592,7 +594,11 @@ export const searchProductController = async (req, res) => {
           { description: { $regex: safeKeyword, $options: "i" } },
         ],
       })
-      .select("-photo");
+      .select("-photo")
+      .sort({ createdAt: -1 })
+      .skip((pageNum - 1) * PER_PAGE_LIMIT)
+      .limit(PER_PAGE_LIMIT);
+
     res.status(200).json({ success: true, results });
   } catch (error) {
     console.log(error);

@@ -20,7 +20,7 @@ describe("Product Count Controller tests", () => {
 
   it("Should fetch product count successfully", async () => {
     const mockGetCountSuccess = {
-      estimatedDocumentCount: jest.fn().mockResolvedValue(3),
+      countDocuments: jest.fn().mockResolvedValue(3),
     };
     productModel.find = jest.fn().mockReturnValue(mockGetCountSuccess);
 
@@ -36,7 +36,7 @@ describe("Product Count Controller tests", () => {
 
   it("Should return error response when there is error fetching product count", async () => {
     const mockGetCountError = {
-      estimatedDocumentCount: jest.fn().mockImplementation(() => {
+      countDocuments: jest.fn().mockImplementation(() => {
         throw new Error("some error");
       }),
     };

@@ -62,6 +62,38 @@ describe("Search Component", () => {
         quantity: 211,
         slug: "Toy-3",
       },
+      {
+        name: "Toy 4",
+        category: "679f463b6d15f42289be8cdd",
+        description: "desc 4",
+        price: 123,
+        quantity: 211,
+        slug: "Toy-4",
+      },
+      {
+        name: "Toy 5",
+        category: "679f463b6d15f42289be8cdd",
+        description: "desc 5",
+        price: 103,
+        quantity: 21,
+        slug: "Toy-5",
+      },
+      {
+        name: "Toy 6",
+        category: "679f463b6d15f42289be8cdd",
+        description: "desc 6",
+        price: 17,
+        quantity: 20,
+        slug: "Toy-6",
+      },
+      {
+        name: "Toy 7",
+        category: "679f463b6d15f42289be8cdd",
+        description: "desc 7",
+        price: 1231,
+        quantity: 21,
+        slug: "Toy-7",
+      },
     ];
 
     // Setup default mock returns
@@ -131,7 +163,7 @@ describe("Search Component", () => {
 
   it("renders multiple products (equivalence partition: length>1)", async () => {
     axios.get.mockResolvedValueOnce({
-      data: { success: true, results: products },
+      data: { success: true, results: products.slice(0, 3) },
     });
 
     renderWithProviders(<Search />);
@@ -268,5 +300,47 @@ describe("Search Component", () => {
     );
     expect(descriptionElement).toBeInTheDocument();
     expect(descriptionElement.textContent.trim()).toBe("");
+  });
+
+  it("Can render multiple pages of multiple products", async () => {
+    axios.get.mockResolvedValueOnce({
+      data: { success: true, results: products.slice(0, 6) },
+    });
+    axios.get.mockResolvedValueOnce({
+      data: { success: true, results: [products[6]] },
+    });
+
+    renderWithProviders(<Search />);
+
+    const searchInput = screen.getByPlaceholderText("Search for a product ...");
+    fireEvent.change(searchInput, { target: { value: "T" } });
+    const searchButton = screen.getByRole("button", { name: /search/i });
+    fireEvent.click(searchButton);
+
+    // Should display "Found 3"
+    await waitFor(() => {
+      expect(screen.getByText("Found 6")).toBeInTheDocument();
+    });
+
+    // Verify each product is displayed
+    expect(screen.getByText("Toy 1")).toBeInTheDocument();
+    expect(screen.getByText("Toy 2")).toBeInTheDocument();
+    expect(screen.getByText("Toy 3")).toBeInTheDocument();
+    expect(screen.getByText("Toy 4")).toBeInTheDocument();
+    expect(screen.getByText("Toy 5")).toBeInTheDocument();
+    expect(screen.getByText("Toy 6")).toBeInTheDocument();
+    // Check one of the prices
+    expect(screen.getByText("$ 13")).toBeInTheDocument();
+
+    const loadMoreButton = screen.getByRole("button", { name: /loadmore/i });
+    await fireEvent.click(loadMoreButton);
+
+    await waitFor(() => {
+      expect(screen.getByText("Found 7")).toBeInTheDocument();
+    });
+
+    expect(screen.getByText("Toy 7")).toBeInTheDocument();
+    // Check Toy 7's price
+    expect(screen.getByText("$ 1231")).toBeInTheDocument();
   });
 });

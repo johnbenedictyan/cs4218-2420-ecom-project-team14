@@ -69,6 +69,7 @@ describe("Search Product Controller tests", () => {
    * equivalent in its name or description
    * 8. No capital letter -> success and return products that match it in its name or
    * description
+   * 9. Valid page (e.g 1) just on the boundary -> should return products from page 1
    *
    */
   describe("Boundary Value Analysis test cases", () => {
@@ -91,10 +92,13 @@ describe("Search Product Controller tests", () => {
     // BVA test:
     // 1. smallest valid input (1 character)
     // 2. No capital letter
+    // 3. Valid page (just on the boundary)
     it("Should fetch associated products given minimum valid input that matches product name or description", async () => {
-      req = { params: { keyword: "a" } }; // minimum input of 1 character
+      req = { params: { keyword: "a", page: "1" } }; // minimum input of 1 character
       productModel.find = jest.fn().mockReturnValue({
         select: jest.fn().mockReturnThis(),
+        sort: jest.fn().mockReturnThis(),
+        skip: jest.fn().mockReturnThis(),
         limit: jest.fn().mockResolvedValue(mockProducts),
       });
 
@@ -115,6 +119,8 @@ describe("Search Product Controller tests", () => {
       req = { params: { keyword: "a".repeat(100) } }; // maximum input of 100 characters
       productModel.find = jest.fn().mockReturnValue({
         select: jest.fn().mockReturnThis(),
+        sort: jest.fn().mockReturnThis(),
+        skip: jest.fn().mockReturnThis(),
         limit: jest.fn().mockResolvedValue([mockProducts[2]]),
       });
 
@@ -147,6 +153,8 @@ describe("Search Product Controller tests", () => {
       req = { params: { keyword: "caa+" } }; // input with special characters
       productModel.find = jest.fn().mockReturnValue({
         select: jest.fn().mockReturnThis(),
+        sort: jest.fn().mockReturnThis(),
+        skip: jest.fn().mockReturnThis(),
         limit: jest.fn().mockResolvedValue([]),
       });
 
@@ -171,6 +179,8 @@ describe("Search Product Controller tests", () => {
       req = { params: { keyword: "F" } }; // input with 1 capital letter
       productModel.find = jest.fn().mockReturnValue({
         select: jest.fn().mockReturnThis(),
+        sort: jest.fn().mockReturnThis(),
+        skip: jest.fn().mockReturnThis(),
         limit: jest.fn().mockResolvedValue([mockProducts[0]]),
       });
 
@@ -185,9 +195,16 @@ describe("Search Product Controller tests", () => {
     });
   });
 
-  // Additional BVA test identified (future additions):
-  // Maximum products returns is less than or equal per page product limit
-  // (Test at the boundary of per page product limit and one more than per page product limit)
+  /** Additional BVA tests identified (future additions):
+   * 1. Products returned is less than or equal per page product limit
+   * (Test at the boundary of per page product limit and one more than per page product limit)
+   *
+   * 2. Test with invalid page (e.g 0) which is just outside the page boundary
+   * Should return products from page 1
+   *
+   * 3. Test with page that is greater than the last non-empty page of products (just outside the boundary)
+   * Should return products from page 1
+   * */
 
   describe("Test cases with regards to model errors", () => {
     it("Should return error response when there is error fetching associated products", async () => {

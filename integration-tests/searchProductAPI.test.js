@@ -63,6 +63,9 @@ describe("Search Product Integration Tests", () => {
    * equivalent in its name or description
    * 5. No capital letter -> success and return products that match it in its name or
    * description
+   * 6. Valid page (e.g 1) just on the boundary -> should return products from page 1
+   * 7. Test with invalid page (e.g 0) which is just outside the page boundary
+   * Should return products from page 1
    *
    */
   describe("Boundary Value Analysis test cases", () => {
@@ -70,7 +73,7 @@ describe("Search Product Integration Tests", () => {
     it("Should fetch associated products given minimum valid input that matches product name or description", async () => {
       const keyword = "1"; // smallest valid input, no capital letter
       const response = await request(app).get(
-        `${productPath}/search/${keyword}`
+        `${productPath}/search/${keyword}/1`
       );
 
       expect(response.status).toBe(200);
@@ -84,7 +87,7 @@ describe("Search Product Integration Tests", () => {
     it("Should fetch associated products given maximum valid input that matches product name or description", async () => {
       const keyword = "a".repeat(100); // max valid input, no capital letter
       const response = await request(app).get(
-        `${productPath}/search/${keyword}`
+        `${productPath}/search/${keyword}/1`
       );
 
       expect(response.status).toBe(200);
@@ -96,7 +99,7 @@ describe("Search Product Integration Tests", () => {
     it("Should return 400 error given just above maximum valid input", async () => {
       const keyword = "a".repeat(101); // just above max valid input
       const response = await request(app).get(
-        `${productPath}/search/${keyword}`
+        `${productPath}/search/${keyword}/1`
       );
 
       expect(response.status).toBe(400);
@@ -108,12 +111,24 @@ describe("Search Product Integration Tests", () => {
     it("Should fetch associated products given valid input with one capital letter that matches product name or description, regardless of case", async () => {
       const keyword = "P"; // capital P matches small p in a few product names and descriptions
       const response = await request(app).get(
-        `${productPath}/search/${keyword}`
+        `${productPath}/search/${keyword}/1`
       );
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
       expect(response.body.results.length).toBe(3);
+    });
+
+    // BVA test: Test with invalid page (e.g 0) which is just outside the page boundary, should return products from page 1
+    it("Should fetch associated products from page 1 given invalid input for page ", async () => {
+      const keyword = "p";
+      const response = await request(app).get(
+        `${productPath}/search/${keyword}/0` // invalid page
+      );
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(response.body.results.length).toBe(3); // Assert that first page products are still retrieved
     });
   });
 });

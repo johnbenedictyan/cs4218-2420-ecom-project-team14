@@ -27,7 +27,7 @@ const CreateProduct = () => {
       }
     } catch (error) {
       console.log(error);
-      toast.error("Something wwent wrong in getting catgeory");
+      toast.error("Something went wrong in getting category");
     }
   };
 
@@ -40,25 +40,30 @@ const CreateProduct = () => {
     e.preventDefault();
     try {
       const productData = new FormData();
-      productData.append("name", name);
-      productData.append("description", description);
+      productData.append("name", name.trim());
+      productData.append("description", description.trim());
       productData.append("price", price);
       productData.append("quantity", quantity);
       productData.append("photo", photo);
       productData.append("category", category);
+      productData.append("shipping", shipping);
       const { data } = await axios.post(
         "/api/v1/product/create-product",
         productData
       );
-      if (data?.success) {
-        toast.error(data?.message);
+      if (!data?.success) {
+        toast.success(data?.message);
       } else {
         toast.success("Product Created Successfully");
         navigate("/dashboard/admin/products");
       }
     } catch (error) {
-      console.log(error);
-      toast.error("something went wrong");
+      if (error.response && error.response.status === 400) {
+        toast.error(error.response.data?.message ?? "Error encountered when creating product");
+      } else {
+        console.log(error);
+        toast.error("something went wrong");
+      }
     }
   };
 

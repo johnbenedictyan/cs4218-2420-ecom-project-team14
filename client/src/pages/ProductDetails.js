@@ -3,6 +3,7 @@ import Layout from "./../components/Layout";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import "../styles/ProductDetailsStyles.css";
+import toast from "react-hot-toast";
 
 const ProductDetails = () => {
   const params = useParams();
@@ -37,9 +38,7 @@ const ProductDetails = () => {
     } catch (error) {
       console.log(error);
       setRelatedProducts([]);
-      setDefaultResultOrder(
-        "Failed to load similar products. Please try again."
-      );
+      toast.error("Failed to load similar products. Please try again.");
     }
   };
   return (

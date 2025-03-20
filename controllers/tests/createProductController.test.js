@@ -82,8 +82,9 @@ describe("Create Product Controller tests", () => {
    * b. String <= 100 characters product name already exists (invalid)
    * c. Empty/null/missing (invalid)
    * d. String > 100 characters (invalid)
+   * e. String <= 100 characters and slugified product name already exists (invalid)
    *
-   * Classes b, d are tested below, while c can be added on additionally in the future
+   * Classes b, d are tested below, while c, e can be added on additionally in the future
    */
   // Equivalence class tested: field "name" is string > 100 characters (invalid)
   it("Should return 400 error when name field is a string of more than 100 characters", async () => {
@@ -318,9 +319,7 @@ describe("Create Product Controller tests", () => {
     // Assertions
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send.mock.lastCall[0].success).toBe(false);
-    expect(res.send.mock.lastCall[0].message).toBe(
-      "Shipping must either take on values 0 or 1"
-    );
+    expect(res.send.mock.lastCall[0].message).toBe("Shipping is Required");
   });
 
   /**
@@ -353,7 +352,7 @@ describe("Create Product Controller tests", () => {
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send.mock.lastCall[0].success).toBe(false);
     expect(res.send.mock.lastCall[0].message).toBe(
-      "photo is Required and should be less then 1mb"
+      "Photo should be less then 1mb"
     );
   });
 

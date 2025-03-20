@@ -19,10 +19,12 @@ const Login = () => {
   // form function
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
     try {
-      const res = await axios.post("/api/v1/auth/login", {
-        email,
-        password,
+      const res = await axios.post("http://127.0.0.1:6060/api/v1/auth/login", {
+        email: trimmedEmail,
+        password: trimmedPassword,
       });
       if (res && res.data.success) {
         toast.success(res.data && res.data.message, {
@@ -45,7 +47,7 @@ const Login = () => {
       }
     } catch (error) {
       if (error.response && error.response.status === 400) {
-        toast.error(error.response?.data?.message);
+        toast.error(error.response.data?.message ?? "Error encountered when logging in");
       } else {
       console.log(error);
       toast.error("Something went wrong");

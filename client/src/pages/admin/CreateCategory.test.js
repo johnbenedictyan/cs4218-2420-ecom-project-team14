@@ -43,7 +43,7 @@ describe("CreateCategory Error Handling", () => {
     
     await waitFor(() => {
       expect(consoleLogSpy).toHaveBeenCalled(); // Check that error is logged
-      expect(toast.error).toHaveBeenCalledWith("somthing went wrong in input form");
+      expect(toast.error).toHaveBeenCalledWith("Something went wrong in input form");
     });
     
     consoleLogSpy.mockRestore();
@@ -87,7 +87,7 @@ describe("CreateCategory Error Handling", () => {
 
     await waitFor(() => {
       expect(consoleLogSpy).toHaveBeenCalled();
-      expect(toast.error).toHaveBeenCalledWith("Somtihing went wrong");
+      expect(toast.error).toHaveBeenCalledWith("Something went wrong");
     });
     
     consoleLogSpy.mockRestore();
@@ -108,7 +108,7 @@ describe("CreateCategory Error Handling", () => {
     fireEvent.click(deleteButton);
     
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith("Somtihing went wrong");
+      expect(toast.error).toHaveBeenCalledWith("Something went wrong");
     });
   });
 });

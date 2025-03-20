@@ -63,8 +63,8 @@ const UpdateProduct = () => {
     e.preventDefault();
     try {
       const productData = new FormData();
-      productData.append("name", name);
-      productData.append("description", description);
+      productData.append("name", name.trim());
+      productData.append("description", description.trim());
       productData.append("price", price);
       productData.append("quantity", quantity);
       photo && productData.append("photo", photo);
@@ -81,8 +81,12 @@ const UpdateProduct = () => {
         toast.error(data?.message || "Failed to update product");
       }
     } catch (error) {
-      console.log(error);
-      toast.error("something went wrong");
+      if (error.response && error.response.status === 400) {
+        toast.error(error.response.data?.message ?? "Error encountered when updating product");
+      } else {
+        console.log(error);
+        toast.error("something went wrong");
+      }
     }
   };
 

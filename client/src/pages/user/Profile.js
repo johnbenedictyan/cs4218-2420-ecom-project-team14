@@ -13,6 +13,7 @@ const Profile = () => {
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
+  const [errors, setErrors] = useState({});
 
   //get user data
   useEffect(() => {
@@ -23,16 +24,56 @@ const Profile = () => {
     setAddress(address);
   }, [auth?.user]);
 
+  const validateData = () => {
+    let errors = {};
+
+    // Check that the length of the name is at most 150 characters long
+    if (name.length > 150) {
+        errors.name = "The length of the name can only be up to 150 characters";
+    }
+
+    // Check that the phone number is 8 digits long and start with 6,8 or 9
+    const phoneRegex = /^[689]\d{7}$/;
+    if (!phone.match(phoneRegex)) {
+      errors.phone = "The phone number must start with 6,8 or 9 and be 8 digits long";
+    }
+
+    // Check that new password is at least of length 6 if not empty
+    if (password && password.length < 6) {
+        errors.password = "The length of the new password needs to be at least of length 6";
+    }
+
+    // Check that the address is at most 150 characters long
+    if (address.length > 150) {
+      errors.address = "The address can only be up to 150 characters long";
+    }
+
+    return errors
+};
+
   // form function
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrors({});
+    const errorList = validateData();
+
+    if (Object.entries(errorList).length > 0) {
+        setErrors(errorList);
+        toast.error("There are invalid fields in the update profile form")
+        return;
+    }
+
+    const trimmedName = name.trim();
+    const trimmedPassword = password.trim();
+    const trimmedPhone = phone.trim();
+    const trimmedAddress = address.trim();
+
     try {
       const { data } = await axios.put("/api/v1/auth/profile", {
-        name,
-        email,
-        password,
-        phone,
-        address,
+        name: trimmedName,
+        password: trimmedPassword,
+        phone: trimmedPhone,
+        address: trimmedAddress,
       });
       if (data?.error) {
         toast.error(data?.error);
@@ -46,7 +87,7 @@ const Profile = () => {
       }
     } catch (error) {
       if (error.response && error.response.status === 400) {
-        toast.error(error.response?.data?.message);
+        toast.error(error.response.data?.message ?? "Error encountered when updating profile");
       } else {
         console.log(error);
         toast.error("Something went wrong");
@@ -71,9 +112,14 @@ const Profile = () => {
                     onChange={(e) => setName(e.target.value)}
                     className="form-control"
                     id="exampleInputEmail1"
-                    placeholder="Enter Your Name"
+                    placeholder="Enter Your Name (Required)"
+                    required
                     autoFocus
                   />
+                  {errors.name && (
+                  <p style={{ color: "red" }}>
+                      {errors.name}
+                  </p>)}
                 </div>
                 <div className="mb-3">
                   <input
@@ -95,6 +141,10 @@ const Profile = () => {
                     id="exampleInputPassword1"
                     placeholder="Enter Your Password"
                   />
+                  {errors.password && (
+                  <p style={{ color: "red" }}>
+                      {errors.password}
+                  </p>)}
                 </div>
                 <div className="mb-3">
                   <input
@@ -103,8 +153,13 @@ const Profile = () => {
                     onChange={(e) => setPhone(e.target.value)}
                     className="form-control"
                     id="exampleInputEmail1"
-                    placeholder="Enter Your Phone"
+                    required
+                    placeholder="Enter Your Phone (Required)"
                   />
+                  {errors.phone && (
+                  <p style={{ color: "red" }}>
+                      {errors.phone}
+                  </p>)}
                 </div>
                 <div className="mb-3">
                   <input
@@ -113,8 +168,13 @@ const Profile = () => {
                     onChange={(e) => setAddress(e.target.value)}
                     className="form-control"
                     id="exampleInputEmail1"
-                    placeholder="Enter Your Address"
+                    required
+                    placeholder="Enter Your Address (Required)"
                   />
+                  {errors.address && (
+                  <p style={{ color: "red" }}>
+                      {errors.address}
+                  </p>)}
                 </div>
 
                 <button type="submit" className="btn btn-primary">

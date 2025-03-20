@@ -205,7 +205,7 @@ const UpdateProduct = () => {
                   placeholder="Select Shipping "
                   size="large"
                   showSearch
-                  value={shipping === "1" ? "Yes" : "No"}
+                  value={shipping}
                   className="form-select mb-3"
                   onChange={(value) => {
                     setShipping(value);

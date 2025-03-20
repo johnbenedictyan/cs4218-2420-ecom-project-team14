@@ -325,7 +325,7 @@ describe("HomePage component", () => {
       });
     });
 
-    // Equivalence partioning 2 pages
+    // Equivalence partitioning 2 pages
     it("should load more products when page > 1", async () => {
       const initialProducts = [
         {
@@ -346,10 +346,23 @@ describe("HomePage component", () => {
         },
       ];
 
-      axios.get
-        .mockResolvedValueOnce({ data: { products: initialProducts } })
-        .mockResolvedValueOnce({ data: { total: 2 } })
-        .mockResolvedValueOnce({ data: { products: moreProducts } });
+      const getProductCount = 0;
+
+      axios.get = jest.fn((url) => {
+        if (url.startsWith("/api/v1/product/product-list")) {
+          if (getProductCount.count === 0) {
+            getProductCount++;
+            return Promise.resolve({ data: { products: initialProducts } });
+          }
+          return Promise.resolve({ data: { products: moreProducts } });
+        }
+
+        if (url === "/api/v1/product/product-count") {
+          return Promise.resolve({ data: { total: 2 } });
+        }
+
+        return Promise.reject(new Error("Unexpected URL"));
+      });
 
       render(<HomePage />);
 
@@ -645,10 +658,23 @@ describe("HomePage component", () => {
         },
       ];
 
-      axios.get
-        .mockResolvedValueOnce({ data: { products: initialProducts } })
-        .mockResolvedValueOnce({ data: { total: 2 } })
-        .mockResolvedValueOnce({ data: { products: moreProducts } });
+      const getProductCount = 0;
+
+      axios.get = jest.fn((url) => {
+        if (url.startsWith("/api/v1/product/product-list")) {
+          if (getProductCount.count === 0) {
+            getProductCount++;
+            return Promise.resolve({ data: { products: initialProducts } });
+          }
+          return Promise.resolve({ data: { products: moreProducts } });
+        }
+
+        if (url === "/api/v1/product/product-count") {
+          return Promise.resolve({ data: { total: 2 } });
+        }
+
+        return Promise.reject(new Error("Unexpected URL"));
+      });
 
       render(<HomePage />);
 

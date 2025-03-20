@@ -51,7 +51,9 @@ const HomePage = () => {
   const getTotal = async () => {
     try {
       const { data } = await axios.get("/api/v1/product/product-count");
-      setTotal(data?.total);
+      if (data.total) {
+        setTotal(data.total);
+      }
     } catch (error) {
       console.log(error);
       toast.error(`Error fetching product count: ${error.message}`);

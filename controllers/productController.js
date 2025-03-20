@@ -137,18 +137,31 @@ export const createProductController = async (req, res) => {
       });
     }
 
+    // Do a case-insensitive check that no other product exists with the same slug
+    const productSlug = slugify(name);
+    const productWithSameSlug = await productModel.findOne({
+      slug: { $regex: new RegExp(`^${productSlug}$`, "i") },
+    });
+    if (productWithSameSlug) {
+      return res.status(400).send({
+        success: false,
+        message: `Product with this name format or slug already exists: ${productSlug}`,
+      });
+    }
+
     // Truncate price to 2 decimal places
     const priceTruncated = parseFloat(price).toFixed(2);
     const products = new productModel({
       ...req.fields,
       price: priceTruncated,
-      slug: slugify(name),
+      slug: productSlug,
     });
 
     if (photo) {
       products.photo.data = fs.readFileSync(photo.path);
       products.photo.contentType = photo.type;
     }
+
     await products.save();
     res.status(201).send({
       success: true,
@@ -692,6 +705,8 @@ export const brainTreePaymentController = async (req, res) => {
     cart.map((i) => {
       total += i.price;
     });
+    // Truncate price to 2dp
+    total = total.toFixed(2);
     let newTransaction = gateway.transaction.sale(
       {
         amount: total,
@@ -702,11 +717,38 @@ export const brainTreePaymentController = async (req, res) => {
       },
       function (error, result) {
         if (result) {
-          const order = new orderModel({
-            products: cart,
-            payment: result,
-            buyer: req.user._id,
-          }).save();
+          if (result.success) {
+            // Create order with processing order status
+            const order = new orderModel({
+              products: cart,
+              payment: result,
+              buyer: req.user._id,
+              status: "Processing"
+            }).save();
+
+            const productCount = new Map();
+            // Getting the quantity of each product in the order (To avoid making too many API calls)
+            cart.forEach((product) => {
+              if (productCount.get(product._id)) {
+                productCount.set(product._id, productCount.get(product._id) + 1);
+              } else {
+                productCount.set(product._id, 1);
+              }
+            });
+            
+            // Decrementing product count for each product
+            productCount.forEach((value, key) => {
+              productModel.findByIdAndUpdate(key, 
+                {$inc: {quantity: -value}}
+              ).exec();
+            });
+          } else {
+            const order = new orderModel({
+              products: cart,
+              payment: result,
+              buyer: req.user._id
+            }).save();
+          }
           res.json({ ok: true });
         } else {
           res.status(500).send(error);

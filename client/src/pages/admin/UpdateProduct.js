@@ -30,7 +30,6 @@ const UpdateProduct = () => {
       setId(data.product._id);
       setDescription(data.product.description);
       setPrice(data.product.price);
-      setPrice(data.product.price);
       setQuantity(data.product.quantity);
       setShipping(data.product.shipping);
       setCategory(data.product.category._id);
@@ -51,7 +50,7 @@ const UpdateProduct = () => {
       }
     } catch (error) {
       console.log(error);
-      toast.error("Something wwent wrong in getting catgeory");
+      toast.error("Something went wrong in getting category");
     }
   };
 
@@ -90,15 +89,45 @@ const UpdateProduct = () => {
   //delete a product
   const handleDelete = async () => {
     try {
-      let answer = window.prompt("Are You Sure want to delete this product ? ");
-      if (!answer) return;
-      const { data } = await axios.delete(
-        `/api/v1/product/delete-product/${id}`
+      let answer = window.prompt(
+        "Are You Sure want to delete this product ? Type 'yes' to confirm"
       );
-      toast.success("Product DEleted Succfully");
+      if (!answer || answer.toLowerCase() !== "yes") {
+        return;
+      }
+      if (!id) {
+        toast.error("Cannot delete product: ID is missing");
+        return;
+      }
+
+      // Get the product ID directly if it's not already set
+      if (!id && params.slug) {
+        try {
+          const { data } = await axios.get(
+            `/api/v1/product/get-product/${params.slug}`
+          );
+          if (data?.product?._id) {
+            setId(data.product._id);
+          }
+        } catch (fetchError) {
+          console.error("Error fetching product ID:", fetchError);
+          toast.error("Cannot delete product: failed to fetch ID");
+        }
+      }
+
+      // Double-check we have an ID before proceeding
+      if (!id) {
+        toast.error("Cannot delete: Product ID still missing after retry");
+        return;
+      }
+
+      const deleteUrl = `/api/v1/product/delete-product/${id}`;
+
+      const { data } = await axios.delete(deleteUrl);
+      toast.success("Product Deleted Successfully");
       navigate("/dashboard/admin/products");
     } catch (error) {
-      console.log(error);
+      console.log("Delete error:", error);
       toast.error("Something went wrong");
     }
   };
@@ -221,9 +250,11 @@ const UpdateProduct = () => {
                 </button>
               </div>
               <div className="mb-3">
-                <button className="btn btn-danger" onClick={handleDelete}>
-                  DELETE PRODUCT
-                </button>
+                {id && (
+                  <button className="btn btn-danger" onClick={handleDelete}>
+                    DELETE PRODUCT
+                  </button>
+                )}
               </div>
             </div>
           </div>

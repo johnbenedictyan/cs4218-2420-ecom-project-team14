@@ -42,13 +42,13 @@ describe("UpdateProduct Component", () => {
     shipping: false,
     category: {
       _id: "1",
-      name: "Test Category"
-    }
+      name: "Test Category",
+    },
   };
 
   const mockCategories = [
     { _id: "1", name: "Test Category" },
-    { _id: "2", name: "Another Category" }
+    { _id: "2", name: "Another Category" },
   ];
 
   beforeEach(() => {
@@ -58,22 +58,22 @@ describe("UpdateProduct Component", () => {
     axios.get.mockImplementation((url) => {
       if (url.includes("/api/v1/product/get-product/")) {
         return Promise.resolve({
-          data: { success: true, product: mockProduct }
+          data: { success: true, product: mockProduct },
         });
       } else if (url.includes("/api/v1/category/get-category")) {
         return Promise.resolve({
-          data: { success: true, category: mockCategories }
+          data: { success: true, category: mockCategories },
         });
       }
       return Promise.reject(new Error("Not found"));
     });
 
     axios.put.mockResolvedValue({
-      data: { success: true }
+      data: { success: true },
     });
 
     axios.delete.mockResolvedValue({
-      data: { success: true }
+      data: { success: true },
     });
   });
 
@@ -148,8 +148,10 @@ describe("UpdateProduct Component", () => {
 
     // Check that prompt was shown
     expect(window.prompt).toHaveBeenCalled();
-    expect(axios.delete).toHaveBeenCalledWith("/api/v1/product/delete-product/123");
-    expect(toast.success).toHaveBeenCalledWith("Product DEleted Succfully");
+    expect(axios.delete).toHaveBeenCalledWith(
+      "/api/v1/product/delete-product/123"
+    );
+    expect(toast.success).toHaveBeenCalledWith("Product Deleted Successfully");
     expect(mockedNavigate).toHaveBeenCalledWith("/dashboard/admin/products");
   });
 
@@ -185,10 +187,12 @@ describe("UpdateProduct Component", () => {
 
     // Create a file and trigger upload
     const file = new File(["dummy content"], "test.png", { type: "image/png" });
-    
+
     // Find the file input (it's hidden, so we need to find its parent label first)
-    const fileInput = screen.getByLabelText(/Upload Photo/i, { selector: 'input' });
-    
+    const fileInput = screen.getByLabelText(/Upload Photo/i, {
+      selector: "input",
+    });
+
     // Trigger file upload
     await act(async () => {
       fireEvent.change(fileInput, { target: { files: [file] } });

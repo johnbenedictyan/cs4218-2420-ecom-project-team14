@@ -2,7 +2,7 @@ import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";
-import '@testing-library/jest-dom'; // I have no idea what this is, but it works
+import "@testing-library/jest-dom"; // I have no idea what this is, but it works
 import Products from "./Products";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -94,7 +94,7 @@ describe("Products Component", () => {
       );
     });
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith("Someething Went Wrong");
+      expect(toast.error).toHaveBeenCalledWith("Something Went Wrong");
     });
   });
 

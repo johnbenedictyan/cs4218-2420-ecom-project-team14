@@ -30,7 +30,7 @@ export default function AdminRoute() {
         }
       }
 
-      const response = await axios.get("/api/v1/auth/admin-auth", {
+      const response = await axios.get("http://127.0.0.1:6060/api/v1/auth/admin-auth", {
         headers: {
           Authorization: token,
         },

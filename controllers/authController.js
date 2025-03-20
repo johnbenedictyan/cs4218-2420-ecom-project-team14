@@ -29,15 +29,22 @@ export const registerController = async (req, res) => {
 
     // Add validation for name (Maximum 150 characters long)
     if (name.length > 150) {
-      return res.status(400).send({ message: "The name can only be up to 150 characters long"});
+      return res
+        .status(400)
+        .send({ message: "The name can only be up to 150 characters long" });
     }
 
     // Add validation for password length (Need to be minimum of length 6)
     if (password.length < 6) {
-      return res.status(400).send({ message: "The length of the password should be at least 6 characters long"});
+      return res
+        .status(400)
+        .send({
+          message:
+            "The length of the password should be at least 6 characters long",
+        });
     }
 
-    // Add validation for email check 
+    // Add validation for email check
     /* Conditions which are added are as follows:
     Local part
     1) Cannot start with dot
@@ -45,41 +52,53 @@ export const registerController = async (req, res) => {
     3) Cannot end with dot
     4) Restrict characters to alphanumeric and dot
     5) Maximally is 64 characters long
-    
+
     Domain part
     1) Cannot start with dot
     2) Cannot have consecutive dots
     3) Cannot end with dot
     4) Restrict characters to alphanumeric and dot
     5) Maximally is 64 characters long
-    
+
     */
-    const emailRegex = /^(?!^\.)(?!.*\.@)(?!.*\.{2})[a-zA-Z0-9.]{1,64}@(?!@\.)(?!.*\.$)(?!.*\.{2})[a-zA-Z0-9.]{1,64}$/;    
+    const emailRegex =
+      /^(?!^\.)(?!.*\.@)(?!.*\.{2})[a-zA-Z0-9.]{1,64}@(?!@\.)(?!.*\.$)(?!.*\.{2})[a-zA-Z0-9.]{1,64}$/;
     if (!email.match(emailRegex)) {
-      return res.status(400).send({ message: "The email is in an invalid format"});
+      return res
+        .status(400)
+        .send({ message: "The email is in an invalid format" });
     }
 
     // Add validation for phone number
     const phoneRegex = /^[689]\d{7}$/;
     if (!phone.match(phoneRegex)) {
-      return res.status(400).send({ message: "The phone number must start with 6,8 or 9 and be 8 digits long"});
+      return res
+        .status(400)
+        .send({
+          message:
+            "The phone number must start with 6,8 or 9 and be 8 digits long",
+        });
     }
 
     // Add validation for address
     if (address.length > 150) {
-      return res.status(400).send({ message: "The address can only be up to 150 characters long"});
+      return res
+        .status(400)
+        .send({ message: "The address can only be up to 150 characters long" });
     }
 
     // Add validation for answer
     if (answer.length > 100) {
-      return res.status(400).send({ message: "The answer can only be up to 100 characters long"});
+      return res
+        .status(400)
+        .send({ message: "The answer can only be up to 100 characters long" });
     }
 
-    //check user
-    const exisitingUser = await userModel.findOne({ email });
-    //exisiting user
-    if (exisitingUser) {
-      return res.status(200).send({
+    // check if user exist
+    const existingUser = await userModel.findOne({ email });
+    // existing user
+    if (existingUser) {
+      return res.status(409).send({
         success: false,
         message: "Already Register please login",
       });
@@ -120,7 +139,8 @@ export const loginController = async (req, res) => {
       // Changed error message to have same generic error message as below
       return res.status(400).send({
         success: false,
-        message: "Invalid email or password has been entered or email is not registered",
+        message:
+          "Invalid email or password has been entered or email is not registered",
       });
     }
     //check user
@@ -129,7 +149,8 @@ export const loginController = async (req, res) => {
       // Change error message as it should not reveal that email is not registered (Should just give generic message)
       return res.status(400).send({
         success: false,
-        message: "Invalid email or password has been entered or email is not registered",
+        message:
+          "Invalid email or password has been entered or email is not registered",
       });
     }
     const match = await comparePassword(password, user.password);
@@ -138,7 +159,8 @@ export const loginController = async (req, res) => {
       // Change error message as it should not reveal whether email is wrong or password is wrong (Security Reasons)
       return res.status(400).send({
         success: false,
-        message: "Invalid email or password has been entered or email is not registered",
+        message:
+          "Invalid email or password has been entered or email is not registered",
       });
     }
     //token
@@ -182,21 +204,31 @@ export const forgotPasswordController = async (req, res) => {
     if (!newPassword) {
       return res.status(400).send({ message: "New Password is required" });
     }
-    
+
     // Add validation for new password length (Need to be minimum of length 6)
     if (newPassword.length < 6) {
-      return res.status(400).send({ message: "The length of the new password should be at least 6 characters long"});
+      return res
+        .status(400)
+        .send({
+          message:
+            "The length of the new password should be at least 6 characters long",
+        });
     }
 
     // Add validation for email being used
-    const emailRegex = /^(?!^\.)(?!.*\.@)(?!.*\.{2})[a-zA-Z0-9.]{1,64}@(?!@\.)(?!.*\.$)(?!.*\.{2})[a-zA-Z0-9.]{1,64}$/;    
+    const emailRegex =
+      /^(?!^\.)(?!.*\.@)(?!.*\.{2})[a-zA-Z0-9.]{1,64}@(?!@\.)(?!.*\.$)(?!.*\.{2})[a-zA-Z0-9.]{1,64}$/;
     if (!email.match(emailRegex)) {
-      return res.status(400).send({ message: "The email is in an invalid format"});
+      return res
+        .status(400)
+        .send({ message: "The email is in an invalid format" });
     }
 
     // Add validation for answer
     if (answer.length > 100) {
-      return res.status(400).send({ message: "The answer can only be up to 100 characters long"});
+      return res
+        .status(400)
+        .send({ message: "The answer can only be up to 100 characters long" });
     }
 
     //check
@@ -246,18 +278,27 @@ export const updateProfileController = async (req, res) => {
 
     // Add validation for non-empty name (Maximum 150 characters long)
     if (name && name.length > 150) {
-      return res.status(400).send({ message: "The name can only be up to 150 characters long"});
+      return res
+        .status(400)
+        .send({ message: "The name can only be up to 150 characters long" });
     }
 
     // Add validation for non-empty phone number
     const phoneRegex = /^[689]\d{7}$/;
     if (phone && !phone.match(phoneRegex)) {
-      return res.status(400).send({ message: "The phone number must start with 6,8 or 9 and be 8 digits long"});
+      return res
+        .status(400)
+        .send({
+          message:
+            "The phone number must start with 6,8 or 9 and be 8 digits long",
+        });
     }
 
     // Add validation for non-empty address
     if (address && address.length > 150) {
-      return res.status(400).send({ message: "The address can only be up to 150 characters long"});
+      return res
+        .status(400)
+        .send({ message: "The address can only be up to 150 characters long" });
     }
 
     const hashedPassword = password ? await hashPassword(password) : undefined;
@@ -331,10 +372,10 @@ export const orderStatusController = async (req, res) => {
     const { status } = req.body;
 
     // Add validation for the type of order status (Need to check if it's one of the enums)
-    if (!(orderModel.schema.paths.status.enumValues.includes(status))) {
+    if (!orderModel.schema.paths.status.enumValues.includes(status)) {
       return res.status(400).send({
-        message: "Invalid order status is provided"
-      })
+        message: "Invalid order status is provided",
+      });
     }
 
     const orders = await orderModel.findByIdAndUpdate(
@@ -345,8 +386,8 @@ export const orderStatusController = async (req, res) => {
 
     if (!orders) {
       return res.status(400).send({
-        message: "Invalid order id was provided and order cannot be found"
-      })
+        message: "Invalid order id was provided and order cannot be found",
+      });
     }
     res.json(orders);
   } catch (error) {

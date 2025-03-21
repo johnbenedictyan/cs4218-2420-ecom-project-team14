@@ -27,6 +27,7 @@ describe("Login Integration Tests", () => {
       password: hashedPassword,
       phone: "81234567",
       address: "Beautiful Home on Earth",
+      answer: "Basketball",
       role: 0,
     }).save();
   });

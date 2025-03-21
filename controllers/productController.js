@@ -465,7 +465,7 @@ export const updateProductController = async (req, res) => {
 // filters
 export const productFiltersController = async (req, res) => {
   try {
-    const { checked, radio } = req.body;
+    const { checked, radio, page = 1 } = req.body;
     let args = {};
     // checked validations
     if (
@@ -494,7 +494,16 @@ export const productFiltersController = async (req, res) => {
     }
     if (checked.length > 0) args.category = checked;
     if (radio.length) args.price = { $gte: radio[0], $lte: radio[1] };
-    const products = await productModel.find(args);
+
+    // Convert page to number using decimal parsing and validate
+    const pageNum = Math.max(parseInt(page, 10) || 1, 1);
+
+    const products = await productModel
+      .find(args)
+      .select("-photo")
+      .skip((pageNum - 1) * PER_PAGE_LIMIT) // Use Offset of 1 because we don't want to skip one page
+      .limit(PER_PAGE_LIMIT); // Consistent with productListController
+
     res.status(200).send({
       success: true,
       products,
@@ -503,7 +512,7 @@ export const productFiltersController = async (req, res) => {
     console.log(error);
     res.status(400).send({
       success: false,
-      message: "Error WHile Filtering Products",
+      message: "Error While Filtering Products",
       error,
     });
   }
@@ -512,8 +521,15 @@ export const productFiltersController = async (req, res) => {
 // product count
 export const productCountController = async (req, res) => {
   try {
+    const { checked, radio } = req.query;
+
+    let args = {};
+
+    if (checked && checked.length > 0) args.category = checked;
+    if (radio && radio.length > 0)
+      args.price = { $gte: radio[0], $lte: radio[1] };
     // Opt to use countDocuments to ensure productCountController always returns correct count
-    const total = await productModel.find({}).countDocuments();
+    const total = await productModel.countDocuments(args);
     res.status(200).send({
       success: true,
       total,
@@ -730,30 +746,33 @@ export const brainTreePaymentController = async (req, res) => {
               products: cart,
               payment: result,
               buyer: req.user._id,
-              status: "Processing"
+              status: "Processing",
             }).save();
 
             const productCount = new Map();
             // Getting the quantity of each product in the order (To avoid making too many API calls)
             cart.forEach((product) => {
               if (productCount.get(product._id)) {
-                productCount.set(product._id, productCount.get(product._id) + 1);
+                productCount.set(
+                  product._id,
+                  productCount.get(product._id) + 1
+                );
               } else {
                 productCount.set(product._id, 1);
               }
             });
-            
+
             // Decrementing product count for each product
             productCount.forEach((value, key) => {
-              productModel.findByIdAndUpdate(key, 
-                {$inc: {quantity: -value}}
-              ).exec();
+              productModel
+                .findByIdAndUpdate(key, { $inc: { quantity: -value } })
+                .exec();
             });
           } else {
             const order = new orderModel({
               products: cart,
               payment: result,
-              buyer: req.user._id
+              buyer: req.user._id,
             }).save();
           }
           res.json({ ok: true });

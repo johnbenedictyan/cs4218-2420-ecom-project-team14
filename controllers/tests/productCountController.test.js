@@ -18,9 +18,16 @@ describe("Product Count Controller tests", () => {
     jest.resetModules();
   });
 
+  afterAll(() => {
+    // Clean up any mocks to prevent memory leaks
+    jest.restoreAllMocks();
+    // Reset modules to clean state
+    jest.resetModules();
+  });
+
   it("Should fetch product count successfully", async () => {
-    // Mock countDocuments
-    productModel.countDocuments = jest.fn().mockReturnValue(3);
+    // Mock countDocuments to return count 3
+    productModel.countDocuments = jest.fn().mockResolvedValue(3);
 
     // Create a mock request with empty query parameters
     const req = {
@@ -43,6 +50,7 @@ describe("Product Count Controller tests", () => {
     // Create a mock error
     const mockError = new Error("some error");
 
+    // Mock countDocuments to reject with the error
     productModel.countDocuments = jest.fn().mockRejectedValue(mockError);
     // Create a mock request with empty query parameters
     const req = {

@@ -217,7 +217,7 @@ async function viewAllCategoryAndRelatedProducts(page) {
 }
 
 test.describe("Successful view all categories and related product details", () => {
-  // Check that an unauthorised user view all categories and related product details
+  // Check that an unauthorised user can view all categories and related product details
   test("Should allow unauthorised user to view all categories and related product details", async ({
     page,
   }) => {
@@ -225,7 +225,7 @@ test.describe("Successful view all categories and related product details", () =
     await viewAllCategoryAndRelatedProducts(page);
   });
 
-  // Check that an authorised user can search for a product
+  // Check that an authorised user can  view all categories and related product details
   test("Should allow authorised user to view all categories and related product details", async ({
     page,
   }) => {

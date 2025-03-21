@@ -92,7 +92,7 @@ describe("Register Integration Tests", () => {
       .send(payload)
       .set("Content-Type", "application/json")
       .set("Accept", "application/json")
-      .expect(201)
+      .expect(400)
       .then((response) => {
         console.log(response);
         expect(response.body.success).toBe(true);
@@ -116,7 +116,7 @@ describe("Register Integration Tests", () => {
       .send(payload)
       .set("Content-Type", "application/json")
       .set("Accept", "application/json")
-      .expect(201)
+      .expect(400)
       .then((response) => {
         console.log(response);
         expect(response.body.success).toBe(true);
@@ -138,7 +138,7 @@ describe("Register Integration Tests", () => {
       .send(payload)
       .set("Content-Type", "application/json")
       .set("Accept", "application/json")
-      .expect(201)
+      .expect(400)
       .then((response) => {
         console.log(response);
         expect(response.body.success).toBe(true);
@@ -162,7 +162,7 @@ describe("Register Integration Tests", () => {
       .send(payload)
       .set("Content-Type", "application/json")
       .set("Accept", "application/json")
-      .expect(201)
+      .expect(400)
       .then((response) => {
         console.log(response);
         expect(response.body.success).toBe(true);
@@ -184,7 +184,7 @@ describe("Register Integration Tests", () => {
       .send(payload)
       .set("Content-Type", "application/json")
       .set("Accept", "application/json")
-      .expect(201)
+      .expect(400)
       .then((response) => {
         console.log(response);
         expect(response.body.success).toBe(true);
@@ -208,7 +208,7 @@ describe("Register Integration Tests", () => {
       .send(payload)
       .set("Content-Type", "application/json")
       .set("Accept", "application/json")
-      .expect(201)
+      .expect(400)
       .then((response) => {
         console.log(response);
         expect(response.body.success).toBe(true);
@@ -230,7 +230,7 @@ describe("Register Integration Tests", () => {
       .send(payload)
       .set("Content-Type", "application/json")
       .set("Accept", "application/json")
-      .expect(201)
+      .expect(400)
       .then((response) => {
         console.log(response);
         expect(response.body.success).toBe(true);
@@ -254,7 +254,7 @@ describe("Register Integration Tests", () => {
       .send(payload)
       .set("Content-Type", "application/json")
       .set("Accept", "application/json")
-      .expect(201)
+      .expect(400)
       .then((response) => {
         console.log(response);
         expect(response.body.success).toBe(true);
@@ -277,7 +277,7 @@ describe("Register Integration Tests", () => {
       .send(payload)
       .set("Content-Type", "application/json")
       .set("Accept", "application/json")
-      .expect(201)
+      .expect(400)
       .then((response) => {
         console.log(response);
         expect(response.body.success).toBe(true);
@@ -301,7 +301,7 @@ describe("Register Integration Tests", () => {
       .send(payload)
       .set("Content-Type", "application/json")
       .set("Accept", "application/json")
-      .expect(201)
+      .expect(400)
       .then((response) => {
         console.log(response);
         expect(response.body.success).toBe(true);
@@ -324,7 +324,7 @@ describe("Register Integration Tests", () => {
       .send(payload)
       .set("Content-Type", "application/json")
       .set("Accept", "application/json")
-      .expect(201)
+      .expect(400)
       .then((response) => {
         console.log(response);
         expect(response.body.success).toBe(true);

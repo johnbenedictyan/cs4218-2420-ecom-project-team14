@@ -36,12 +36,10 @@ export const registerController = async (req, res) => {
 
     // Add validation for password length (Need to be minimum of length 6)
     if (password.length < 6) {
-      return res
-        .status(400)
-        .send({
-          message:
-            "The length of the password should be at least 6 characters long",
-        });
+      return res.status(400).send({
+        message:
+          "The length of the password should be at least 6 characters long",
+      });
     }
 
     // Add validation for email check
@@ -72,12 +70,10 @@ export const registerController = async (req, res) => {
     // Add validation for phone number
     const phoneRegex = /^[689]\d{7}$/;
     if (!phone.match(phoneRegex)) {
-      return res
-        .status(400)
-        .send({
-          message:
-            "The phone number must start with 6,8 or 9 and be 8 digits long",
-        });
+      return res.status(400).send({
+        message:
+          "The phone number must start with 6,8 or 9 and be 8 digits long",
+      });
     }
 
     // Add validation for address
@@ -115,14 +111,14 @@ export const registerController = async (req, res) => {
       answer,
     }).save();
 
-    res.status(201).send({
+    return res.status(201).send({
       success: true,
       message: "User Register Successfully",
       user,
     });
   } catch (error) {
     console.log(error);
-    res.status(500).send({
+    return res.status(500).send({
       success: false,
       message: "Error in Registration",
       error,
@@ -207,12 +203,10 @@ export const forgotPasswordController = async (req, res) => {
 
     // Add validation for new password length (Need to be minimum of length 6)
     if (newPassword.length < 6) {
-      return res
-        .status(400)
-        .send({
-          message:
-            "The length of the new password should be at least 6 characters long",
-        });
+      return res.status(400).send({
+        message:
+          "The length of the new password should be at least 6 characters long",
+      });
     }
 
     // Add validation for email being used
@@ -286,12 +280,10 @@ export const updateProfileController = async (req, res) => {
     // Add validation for non-empty phone number
     const phoneRegex = /^[689]\d{7}$/;
     if (phone && !phone.match(phoneRegex)) {
-      return res
-        .status(400)
-        .send({
-          message:
-            "The phone number must start with 6,8 or 9 and be 8 digits long",
-        });
+      return res.status(400).send({
+        message:
+          "The phone number must start with 6,8 or 9 and be 8 digits long",
+      });
     }
 
     // Add validation for non-empty address

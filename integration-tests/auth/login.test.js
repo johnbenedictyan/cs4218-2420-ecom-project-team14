@@ -46,9 +46,10 @@ describe("Login Integration Tests", () => {
       .field("password", testPassword)
       .set("Content-Type", "application/json")
       .set("Accept", "application/json")
+      .expect(200)
       .then((response) => {
-        console.log(response);
-        expect(response.body).toBe({});
+        expect(response.body.success).toBe(true);
+        expect(response.body.message).toBe("login successfully");
       });
   });
 

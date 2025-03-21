@@ -24,6 +24,7 @@ describe("Register Integration Tests", () => {
       password: hashedPassword,
       phone: "81234567",
       address: "Beautiful Home on Earth",
+      answer: "Baseball",
       role: 0,
     }).save();
   });
@@ -329,6 +330,7 @@ describe("Register Integration Tests", () => {
       password: "testUserPassword",
       phone: "81234567",
       address: "Beautiful Home on Earth",
+      answer: "Basketball",
     };
     request(app)
       .post("/api/v1/auth/register")

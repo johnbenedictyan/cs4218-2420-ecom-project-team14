@@ -29,11 +29,17 @@ test.beforeAll(async () => {
   // Create category for test
   const sampleCategory = await categoryModel.create({
     name: "IT accessories and other electronics",
-    slug: "IT-accessories-and-other-electronics",
+    slug: "it-accessories-and-other-electronics",
   });
 
-  const imageBuffer = fs.readFileSync("test-images/toycar.jpeg");
-  // Create product for test
+  // Create alternate category for test
+  const alternateCategory = await categoryModel.create({
+    name: "Furniture and other household items",
+    slug: "furniture-and-other-household-items",
+  });
+
+  const imageBuffer = fs.readFileSync("test-images/Speaker.jpg");
+  // Create product with sample category
   const wirelessMouseProduct = await productModel.create({
     name: "Wireless mouse with cable",
     slug: "Wireless-mouse-with-cable",
@@ -48,6 +54,7 @@ test.beforeAll(async () => {
     },
   });
 
+  // Create product with sample category
   const mechKeyboardProduct = await productModel.create({
     name: "Mechanical keyboard with RGB light",
     slug: "Mechanical-keyboard-with-RGB-light",
@@ -62,6 +69,7 @@ test.beforeAll(async () => {
     },
   });
 
+  // Create product with sample category
   const wirelessBluetoothSpeaker = await productModel.create({
     name: "Wireless bluetooth speaker with charger",
     slug: "Wireless-bluetooth-speaker-with-charger",
@@ -76,14 +84,15 @@ test.beforeAll(async () => {
     },
   });
 
-  const electronicToyCar = await productModel.create({
-    name: "Electronic toy car",
-    slug: "Electronic-toy-car",
-    description: "Fast and durable electronic toy car",
+  // Create product with alternate category
+  const woodenSofaFrame = await productModel.create({
+    name: "Wooden sofa frame",
+    slug: "wooden-sofa-frame",
+    description: "Good and durable sofa",
     quantity: "77",
     shipping: "1",
-    category: sampleCategory._id,
-    price: "72",
+    category: alternateCategory._id,
+    price: "400",
     photo: {
       data: imageBuffer,
       contentType: "image/jpeg",
@@ -94,7 +103,7 @@ test.beforeAll(async () => {
   createdProductIds.push(wirelessMouseProduct._id);
   createdProductIds.push(mechKeyboardProduct._id);
   createdProductIds.push(wirelessBluetoothSpeaker._id);
-  createdProductIds.push(electronicToyCar._id);
+  createdProductIds.push(woodenSofaFrame._id);
 });
 
 test.afterAll(async () => {
@@ -103,7 +112,10 @@ test.afterAll(async () => {
 
   // Delete the category created in this test
   await categoryModel.deleteMany({
-    name: "IT accessories and other electronics",
+    $or: [
+      { name: "IT accessories and other electronics" },
+      { name: "Furniture and other household items" },
+    ],
   });
 
   // Delete the user created in this test
@@ -133,7 +145,7 @@ async function viewAllCategoryAndRelatedProducts(page) {
       name: "Category - IT accessories and other electronics",
     })
   ).toBeVisible();
-  await expect(page.locator("h6")).toContainText("4 result found");
+  await expect(page.locator("h6")).toContainText("3 result found");
 
   // Expect one product with all relevant details present
   await expect(
@@ -157,9 +169,6 @@ async function viewAllCategoryAndRelatedProducts(page) {
     page.getByRole("heading", {
       name: "Mechanical keyboard with RGB light",
     })
-  ).toBeVisible();
-  await expect(
-    page.getByRole("heading", { name: "Electronic toy car" })
   ).toBeVisible();
 
   // Click on "Product details button"
@@ -203,17 +212,19 @@ async function viewAllCategoryAndRelatedProducts(page) {
     page.getByRole("button", { name: "More Details" }).first()
   ).toBeVisible();
 
-  // Expect the remaining related products to be visible
-  await expect(
-    page.getByRole("heading", {
-      name: "Electronic toy car",
-    })
-  ).toBeVisible();
+  // Expect the remaining related product to be visible
   await expect(
     page.getByRole("heading", {
       name: "Wireless bluetooth speaker with charger",
     })
   ).toBeVisible();
+
+  // Expect the product with a different category (unrelated product) to not be visible
+  await expect(
+    page.getByRole("heading", {
+      name: "Wooden sofa frame",
+    })
+  ).not.toBeVisible();
 }
 
 test.describe("Successful view all categories and related product details", () => {
@@ -222,6 +233,11 @@ test.describe("Successful view all categories and related product details", () =
     page,
   }) => {
     await page.goto("http://localhost:3000", { waitUntil: "commit" });
+
+    // Making sure not logged in before proceeding
+    await expect(page.getByRole("link", { name: "Login" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Register" })).toBeVisible();
+
     await viewAllCategoryAndRelatedProducts(page);
   });
 
@@ -231,8 +247,8 @@ test.describe("Successful view all categories and related product details", () =
   }) => {
     await page.goto("http://localhost:3000", { waitUntil: "commit" });
 
+    // Logging in before proceeding
     await page.getByRole("link", { name: "Login" }).click();
-
     await page
       .getByRole("textbox", { name: "Enter Your Email" })
       .fill("sammyrae@gmail.com");

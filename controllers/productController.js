@@ -529,7 +529,7 @@ export const productCountController = async (req, res) => {
     if (radio && radio.length > 0)
       args.price = { $gte: radio[0], $lte: radio[1] };
     // Opt to use countDocuments to ensure productCountController always returns correct count
-    const total = await productModel.countDocuments({});
+    const total = await productModel.countDocuments(args);
     res.status(200).send({
       success: true,
       total,

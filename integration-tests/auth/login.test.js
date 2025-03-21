@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
+import userModel from "../../models/userModel.js";
 import app from "../../server.js";
 
 describe("Login Integration Tests", () => {

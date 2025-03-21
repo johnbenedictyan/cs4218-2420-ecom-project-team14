@@ -96,7 +96,7 @@ describe("Register Integration Tests", () => {
       .set("Accept", "application/json")
       .expect(400)
       .then((response) => {
-        expect(response.body).toBe({});
+        expect(response.body.message).toBe("The email is in an invalid format");
       });
   });
 
@@ -140,7 +140,9 @@ describe("Register Integration Tests", () => {
       .set("Accept", "application/json")
       .expect(400)
       .then((response) => {
-        expect(response.body).toBe({});
+        expect(response.body.message).toBe(
+          "The length of the password should be at least 6 characters long"
+        );
       });
   });
 
@@ -163,7 +165,9 @@ describe("Register Integration Tests", () => {
       .set("Accept", "application/json")
       .expect(400)
       .then((response) => {
-        expect(response.body).toBe({});
+        expect(response.body.message).toBe(
+          "The name can only be up to 150 characters long"
+        );
       });
   });
 
@@ -228,7 +232,9 @@ describe("Register Integration Tests", () => {
       .set("Accept", "application/json")
       .expect(400)
       .then((response) => {
-        expect(response.body).toBe({});
+        expect(response.body.message).toBe(
+          "The phone number must start with 6,8 or 9 and be 8 digits long"
+        );
       });
   });
 
@@ -273,7 +279,9 @@ describe("Register Integration Tests", () => {
       .set("Accept", "application/json")
       .expect(400)
       .then((response) => {
-        expect(response.body).toBe({});
+        expect(response.body.message).toBe(
+          "The address can only be up to 150 characters long"
+        );
       });
   });
 
@@ -318,7 +326,9 @@ describe("Register Integration Tests", () => {
       .set("Accept", "application/json")
       .expect(400)
       .then((response) => {
-        expect(response.body).toBe({});
+        expect(response.body.message).toBe(
+          "The answer can only be up to 100 characters long"
+        );
       });
   });
 

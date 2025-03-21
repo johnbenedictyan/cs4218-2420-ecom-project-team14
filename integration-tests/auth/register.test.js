@@ -35,15 +35,11 @@ describe("Register Integration Tests", () => {
     await mongoMemServer.stop();
   });
 
-  afterEach(async () => {
-    await userModel.findOneAndDelete({ name: "Test User 2" });
-  });
-
   // Test 1: Success case where all details are in correct valid format for user to be registered
   it("should allow user with all correct valid details to be registered successfully", () => {
     const payload = {
-      name: "Test User 2",
-      email: "testuser2@mail.com",
+      name: "Test User 3",
+      email: "testuser3@mail.com",
       password: "SomeRandomPasswordHere123",
       phone: "81234567",
       address: "6 Short Street",
@@ -56,7 +52,8 @@ describe("Register Integration Tests", () => {
       .set("Accept", "application/json")
       .expect(201)
       .then((response) => {
-        expect(response.body).toBe({});
+        expect(response.body.success).toBe(true);
+        expect(response.body.message).toBe("User Register Successfully");
       });
   });
 
@@ -79,7 +76,8 @@ describe("Register Integration Tests", () => {
       .set("Accept", "application/json")
       .expect(400)
       .then((response) => {
-        expect(response.body).toBe({});
+        expect(response.body.success).toBe(false);
+        expect(response.body.message).toBe("Email is Required");
       });
   });
 
@@ -100,6 +98,7 @@ describe("Register Integration Tests", () => {
       .set("Accept", "application/json")
       .expect(400)
       .then((response) => {
+        expect(response.body.success).toBe(false);
         expect(response.body.message).toBe("The email is in an invalid format");
       });
   });
@@ -123,7 +122,8 @@ describe("Register Integration Tests", () => {
       .set("Accept", "application/json")
       .expect(400)
       .then((response) => {
-        expect(response.body).toBe({});
+        expect(response.body.success).toBe(false);
+        expect(response.body.message).toBe("Password is Required");
       });
   });
 
@@ -144,6 +144,7 @@ describe("Register Integration Tests", () => {
       .set("Accept", "application/json")
       .expect(400)
       .then((response) => {
+        expect(response.body.success).toBe(false);
         expect(response.body.message).toBe(
           "The length of the password should be at least 6 characters long"
         );
@@ -169,9 +170,8 @@ describe("Register Integration Tests", () => {
       .set("Accept", "application/json")
       .expect(400)
       .then((response) => {
-        expect(response.body.message).toBe(
-          "The name can only be up to 150 characters long"
-        );
+        expect(response.body.success).toBe(false);
+        expect(response.body.message).toBe("Name is Required");
       });
   });
 
@@ -192,7 +192,10 @@ describe("Register Integration Tests", () => {
       .set("Accept", "application/json")
       .expect(400)
       .then((response) => {
-        expect(response.body).toBe({});
+        expect(response.body.success).toBe(false);
+        expect(response.body.message).toBe(
+          "The name can only be up to 150 characters long"
+        );
       });
   });
 
@@ -215,7 +218,8 @@ describe("Register Integration Tests", () => {
       .set("Accept", "application/json")
       .expect(400)
       .then((response) => {
-        expect(response.body).toBe({});
+        expect(response.body.success).toBe(false);
+        expect(response.body.message).toBe("Phone no is Required");
       });
   });
 
@@ -236,6 +240,7 @@ describe("Register Integration Tests", () => {
       .set("Accept", "application/json")
       .expect(400)
       .then((response) => {
+        expect(response.body.success).toBe(false);
         expect(response.body.message).toBe(
           "The phone number must start with 6,8 or 9 and be 8 digits long"
         );
@@ -261,7 +266,8 @@ describe("Register Integration Tests", () => {
       .set("Accept", "application/json")
       .expect(400)
       .then((response) => {
-        expect(response.body).toBe({});
+        expect(response.body.success).toBe(false);
+        expect(response.body.message).toBe("Address is Required");
       });
   });
 
@@ -283,6 +289,7 @@ describe("Register Integration Tests", () => {
       .set("Accept", "application/json")
       .expect(400)
       .then((response) => {
+        expect(response.body.success).toBe(false);
         expect(response.body.message).toBe(
           "The address can only be up to 150 characters long"
         );
@@ -308,7 +315,8 @@ describe("Register Integration Tests", () => {
       .set("Accept", "application/json")
       .expect(400)
       .then((response) => {
-        expect(response.body).toBe({});
+        expect(response.body.success).toBe(false);
+        expect(response.body.message).toBe("Answer is Required");
       });
   });
 
@@ -330,6 +338,7 @@ describe("Register Integration Tests", () => {
       .set("Accept", "application/json")
       .expect(400)
       .then((response) => {
+        expect(response.body.success).toBe(false);
         expect(response.body.message).toBe(
           "The answer can only be up to 100 characters long"
         );
@@ -353,7 +362,8 @@ describe("Register Integration Tests", () => {
       .set("Accept", "application/json")
       .expect(409)
       .then((response) => {
-        expect(response.body).toBe({});
+        expect(response.body.success).toBe(false);
+        expect(response.body.message).toBe("Already Register please login");
       });
   });
 });

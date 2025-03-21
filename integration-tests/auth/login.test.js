@@ -20,7 +20,7 @@ describe("Login Integration Tests", () => {
 
     const hashedPassword = await hashPassword(testPassword);
 
-    testUser = userModel({
+    testUser = await userModel({
       _id: new ObjectId("679f3c5eb35bb2db5e6a3646"),
       name: "Test User 1",
       email: "testuser1@mail.com",
@@ -64,8 +64,10 @@ describe("Login Integration Tests", () => {
       .set("Accept", "application/json")
       .expect(400)
       .then((response) => {
-        console.log(response);
-        expect(response.body).toBe({});
+        expect(response.body.message).toBe(
+          "Invalid email or password has been entered or email is not registered"
+        );
+        expect(response.body.success).toBe(false);
       });
   });
 
@@ -79,8 +81,10 @@ describe("Login Integration Tests", () => {
       .set("Accept", "application/json")
       .expect(400)
       .then((response) => {
-        console.log(response);
-        expect(response.body).toBe({});
+        expect(response.body.message).toBe(
+          "Invalid email or password has been entered or email is not registered"
+        );
+        expect(response.body.success).toBe(false);
       });
   });
 
@@ -96,8 +100,10 @@ describe("Login Integration Tests", () => {
       .set("Accept", "application/json")
       .expect(400)
       .then((response) => {
-        console.log(response);
-        expect(response.body).toBe({});
+        expect(response.body.message).toBe(
+          "Invalid email or password has been entered or email is not registered"
+        );
+        expect(response.body.success).toBe(false);
       });
   });
 
@@ -111,8 +117,10 @@ describe("Login Integration Tests", () => {
       .set("Accept", "application/json")
       .expect(400)
       .then((response) => {
-        console.log(response);
-        expect(response.body).toBe({});
+        expect(response.body.message).toBe(
+          "Invalid email or password has been entered or email is not registered"
+        );
+        expect(response.body.success).toBe(false);
       });
   });
 });

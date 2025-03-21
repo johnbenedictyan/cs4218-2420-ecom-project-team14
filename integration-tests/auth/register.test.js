@@ -35,6 +35,10 @@ describe("Register Integration Tests", () => {
     await mongoMemServer.stop();
   });
 
+  afterEach(async () => {
+    await userModel.findOneAndDelete({ name: "Test User 2" });
+  });
+
   // Test 1: Success case where all details are in correct valid format for user to be registered
   it("should allow user with all correct valid details to be registered successfully", () => {
     const payload = {

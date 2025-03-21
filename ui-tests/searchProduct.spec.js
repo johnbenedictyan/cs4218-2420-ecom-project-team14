@@ -117,14 +117,19 @@ async function searchAndLoadmoreVerification(page) {
   await expect(page.getByRole("heading", { name: "Found 6" })).toBeVisible();
 
   // Expect the important product values to be present
+  const toyCarEight = page.locator(".card").nth(0);
   await expect(
-    page.getByRole("heading", { name: "Electronic toy car 8" })
+    toyCarEight.getByRole("heading", { name: "Electronic toy car 8" })
   ).toBeVisible();
-  await expect(page.getByText("$ 8")).toBeVisible();
+  await expect(toyCarEight.getByText("$ 8")).toBeVisible();
 
   // Assert buttons like "add to cart" and "product details" are present
-  await expect(page.locator(".card-body > button").first()).toBeVisible();
-  await expect(page.locator("button:nth-child(5)").first()).toBeVisible();
+  await expect(
+    toyCarEight.getByRole("button", { name: "Add To Cart" }).first()
+  ).toBeVisible();
+  await expect(
+    toyCarEight.getByRole("button", { name: "More Details" }).first()
+  ).toBeVisible();
 
   // Expect the other products to be visible
   await expect(
@@ -147,16 +152,21 @@ async function searchAndLoadmoreVerification(page) {
   await expect(page.getByRole("button", { name: "Loadmore" })).toBeVisible();
   await page.getByRole("button", { name: "Loadmore" }).click();
 
-  // Expect 12 products to be found
+  // Expect 8 products to be found
   await expect(page.getByRole("heading", { name: "Found 8" })).toBeVisible();
 
   // Expect the important product values to be present
+  const toyCarTwo = page.locator(".card").nth(6);
   await expect(
-    page.getByRole("heading", { name: "Electronic toy car 2" })
+    toyCarTwo.getByRole("heading", { name: "Electronic toy car 2" })
   ).toBeVisible();
-  await expect(page.getByText("$ 2")).toBeVisible();
-  await expect(page.locator(".card-body > button").first()).toBeVisible();
-  await expect(page.locator("button:nth-child(5)").first()).toBeVisible();
+  await expect(toyCarTwo.getByText("$ 2")).toBeVisible();
+  await expect(
+    toyCarTwo.getByRole("button", { name: "Add To Cart" }).first()
+  ).toBeVisible();
+  await expect(
+    toyCarTwo.getByRole("button", { name: "More Details" }).first()
+  ).toBeVisible();
 
   // Expect the other remaining product to be visible
   await expect(
@@ -177,7 +187,7 @@ async function searchAndLoadmoreVerification(page) {
   ).not.toBeVisible();
 
   // Click on "more details" button of Electronic toy car 8
-  await page.locator(".card-body > button").first().click();
+  toyCarEight.getByRole("button", { name: "More Details" }).first().click();
 
   // Expect relevant product details to be present
   await expect(
@@ -205,6 +215,11 @@ test.describe("Successful searching, loadmore and view product details functiona
     page,
   }) => {
     await page.goto("http://localhost:3000", { waitUntil: "commit" });
+
+    // Ensure not logged in before proceeding
+    await expect(page.getByRole("link", { name: "Login" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Register" })).toBeVisible();
+
     await searchAndLoadmoreVerification(page);
   });
 
@@ -214,8 +229,8 @@ test.describe("Successful searching, loadmore and view product details functiona
   }) => {
     await page.goto("http://localhost:3000", { waitUntil: "commit" });
 
+    // Logging in before proceeding
     await page.getByRole("link", { name: "Login" }).click();
-
     await page
       .getByRole("textbox", { name: "Enter Your Email" })
       .fill("sammyrae@gmail.com");

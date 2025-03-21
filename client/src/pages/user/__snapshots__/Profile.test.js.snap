@@ -39,7 +39,8 @@ exports[`Profile Component Snapshot matches snapshot 1`] = `
                 <input
                   class="form-control"
                   id="exampleInputEmail1"
-                  placeholder="Enter Your Name"
+                  placeholder="Enter Your Name (Required)"
+                  required=""
                   type="text"
                   value="John Doe"
                 />
@@ -73,7 +74,8 @@ exports[`Profile Component Snapshot matches snapshot 1`] = `
                 <input
                   class="form-control"
                   id="exampleInputEmail1"
-                  placeholder="Enter Your Phone"
+                  placeholder="Enter Your Phone (Required)"
+                  required=""
                   type="text"
                   value="1234567890"
                 />
@@ -84,7 +86,8 @@ exports[`Profile Component Snapshot matches snapshot 1`] = `
                 <input
                   class="form-control"
                   id="exampleInputEmail1"
-                  placeholder="Enter Your Address"
+                  placeholder="Enter Your Address (Required)"
+                  required=""
                   type="text"
                   value="123 Test Street"
                 />

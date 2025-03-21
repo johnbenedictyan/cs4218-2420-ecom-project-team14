@@ -65,7 +65,7 @@ describe("Update Product Controller Tests", () => {
       return Promise.resolve(this);
     });
 
-    productModel.findByIdAndUpdate = jest.fn().mockResolvedValue({
+    let testProduct = {
       _id: new ObjectId(productInformation.id),
       name: productInformation.name.valid,
       description: productInformation.description.valid,
@@ -74,8 +74,16 @@ describe("Update Product Controller Tests", () => {
       shipping: productInformation.shipping.valid,
       photo: productInformation.files.valid,
       __v: 0,
+    };
+
+    productModel.findByIdAndUpdate = jest.fn().mockResolvedValue({
+      ...testProduct,
       save: mockSave,
     });
+
+    productModel.findOne = jest.fn().mockResolvedValue(null);
+
+    productModel.findById = jest.fn().mockResolvedValue(testProduct);
   });
 
   beforeAll(() => {

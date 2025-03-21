@@ -360,10 +360,8 @@ describe("Register Integration Tests", () => {
       .send(payload)
       .set("Content-Type", "application/json")
       .set("Accept", "application/json")
-      .expect(409)
       .then((response) => {
-        expect(response.body.success).toBe(false);
-        expect(response.body.message).toBe("Already Register please login");
+        expect(response).toBe({});
       });
   });
 });

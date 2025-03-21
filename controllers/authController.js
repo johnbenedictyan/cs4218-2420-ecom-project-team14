@@ -5,59 +5,58 @@ import { comparePassword, hashPassword } from "./../helpers/authHelper.js";
 import JWT from "jsonwebtoken";
 
 export const registerController = async (req, res) => {
-  try {
-    const { name, email, password, phone, address, answer } = req.body;
-    //validations
-    if (!name.trim()) {
-      return res
-        .status(400)
-        .send({ success: false, message: "Name is Required" });
-    }
-    if (!email.trim()) {
-      return res
-        .status(400)
-        .send({ success: false, message: "Email is Required" });
-    }
-    if (!password.trim()) {
-      return res
-        .status(400)
-        .send({ success: false, message: "Password is Required" });
-    }
-    if (!phone.trim()) {
-      return res
-        .status(400)
-        .send({ success: false, message: "Phone no is Required" });
-    }
-    if (!address.trim()) {
-      return res
-        .status(400)
-        .send({ success: false, message: "Address is Required" });
-    }
-    if (!answer.trim()) {
-      return res
-        .status(400)
-        .send({ success: false, message: "Answer is Required" });
-    }
+  const { name, email, password, phone, address, answer } = req.body;
+  //validations
+  if (!name.trim()) {
+    return res
+      .status(400)
+      .send({ success: false, message: "Name is Required" });
+  }
+  if (!email.trim()) {
+    return res
+      .status(400)
+      .send({ success: false, message: "Email is Required" });
+  }
+  if (!password.trim()) {
+    return res
+      .status(400)
+      .send({ success: false, message: "Password is Required" });
+  }
+  if (!phone.trim()) {
+    return res
+      .status(400)
+      .send({ success: false, message: "Phone no is Required" });
+  }
+  if (!address.trim()) {
+    return res
+      .status(400)
+      .send({ success: false, message: "Address is Required" });
+  }
+  if (!answer.trim()) {
+    return res
+      .status(400)
+      .send({ success: false, message: "Answer is Required" });
+  }
 
-    // Add validation for name (Maximum 150 characters long)
-    if (name.length > 150) {
-      return res.status(400).send({
-        success: false,
-        message: "The name can only be up to 150 characters long",
-      });
-    }
+  // Add validation for name (Maximum 150 characters long)
+  if (name.length > 150) {
+    return res.status(400).send({
+      success: false,
+      message: "The name can only be up to 150 characters long",
+    });
+  }
 
-    // Add validation for password length (Need to be minimum of length 6)
-    if (password.length < 6) {
-      return res.status(400).send({
-        success: false,
-        message:
-          "The length of the password should be at least 6 characters long",
-      });
-    }
+  // Add validation for password length (Need to be minimum of length 6)
+  if (password.length < 6) {
+    return res.status(400).send({
+      success: false,
+      message:
+        "The length of the password should be at least 6 characters long",
+    });
+  }
 
-    // Add validation for email check
-    /* Conditions which are added are as follows:
+  // Add validation for email check
+  /* Conditions which are added are as follows:
     Local part
     1) Cannot start with dot
     2) Cannot have consecutive dots
@@ -73,40 +72,40 @@ export const registerController = async (req, res) => {
     5) Maximally is 64 characters long
 
     */
-    const emailRegex =
-      /^(?!^\.)(?!.*\.@)(?!.*\.{2})[a-zA-Z0-9.]{1,64}@(?!@\.)(?!.*\.$)(?!.*\.{2})[a-zA-Z0-9.]{1,64}$/;
-    if (!email.match(emailRegex)) {
-      return res
-        .status(400)
-        .send({ success: false, message: "The email is in an invalid format" });
-    }
+  const emailRegex =
+    /^(?!^\.)(?!.*\.@)(?!.*\.{2})[a-zA-Z0-9.]{1,64}@(?!@\.)(?!.*\.$)(?!.*\.{2})[a-zA-Z0-9.]{1,64}$/;
+  if (!email.match(emailRegex)) {
+    return res
+      .status(400)
+      .send({ success: false, message: "The email is in an invalid format" });
+  }
 
-    // Add validation for phone number
-    const phoneRegex = /^[689]\d{7}$/;
-    if (!phone.match(phoneRegex)) {
-      return res.status(400).send({
-        success: false,
-        message:
-          "The phone number must start with 6,8 or 9 and be 8 digits long",
-      });
-    }
+  // Add validation for phone number
+  const phoneRegex = /^[689]\d{7}$/;
+  if (!phone.match(phoneRegex)) {
+    return res.status(400).send({
+      success: false,
+      message: "The phone number must start with 6,8 or 9 and be 8 digits long",
+    });
+  }
 
-    // Add validation for address
-    if (address.length > 150) {
-      return res.status(400).send({
-        success: false,
-        message: "The address can only be up to 150 characters long",
-      });
-    }
+  // Add validation for address
+  if (address.length > 150) {
+    return res.status(400).send({
+      success: false,
+      message: "The address can only be up to 150 characters long",
+    });
+  }
 
-    // Add validation for answer
-    if (answer.length > 100) {
-      return res.status(400).send({
-        success: false,
-        message: "The answer can only be up to 100 characters long",
-      });
-    }
+  // Add validation for answer
+  if (answer.length > 100) {
+    return res.status(400).send({
+      success: false,
+      message: "The answer can only be up to 100 characters long",
+    });
+  }
 
+  try {
     // check if user exist
     const existingUser = await userModel.findOne({ email });
     // existing user

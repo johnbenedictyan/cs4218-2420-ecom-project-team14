@@ -9,34 +9,48 @@ export const registerController = async (req, res) => {
     const { name, email, password, phone, address, answer } = req.body;
     //validations
     if (!name.trim()) {
-      return res.send({ message: "Name is Required" });
+      return res
+        .status(400)
+        .send({ success: false, message: "Name is Required" });
     }
     if (!email.trim()) {
-      return res.send({ message: "Email is Required" });
+      return res
+        .status(400)
+        .send({ success: false, message: "Email is Required" });
     }
     if (!password.trim()) {
-      return res.send({ message: "Password is Required" });
+      return res
+        .status(400)
+        .send({ success: false, message: "Password is Required" });
     }
     if (!phone.trim()) {
-      return res.send({ message: "Phone no is Required" });
+      return res
+        .status(400)
+        .send({ success: false, message: "Phone no is Required" });
     }
     if (!address.trim()) {
-      return res.send({ message: "Address is Required" });
+      return res
+        .status(400)
+        .send({ success: false, message: "Address is Required" });
     }
     if (!answer.trim()) {
-      return res.send({ message: "Answer is Required" });
+      return res
+        .status(400)
+        .send({ success: false, message: "Answer is Required" });
     }
 
     // Add validation for name (Maximum 150 characters long)
     if (name.length > 150) {
-      return res
-        .status(400)
-        .send({ message: "The name can only be up to 150 characters long" });
+      return res.status(400).send({
+        success: false,
+        message: "The name can only be up to 150 characters long",
+      });
     }
 
     // Add validation for password length (Need to be minimum of length 6)
     if (password.length < 6) {
       return res.status(400).send({
+        success: false,
         message:
           "The length of the password should be at least 6 characters long",
       });
@@ -64,13 +78,14 @@ export const registerController = async (req, res) => {
     if (!email.match(emailRegex)) {
       return res
         .status(400)
-        .send({ message: "The email is in an invalid format" });
+        .send({ success: false, message: "The email is in an invalid format" });
     }
 
     // Add validation for phone number
     const phoneRegex = /^[689]\d{7}$/;
     if (!phone.match(phoneRegex)) {
       return res.status(400).send({
+        success: false,
         message:
           "The phone number must start with 6,8 or 9 and be 8 digits long",
       });
@@ -78,16 +93,18 @@ export const registerController = async (req, res) => {
 
     // Add validation for address
     if (address.length > 150) {
-      return res
-        .status(400)
-        .send({ message: "The address can only be up to 150 characters long" });
+      return res.status(400).send({
+        success: false,
+        message: "The address can only be up to 150 characters long",
+      });
     }
 
     // Add validation for answer
     if (answer.length > 100) {
-      return res
-        .status(400)
-        .send({ message: "The answer can only be up to 100 characters long" });
+      return res.status(400).send({
+        success: false,
+        message: "The answer can only be up to 100 characters long",
+      });
     }
 
     // check if user exist

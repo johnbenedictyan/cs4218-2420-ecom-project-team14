@@ -8,8 +8,8 @@ import app from "../../server.js";
 
 describe("Login Integration Tests", () => {
   let mongoMemoryServer;
-  let testUser;
   const apiURL = "/api/v1/auth/login";
+  const testEmail = "testuser1@mail.com";
   const testPassword = "testUserPassword";
 
   // TODO: Make all test parallelisable, check responses
@@ -20,10 +20,10 @@ describe("Login Integration Tests", () => {
 
     const hashedPassword = await hashPassword(testPassword);
 
-    testUser = await userModel({
+    await userModel({
       _id: new ObjectId("679f3c5eb35bb2db5e6a3646"),
       name: "Test User 1",
-      email: "testuser1@mail.com",
+      email: testEmail,
       password: hashedPassword,
       phone: "81234567",
       address: "Beautiful Home on Earth",
@@ -43,7 +43,7 @@ describe("Login Integration Tests", () => {
     console.log("Test User", testUser);
     await request(app)
       .post(apiURL)
-      .field("email", testUser.email)
+      .field("email", testEmail)
       .field("password", testPassword)
       .set("Content-Type", "application/json")
       .set("Accept", "application/json")
@@ -95,7 +95,7 @@ describe("Login Integration Tests", () => {
   it("should not allow user with an empty password to login", async () => {
     await request(app)
       .post(apiURL)
-      .field("email", "testuser1@mail.com")
+      .field("email", testEmail)
       .field("password", "")
       .set("Content-Type", "application/json")
       .set("Accept", "application/json")
@@ -112,7 +112,7 @@ describe("Login Integration Tests", () => {
   it("should not allow user with a non-empty invalid password to login", async () => {
     await request(app)
       .post(apiURL)
-      .field("email", "testuser1@mail.com")
+      .field("email", testEmail)
       .field("password", "wrongPassword")
       .set("Content-Type", "application/json")
       .set("Accept", "application/json")

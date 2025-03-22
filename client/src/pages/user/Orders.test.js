@@ -1,10 +1,9 @@
-import React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
 import "@testing-library/jest-dom";
-import Orders from "./Orders";
+import { render, screen, waitFor } from "@testing-library/react";
 import axios from "axios";
-import moment from "moment";
+import React from "react";
+import { act } from "react-dom/test-utils";
+import Orders from "./Orders";
 
 // Mock dependencies
 jest.mock("../../components/Layout", () => ({ children, title }) => (
@@ -76,14 +75,17 @@ describe("Orders Component", () => {
   // Rendering Tests
   describe("Component Rendering", () => {
     it("renders Orders component without crashing", async () => {
-      axios.get.mockResolvedValueOnce({ data: [] });
-      
+      axios.get.mockResolvedValueOnce({ data: { orders: [] } });
+
       await act(async () => {
         render(<Orders />);
       });
-      
+
       expect(screen.getByTestId("mock-layout")).toBeInTheDocument();
-      expect(screen.getByTestId("mock-layout")).toHaveAttribute("data-title", "Your Orders");
+      expect(screen.getByTestId("mock-layout")).toHaveAttribute(
+        "data-title",
+        "Your Orders"
+      );
       expect(screen.getByTestId("mock-user-menu")).toBeInTheDocument();
       expect(screen.getByText("All Orders")).toBeInTheDocument();
     });
@@ -92,22 +94,25 @@ describe("Orders Component", () => {
   // Data Fetching Tests
   describe("Data Fetching", () => {
     it("calls getOrders when auth token is present", async () => {
-      axios.get.mockResolvedValueOnce({ data: [] });
-      
+      axios.get.mockResolvedValueOnce({ data: { orders: [] } });
+
       await act(async () => {
         render(<Orders />);
       });
-      
+
       expect(axios.get).toHaveBeenCalledWith("/api/v1/auth/orders");
     });
 
     it("does not call getOrders when auth token is missing", async () => {
-      require("../../context/auth").useAuth.mockReturnValueOnce([{}, jest.fn()]);
-      
+      require("../../context/auth").useAuth.mockReturnValueOnce([
+        {},
+        jest.fn(),
+      ]);
+
       await act(async () => {
         render(<Orders />);
       });
-      
+
       expect(axios.get).not.toHaveBeenCalled();
     });
 
@@ -115,15 +120,15 @@ describe("Orders Component", () => {
       const originalError = console.error;
       const consoleErrorMock = jest.fn();
       console.error = consoleErrorMock;
-      
+
       axios.get.mockRejectedValueOnce(new Error("API Error"));
-      
+
       await act(async () => {
         render(<Orders />);
       });
-      
+
       console.error = originalError;
-      
+
       expect(screen.getByText("All Orders")).toBeInTheDocument();
     });
   });
@@ -131,85 +136,103 @@ describe("Orders Component", () => {
   // Orders Display Tests with findBy instead of getBy to handle async rendering
   describe("Orders Display", () => {
     it("displays orders when data is fetched successfully", async () => {
-      axios.get.mockResolvedValueOnce({ data: mockOrders });
-      
+      axios.get.mockResolvedValueOnce({ data: { orders: mockOrders } });
+
       render(<Orders />);
-      
-      await waitFor(() => {
-        expect(screen.getAllByText("Processing").length).toBeGreaterThan(0);
-      }, { timeout: 3000 });
-      
+
+      await waitFor(
+        () => {
+          expect(screen.getAllByText("Processing").length).toBeGreaterThan(0);
+        },
+        { timeout: 3000 }
+      );
+
       expect(screen.getAllByText("John Doe").length).toBeGreaterThan(0);
-      expect(screen.getAllByText("a few seconds ago").length).toBeGreaterThan(0);
+      expect(screen.getAllByText("a few seconds ago").length).toBeGreaterThan(
+        0
+      );
       expect(screen.getAllByText("Test Product 1").length).toBeGreaterThan(0);
-      
-      expect(screen.getByText("This is a test product descrip")).toBeInTheDocument();
+
+      expect(
+        screen.getByText("This is a test product descrip")
+      ).toBeInTheDocument();
     });
 
     it("shows 'Success' for successful payments and 'Failed' for failed payments", async () => {
-      axios.get.mockResolvedValueOnce({ data: mockOrders });
-      
+      axios.get.mockResolvedValueOnce({ data: { orders: mockOrders } });
+
       render(<Orders />);
-      
-      await waitFor(() => {
-        expect(screen.getByText("Success")).toBeInTheDocument();
-        expect(screen.getByText("Failed")).toBeInTheDocument();
-      }, { timeout: 3000 });
+
+      await waitFor(
+        () => {
+          expect(screen.getByText("Success")).toBeInTheDocument();
+          expect(screen.getByText("Failed")).toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
     });
   });
 
   // Image Tests
   describe("Product Images", () => {
     it("displays product images with correct src and alt attributes", async () => {
-      axios.get.mockResolvedValueOnce({ data: mockOrders });
-      
+      axios.get.mockResolvedValueOnce({ data: { orders: mockOrders } });
+
       render(<Orders />);
-      
-      await waitFor(() => {
-        const images = screen.getAllByRole("img");
-        expect(images.length).toBeGreaterThan(0);
-        
-        const imgSrcPattern = /\/api\/v1\/product\/product-photo\/p\d/;
-        expect(images[0].src).toMatch(imgSrcPattern);
-        
-        expect(images[0].alt).toBe("Test Product 1");
-      }, { timeout: 3000 });
+
+      await waitFor(
+        () => {
+          const images = screen.getAllByRole("img");
+          expect(images.length).toBeGreaterThan(0);
+
+          const imgSrcPattern = /\/api\/v1\/product\/product-photo\/p\d/;
+          expect(images[0].src).toMatch(imgSrcPattern);
+
+          expect(images[0].alt).toBe("Test Product 1");
+        },
+        { timeout: 3000 }
+      );
     });
   });
 
   // Structure Tests
   describe("Component Structure", () => {
     it("renders tables with proper headers", async () => {
-      axios.get.mockResolvedValueOnce({ data: mockOrders });
-      
+      axios.get.mockResolvedValueOnce({ data: { orders: mockOrders } });
+
       render(<Orders />);
-      
-      await waitFor(() => {
-        const headers = screen.getAllByRole("columnheader");
-        expect(headers.length).toBeGreaterThan(0);
-        
-        const headerTexts = headers.map(h => h.textContent);
-        expect(headerTexts).toContain("#");
-        expect(headerTexts).toContain("Status");
-        expect(headerTexts).toContain("Buyer");
-        expect(headerTexts.some(text => text.includes("date"))).toBeTruthy();
-        expect(headerTexts).toContain("Payment");
-        expect(headerTexts).toContain("Quantity");
-      }, { timeout: 3000 });
+
+      await waitFor(
+        () => {
+          const headers = screen.getAllByRole("columnheader");
+          expect(headers.length).toBeGreaterThan(0);
+
+          const headerTexts = headers.map((h) => h.textContent);
+          expect(headerTexts).toContain("#");
+          expect(headerTexts).toContain("Status");
+          expect(headerTexts).toContain("Buyer");
+          expect(
+            headerTexts.some((text) => text.includes("date"))
+          ).toBeTruthy();
+          expect(headerTexts).toContain("Payment");
+          expect(headerTexts).toContain("Quantity");
+        },
+        { timeout: 3000 }
+      );
     });
   });
 
   // Snapshot Test
   describe("Snapshot", () => {
     it("matches snapshot with empty orders", async () => {
-      axios.get.mockResolvedValueOnce({ data: [] });
-      
+      axios.get.mockResolvedValueOnce({ data: { orders: [] } });
+
       let container;
       await act(async () => {
         const { container: renderedContainer } = render(<Orders />);
         container = renderedContainer;
       });
-      
+
       expect(container).toMatchSnapshot();
     });
   });

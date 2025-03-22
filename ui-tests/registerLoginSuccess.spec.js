@@ -8,7 +8,7 @@ dotenv.config();
 let emailForDeletion;
 
 test.beforeEach(async ({ page }) => {
-    // Connecting to db which is needed for deleting the user later
+    // Connecting to db which is needed for creating and deleting the user for the test
     await mongoose.connect(process.env.MONGO_URL);
     // Navigating to home page
     await page.goto('http://localhost:3000', { waitUntil: 'commit' });
@@ -22,7 +22,7 @@ test.afterEach(async () => {
     await mongoose.disconnect();
 })
 
-test.describe("Successful Register and Login", () => {
+test.describe("Successful Register and/or login", () => {
     // Check that normal user is able to register and login successfully
     test("Should allow the normal user to register and login successfully", async ({page}) => {
         // Set email to use for deleting user later

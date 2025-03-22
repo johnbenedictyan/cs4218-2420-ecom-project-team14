@@ -1,8 +1,8 @@
-import userModel from "../models/userModel.js";
 import orderModel from "../models/orderModel.js";
+import userModel from "../models/userModel.js";
 
-import { comparePassword, hashPassword } from "./../helpers/authHelper.js";
 import JWT from "jsonwebtoken";
+import { comparePassword, hashPassword } from "./../helpers/authHelper.js";
 
 export const registerController = async (req, res) => {
   const { name, email, password, phone, address, answer } = req.body;
@@ -176,20 +176,13 @@ export const loginController = async (req, res) => {
       });
     }
     //token
-    const token = await JWT.sign({ _id: user._id }, process.env.JWT_SECRET, {
+    const token = JWT.sign({ _id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
     res.status(200).send({
       success: true,
       message: "login successfully",
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-        address: user.address,
-        role: user.role,
-      },
+      user,
       token,
     });
   } catch (error) {

@@ -11,6 +11,6 @@ sonar.projectVersion=1.0
 sonar.javascript.lcov.reportPaths=coverage/**/lcov.info
 
 # Analysis settings
-sonar.sources=client/src,controllers
+sonar.sources=client/src,controllers,middlewares,routes,helpers
 sonar.inclusions=**/*.js,**/*.jsx
 sonar.exclusions=**/*.test.js

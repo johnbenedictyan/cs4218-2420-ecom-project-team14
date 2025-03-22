@@ -27,6 +27,7 @@ describe("Get Orders By User Id Integration Tests", () => {
       phone: "81234567",
       address: "Beautiful Home on Earth",
       role: 0,
+      answer: "Basketball",
     }).save();
 
     testUser2 = await userModel({
@@ -37,6 +38,7 @@ describe("Get Orders By User Id Integration Tests", () => {
       phone: "81234567",
       address: "Beautiful Home on Earth",
       role: 0,
+      answer: "Basketball",
     }).save();
 
     product1 = await productModel({

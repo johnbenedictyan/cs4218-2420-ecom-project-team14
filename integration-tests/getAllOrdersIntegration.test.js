@@ -114,8 +114,8 @@ describe("Get All Orders Backend Integration Testing", () => {
       .get("/api/v1/auth/all-orders")
       .set("Authorization", jwtToken);
 
-    const firstOrder = response.body[0];
-    const secondOrder = response.body[1];
+    const firstOrder = response.body.orders[0];
+    const secondOrder = response.body.orders[1];
 
     // Check that the orders are sorted correctly with the first order being later than the second one
     expect(new Date(firstOrder.createdAt).getTime()).toBeGreaterThan(

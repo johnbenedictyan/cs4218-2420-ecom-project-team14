@@ -1,6 +1,12 @@
 // AdminOrders.test.js
 import React from "react";
-import { render, screen, fireEvent, waitFor, within } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import "@testing-library/jest-dom";
 import AdminOrders from "./AdminOrders";
@@ -102,7 +108,9 @@ describe("AdminOrders Component", () => {
 
   beforeEach(() => {
     useAuth.mockReturnValue([mockAuth, jest.fn()]);
-    axios.get.mockResolvedValue({ data: mockOrders });
+    axios.get.mockResolvedValue({
+      data: { success: true, orders: mockOrders },
+    });
     axios.put.mockResolvedValue({ data: { success: true } });
   });
 
@@ -146,7 +154,7 @@ describe("AdminOrders Component", () => {
 
     it("does not fetch orders when auth token is not present", async () => {
       useAuth.mockReturnValue([{}, jest.fn()]);
-      
+
       await act(async () => {
         render(<AdminOrders />);
       });
@@ -160,53 +168,59 @@ describe("AdminOrders Component", () => {
     // Replace just the problematic "displays order information correctly" test with this:
 
     it("displays order information correctly", async () => {
-        await act(async () => {
+      await act(async () => {
         render(<AdminOrders />);
-        });
-    
-        // Check for buyer names
-        expect(screen.getByText("John Doe")).toBeInTheDocument();
-        expect(screen.getByText("Jane Smith")).toBeInTheDocument();
-        
-        // Check for payment status
-        expect(screen.getByText("Success")).toBeInTheDocument();
-        expect(screen.getByText("Failed")).toBeInTheDocument();
-        
-        // Check for product information
-        expect(screen.getByText("Test Product")).toBeInTheDocument();
-        expect(screen.getByText("Another Product")).toBeInTheDocument();
-        expect(screen.getByText("Third Product")).toBeInTheDocument();
-        
-        // Check for product description
-        expect(screen.getByText("Test description for product")).toBeInTheDocument();
-        
-        // Check for prices
-        expect(screen.getByText("Price : 99")).toBeInTheDocument();
-        expect(screen.getByText("Price : 199")).toBeInTheDocument();
-        expect(screen.getByText("Price : 299")).toBeInTheDocument();
-        
-        // Check for quantities directly using getAllByText
-        // This is more reliable than trying to filter cells
-        const quantity1Cells = screen.getAllByText("1");
-        const quantity2Cells = screen.getAllByText("2");
-        
-        // Get the one that's in a table cell (not an order index)
-        const productQuantity1 = Array.from(quantity1Cells).find(
-        node => node.tagName === 'TD' && node.textContent === "1" && 
-        node.previousElementSibling && 
-        (node.previousElementSibling.textContent === "Success" || 
-        node.previousElementSibling.textContent === "Failed")
-        );
-        
-        const productQuantity2 = Array.from(quantity2Cells).find(
-        node => node.tagName === 'TD' && node.textContent === "2" && 
-        node.previousElementSibling && 
-        (node.previousElementSibling.textContent === "Success" || 
-        node.previousElementSibling.textContent === "Failed")
-        );
-        
-        expect(productQuantity1).toBeInTheDocument();
-        expect(productQuantity2).toBeInTheDocument();
+      });
+
+      // Check for buyer names
+      expect(screen.getByText("John Doe")).toBeInTheDocument();
+      expect(screen.getByText("Jane Smith")).toBeInTheDocument();
+
+      // Check for payment status
+      expect(screen.getByText("Success")).toBeInTheDocument();
+      expect(screen.getByText("Failed")).toBeInTheDocument();
+
+      // Check for product information
+      expect(screen.getByText("Test Product")).toBeInTheDocument();
+      expect(screen.getByText("Another Product")).toBeInTheDocument();
+      expect(screen.getByText("Third Product")).toBeInTheDocument();
+
+      // Check for product description
+      expect(
+        screen.getByText("Test description for product")
+      ).toBeInTheDocument();
+
+      // Check for prices
+      expect(screen.getByText("Price : 99")).toBeInTheDocument();
+      expect(screen.getByText("Price : 199")).toBeInTheDocument();
+      expect(screen.getByText("Price : 299")).toBeInTheDocument();
+
+      // Check for quantities directly using getAllByText
+      // This is more reliable than trying to filter cells
+      const quantity1Cells = screen.getAllByText("1");
+      const quantity2Cells = screen.getAllByText("2");
+
+      // Get the one that's in a table cell (not an order index)
+      const productQuantity1 = Array.from(quantity1Cells).find(
+        (node) =>
+          node.tagName === "TD" &&
+          node.textContent === "1" &&
+          node.previousElementSibling &&
+          (node.previousElementSibling.textContent === "Success" ||
+            node.previousElementSibling.textContent === "Failed")
+      );
+
+      const productQuantity2 = Array.from(quantity2Cells).find(
+        (node) =>
+          node.tagName === "TD" &&
+          node.textContent === "2" &&
+          node.previousElementSibling &&
+          (node.previousElementSibling.textContent === "Success" ||
+            node.previousElementSibling.textContent === "Failed")
+      );
+
+      expect(productQuantity1).toBeInTheDocument();
+      expect(productQuantity2).toBeInTheDocument();
     });
 
     it("displays the correct number of Select components for status update", async () => {
@@ -216,7 +230,7 @@ describe("AdminOrders Component", () => {
 
       const selectComponents = screen.getAllByTestId("mock-select");
       expect(selectComponents).toHaveLength(mockOrders.length);
-      
+
       // Check default values
       expect(selectComponents[0]).toHaveAttribute(
         "data-default-value",
@@ -237,7 +251,7 @@ describe("AdminOrders Component", () => {
       });
 
       const selectElements = screen.getAllByRole("combobox");
-      
+
       await act(async () => {
         fireEvent.change(selectElements[0], { target: { value: "Shipped" } });
       });
@@ -248,7 +262,7 @@ describe("AdminOrders Component", () => {
           { status: "Shipped" }
         );
       });
-      
+
       // Verify that getOrders is called again to refresh the data
       expect(axios.get).toHaveBeenCalledTimes(2);
     });
@@ -256,13 +270,13 @@ describe("AdminOrders Component", () => {
     it("handles errors when status update fails", async () => {
       console.log = jest.fn(); // Mock console.log to check error logging
       axios.put.mockRejectedValueOnce(new Error("Update failed"));
-      
+
       await act(async () => {
         render(<AdminOrders />);
       });
 
       const selectElements = screen.getAllByRole("combobox");
-      
+
       await act(async () => {
         fireEvent.change(selectElements[0], { target: { value: "Shipped" } });
       });
@@ -281,7 +295,7 @@ describe("AdminOrders Component", () => {
       });
 
       const images = screen.getAllByRole("img");
-      
+
       expect(images[0]).toHaveAttribute("alt", "Test Product");
       expect(images[1]).toHaveAttribute("alt", "Another Product");
       expect(images[2]).toHaveAttribute("alt", "Third Product");
@@ -295,7 +309,7 @@ describe("AdminOrders Component", () => {
       await act(async () => {
         renderResult = render(<AdminOrders />);
       });
-      
+
       expect(renderResult.container).toMatchSnapshot();
     });
   });

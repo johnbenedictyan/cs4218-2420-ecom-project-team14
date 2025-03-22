@@ -1,9 +1,10 @@
-import React from "react";
-import { render, screen, waitFor, act } from "@testing-library/react";
-import { MemoryRouter, useParams, useNavigate } from "react-router-dom";
 import "@testing-library/jest-dom";
+import { act, render, screen } from "@testing-library/react";
 import axios from "axios";
+import React from "react";
+import { MemoryRouter, useNavigate, useParams } from "react-router-dom";
 import ProductDetails from "./ProductDetails";
+import { useCart } from "../context/cart";
 
 // Mock axios
 jest.mock("axios");
@@ -14,6 +15,9 @@ jest.mock("react-router-dom", () => ({
   useParams: jest.fn(),
   useNavigate: jest.fn(),
 }));
+
+// Mock useCart
+jest.mock("../context/cart", () => ({ useCart: jest.fn() }));
 
 // Mock Layout component
 jest.mock("../components/Layout", () => {
@@ -116,6 +120,13 @@ describe("ProductDetails Component", () => {
     jest.clearAllMocks();
     useParams.mockReturnValue({ slug: "test-product" });
     useNavigate.mockReturnValue(mockNavigate);
+    useCart.mockReturnValue({
+      cart: {},
+      addToCart: jest.fn(),
+      removeFromCart: jest.fn(),
+      updateQuantity: jest.fn(),
+      clearCart: jest.fn(),
+    });
   });
 
   // Tests for component rendering
@@ -391,7 +402,7 @@ describe("ProductDetails Component", () => {
     expect(screen.getByText(/Category : Electronics/i)).toBeInTheDocument();
 
     // Check for "ADD TO CART" button
-    expect(screen.getByText("ADD TO CART")).toBeInTheDocument();
+    expect(screen.getByRole("button", {name: "ADD TO CART"})).toBeInTheDocument();
 
     // Check for product image
     const productImage = screen.getByAltText("Test Product");

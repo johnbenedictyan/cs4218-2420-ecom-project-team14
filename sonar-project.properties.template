@@ -7,6 +7,10 @@ sonar.projectKey=cs4218-ecom-project
 sonar.projectName=cs4218-ecom-project
 sonar.projectVersion=1.0
 
+# Coverage
+sonar.javascript.lcov.reportPaths=coverage/**/lcov.info
+
 # Analysis settings
-sonar.sources=client/src
-# sonar.inclusions=**/*.js,**/*.jsx
+sonar.sources=client/src,controllers,middlewares,routes,helpers
+sonar.inclusions=**/*.js,**/*.jsx
+sonar.exclusions=**/*.test.js

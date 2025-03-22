@@ -1,6 +1,6 @@
 export default {
   // display name
-  displayName: "backend",
+  displayName: "backend integration",
 
   // when testing backend
   testEnvironment: "node",

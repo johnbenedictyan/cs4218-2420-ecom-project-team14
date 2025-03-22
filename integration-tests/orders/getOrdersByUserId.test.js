@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import { hashPassword } from "../../helpers/authHelper.js";
 import orderModel from "../../models/orderModel.js";
 import productModel from "../../models/productModel.js";
+import userModel from "../../models/userModel.js";
 import app from "../../server.js";
 
 describe("Get Orders By User Id Integration Tests", () => {
@@ -89,7 +90,7 @@ describe("Get Orders By User Id Integration Tests", () => {
   // Test 1: Success case where the orders made by the user can be obtained
   it("should allow the user to get the list of orders that they have made", async () => {
     const jwtToken = await JWT.sign(
-      { _id: user1._id },
+      { _id: testUser1._id },
       process.env.JWT_SECRET,
       {
         expiresIn: "7d",
@@ -97,19 +98,17 @@ describe("Get Orders By User Id Integration Tests", () => {
     );
 
     // Check that the order returned is correct
-    return request(app)
+    const response = await request(app)
       .get(getOrderURL)
-      .set("Authorization", jwtToken)
-      .expect(200)
-      .then((response) => {
-        expect(response.body).toBe({});
-      });
+      .set("Authorization", jwtToken);
+    expect(response.status).toBe(200);
+    expect(response.body).toBe({});
   });
 
   // Test 2: Success case where user did not make any orders
   it("should return an empty array for the user who has made 0 orders", async () => {
     const jwtToken = await JWT.sign(
-      { _id: user2._id },
+      { _id: testUser2._id },
       process.env.JWT_SECRET,
       {
         expiresIn: "7d",
@@ -117,17 +116,16 @@ describe("Get Orders By User Id Integration Tests", () => {
     );
 
     // Check that the order array returned is empty
-    return request(app)
+    const response = await request(app)
       .get(getOrderURL)
-      .set("Authorization", jwtToken)
-      .expect(200)
-      .then((response) => {
-        expect(response.body).toBe({});
-      });
+      .set("Authorization", jwtToken);
+    expect(response.status).toBe(200);
+    expect(response.body).toBe({});
   });
 
   // Test 3: Failure case when the user is not signed in
   it("should return an error when the user has not signed in", async () => {
-    return request(app).get(getOrderURL).expect(400);
+    const response = await request(app).get(getOrderURL);
+    expect(response.status).toBe(400);
   });
 });

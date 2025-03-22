@@ -10,7 +10,11 @@ export default {
   // which test to run
   testMatch: ["<rootDir>/**/*.test.js"],
 
-  testPathIgnorePatterns: ["<rootDir>/client/", "<rootDir>/node_modules/"],
+  testPathIgnorePatterns: [
+    "<rootDir>/client/",
+    "<rootDir>/node_modules/",
+    "<rootDir>/integration-tests/",
+  ],
 
   // jest code coverage
   collectCoverage: true,

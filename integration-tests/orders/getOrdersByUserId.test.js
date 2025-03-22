@@ -61,7 +61,7 @@ describe("Get Orders By User Id Integration Tests", () => {
       slug: "Snorlax-Pokemon-Trading-Card",
       description: "This is a very rare card worth 1000s",
       price: 1250,
-      catgeory: new ObjectId("67af1353412da5fc3b82ecd8"),
+      category: new ObjectId("67af1353412da5fc3b82ecd8"),
       quantity: 1,
       shipping: true,
       createdAt: "2025-02-14T10:00:23.193Z",

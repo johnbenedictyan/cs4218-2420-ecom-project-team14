@@ -12,8 +12,6 @@ describe("Login Integration Tests", () => {
   const testEmail = "testuser1@mail.com";
   const testPassword = "testUserPassword";
 
-  // TODO: Make all test parallelisable, check responses
-
   beforeAll(async () => {
     mongoMemoryServer = await MongoMemoryServer.create();
     await mongoose.connect(mongoMemoryServer.getUri());
@@ -40,12 +38,14 @@ describe("Login Integration Tests", () => {
 
   // Test 1: Success case where user is able to login successfully with valid email and valid password
   it("should allow the user to login successfully when correct email and password is entered", async () => {
-    console.log("TEST EMAILLLLLLLL", testEmail)
-    console.log("TEST PASWORD", testEmail)
+    const payload = {
+      email: testEmail,
+      password: testPassword,
+    };
+    console.log("TEST PASWORD", testEmail);
     const response = await request(app)
       .post(apiURL)
-      .field("email", testEmail)
-      .field("password", testPassword)
+      .send(payload)
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
     expect(response.status).toBe(200);
@@ -57,10 +57,13 @@ describe("Login Integration Tests", () => {
   // Valid email is already covered in Test 1
   // Test 2 (Empty email): Case where empty email is inputted
   it("should not allow user with an empty email to login", async () => {
+    const payload = {
+      email: "",
+      password: testPassword,
+    };
     const response = await request(app)
       .post(apiURL)
-      .field("email", "")
-      .field("password", testPassword)
+      .send(payload)
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
     expect(response.status).toBe(400);
@@ -72,10 +75,13 @@ describe("Login Integration Tests", () => {
 
   // Test 3 (Non-empty invalid email): Case where non-empty email is inputted but not found in database
   it("should not allow user with a non-empty email that is not in the database to login", async () => {
+    const payload = {
+      email: "random@mail.com",
+      password: testPassword,
+    };
     const response = await request(app)
       .post(apiURL)
-      .field("email", "random@mail.com")
-      .field("password", testPassword)
+      .send(payload)
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
     expect(response.status).toBe(400);
@@ -89,10 +95,13 @@ describe("Login Integration Tests", () => {
   // Valid password is already covered in Test 1
   // Test 4 (Empty Password): Case where empty password is inputted
   it("should not allow user with an empty password to login", async () => {
+    const payload = {
+      email: testEmail,
+      password: "",
+    };
     const response = await request(app)
       .post(apiURL)
-      .field("email", testEmail)
-      .field("password", "")
+      .send(payload)
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
     expect(response.status).toBe(400);
@@ -104,10 +113,13 @@ describe("Login Integration Tests", () => {
 
   // Test 5 (Non-empty invalid password): Case where non-empty password is inputted but it is invalid as the hash of the passwords do not match
   it("should not allow user with a non-empty invalid password to login", async () => {
+    const payload = {
+      email: testEmail,
+      password: "wrongPassword",
+    };
     const response = await request(app)
       .post(apiURL)
-      .field("email", testEmail)
-      .field("password", "wrongPassword")
+      .send(payload)
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
     expect(response.status).toBe(400);

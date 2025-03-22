@@ -6,7 +6,7 @@ import userModel from '../models/userModel';
 dotenv.config();
 
 test.beforeEach(async ({ page }) => {
-    // Connecting to db which is needed for creating the user
+    // Connecting to db which is needed for creating and deleting the user
     await mongoose.connect(process.env.MONGO_URL);
 
     // Create user for test
@@ -34,12 +34,28 @@ test.afterEach(async () => {
 })
 
 test.describe("Invalid fields for login", () => {
-    test("Should not allow the user to login when invalid fields are passed in", async ({page}) => {
+    // Check that the user is not able to login when keying in invalid email
+    test("Should not allow the user to login when invalid email is passed in", async ({page}) => {
         // Navigating to login page
         await page.getByRole('link', { name: 'Login' }).click();
 
-        
-        // Keying in correct email address but wrong password
+         // Keying in invalid email address but correct password
+         await page.getByRole('textbox', { name: 'Enter Your Email' }).fill('some-random-email-here@mail.com');
+         await page.getByRole('textbox', { name: 'Enter Your Password' }).fill('Exact6');
+ 
+         // Click on the login button
+         await page.getByRole('button', { name: 'LOGIN' }).click();
+ 
+         // Check that toast message for invalid login is shown
+         await expect(page.getByText('Invalid email or password has been entered or email is not registered')).toBeVisible();
+    });
+
+    // Check that the user is not able to login when keying in invalid password
+    test("Should not allow the user to login when invalid password is passed in", async ({page}) => {
+        // Navigating to login page
+        await page.getByRole('link', { name: 'Login' }).click();
+
+        // Keying in correct email address but invalid password
         await page.getByRole('textbox', { name: 'Enter Your Email' }).fill('douglas.lim@mail.com');
         await page.getByRole('textbox', { name: 'Enter Your Password' }).fill('Wrong-password-keyed');
         
@@ -48,18 +64,5 @@ test.describe("Invalid fields for login", () => {
 
         // Check that toast message for invalid login is shown
         await expect(page.getByText('Invalid email or password has been entered or email is not registered')).toBeVisible();
-
-        // Refresh page to clear all fields and the toast
-        await page.reload();
-
-        // Keying in wrong email address but correct password
-        await page.getByRole('textbox', { name: 'Enter Your Email' }).fill('some-random-email-here@mail.com');
-        await page.getByRole('textbox', { name: 'Enter Your Password' }).fill('Exact6');
-
-        // Click on the login button
-        await page.getByRole('button', { name: 'LOGIN' }).click();
-
-        // Check that toast message for invalid login is shown
-        await expect(page.getByText('Invalid email or password has been entered or email is not registered')).toBeVisible();
-    })
+    });
 });

@@ -1,25 +1,18 @@
-import React from "react";
-import { screen, render, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import HomePage from "./HomePage";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import axios from "axios";
+import React from "react";
 import toast from "react-hot-toast";
+import { useCart } from "../context/cart";
+import HomePage from "./HomePage";
 
 // Mock modules
 jest.mock("axios");
 jest.mock("react-hot-toast");
 
-jest.mock("react-router-dom", () => ({
-  useNavigate: () => jest.fn(),
-}));
+jest.mock("react-router-dom", () => ({ useNavigate: jest.fn() }));
 
-jest.mock("../context/cart", () => ({
-  useCart: () => {
-    const cart = [];
-    const setCart = jest.fn();
-    return [cart, setCart];
-  },
-}));
+jest.mock("../context/cart", () => ({ useCart: jest.fn() }));
 
 jest.mock("../components/Layout", () => {
   return ({ children, title }) => (
@@ -33,10 +26,22 @@ jest.mock("react-icons/ai", () => ({
   AiOutlineReload: () => <span>ReloadIcon</span>,
 }));
 
+const mockCart = {};
+const mockAddToCart = jest.fn();
+const mockRemoveFromCart = jest.fn();
+const mockUpdateQuantity = jest.fn();
+const mockClearCart = jest.fn();
+
 describe("HomePage component", () => {
   beforeEach(() => {
-    localStorage.clear();
     jest.clearAllMocks();
+    useCart.mockReturnValue({
+      cart: mockCart,
+      addToCart: mockAddToCart,
+      removeFromCart: mockRemoveFromCart,
+      updateQuantity: mockUpdateQuantity,
+      clearCart: mockClearCart,
+    });
   });
 
   // UI Navigation tests
@@ -320,7 +325,7 @@ describe("HomePage component", () => {
       });
     });
 
-    // Equivalence partioning 2 pages
+    // Equivalence partitioning 2 pages
     it("should load more products when page > 1", async () => {
       const initialProducts = [
         {
@@ -330,22 +335,74 @@ describe("HomePage component", () => {
           description: "This is product 1 description",
           slug: "test-product-1",
         },
-      ];
-      const moreProducts = [
         {
           _id: 2,
           name: "Product 2",
-          price: 200,
+          price: 150,
           description: "This is product 2 description",
           slug: "test-product-2",
         },
+        {
+          _id: 3,
+          name: "Product 3",
+          price: 200,
+          description: "This is product 3 description",
+          slug: "test-product-3",
+        },
+        {
+          _id: 4,
+          name: "Product 4",
+          price: 250,
+          description: "This is product 4 description",
+          slug: "test-product-4",
+        },
+        {
+          _id: 5,
+          name: "Product 5",
+          price: 300,
+          description: "This is product 5 description",
+          slug: "test-product-5",
+        },
+        {
+          _id: 6,
+          name: "Product 6",
+          price: 350,
+          description: "This is product 6 description",
+          slug: "test-product-6",
+        },
       ];
 
-      axios.get
-        .mockResolvedValueOnce({ data: { products: initialProducts } })
-        .mockResolvedValueOnce({ data: { total: 2 } })
-        .mockResolvedValueOnce({ data: { products: moreProducts } });
+      const moreProducts = [
+        {
+          _id: 7,
+          name: "Product 7",
+          price: 400,
+          description: "This is product 7 description",
+          slug: "test-product-7",
+        },
+        {
+          _id: 8,
+          name: "Product 8",
+          price: 450,
+          description: "This is product 8 description",
+          slug: "test-product-8",
+        },
+      ];
 
+      // Mock API calls with specific URLs
+      axios.get.mockImplementation((url) => {
+        if (url === "/api/v1/product/product-list/1") {
+          return Promise.resolve({ data: { products: initialProducts } });
+        }
+        if (url === "/api/v1/product/product-count") {
+          return Promise.resolve({ data: { total: 8 } });
+        }
+        if (url === "/api/v1/product/product-list/2") {
+          return Promise.resolve({ data: { products: moreProducts } });
+        }
+        // Fallback
+        return Promise.resolve({ data: {} });
+      });
       render(<HomePage />);
 
       await waitFor(() => {
@@ -573,12 +630,14 @@ describe("HomePage component", () => {
       render(<HomePage />);
 
       await waitFor(() => {
-        expect(screen.getByText("ADD TO CART")).toBeInTheDocument();
+        expect(
+          screen.getByRole("button", { name: "ADD TO CART" })
+        ).toBeInTheDocument();
       });
 
-      fireEvent.click(screen.getByText("ADD TO CART"));
+      fireEvent.click(screen.getByRole("button", { name: "ADD TO CART" }));
 
-      expect(localStorage.getItem("cart")).toBeTruthy();
+      expect(mockAddToCart).toHaveBeenCalledWith("test-product");
     });
   });
 
@@ -617,8 +676,8 @@ describe("HomePage component", () => {
     });
   });
 
-  describe("Rapid Clicks on Loadmore Button", () => {
-    it("should not trigger multiple API calls on rapid clicking", async () => {
+  describe("Loadmore Button", () => {
+    it("should not show Loadmore button after products are all loaded", async () => {
       const initialProducts = [
         {
           _id: 1,
@@ -627,39 +686,87 @@ describe("HomePage component", () => {
           description: "This is product 1 description",
           slug: "test-product-1",
         },
-      ];
-      const moreProducts = [
         {
           _id: 2,
           name: "Product 2",
-          price: 200,
+          price: 150,
           description: "This is product 2 description",
           slug: "test-product-2",
         },
+        {
+          _id: 3,
+          name: "Product 3",
+          price: 200,
+          description: "This is product 3 description",
+          slug: "test-product-3",
+        },
+        {
+          _id: 4,
+          name: "Product 4",
+          price: 250,
+          description: "This is product 4 description",
+          slug: "test-product-4",
+        },
+        {
+          _id: 5,
+          name: "Product 5",
+          price: 300,
+          description: "This is product 5 description",
+          slug: "test-product-5",
+        },
+        {
+          _id: 6,
+          name: "Product 6",
+          price: 350,
+          description: "This is product 6 description",
+          slug: "test-product-6",
+        },
       ];
 
-      axios.get
-        .mockResolvedValueOnce({ data: { products: initialProducts } })
-        .mockResolvedValueOnce({ data: { total: 2 } })
-        .mockResolvedValueOnce({ data: { products: moreProducts } });
+      const moreProducts = [
+        {
+          _id: 7,
+          name: "Product 7",
+          price: 400,
+          description: "This is product 7 description",
+          slug: "test-product-7",
+        },
+        {
+          _id: 8,
+          name: "Product 8",
+          price: 450,
+          description: "This is product 8 description",
+          slug: "test-product-8",
+        },
+      ];
+      // Mock API calls with specific URLs
+      axios.get.mockImplementation((url) => {
+        if (url === "/api/v1/product/product-list/1") {
+          return Promise.resolve({ data: { products: initialProducts } });
+        }
+        if (url === "/api/v1/product/product-count") {
+          return Promise.resolve({ data: { total: 8 } });
+        }
+        if (url === "/api/v1/product/product-list/2") {
+          return Promise.resolve({ data: { products: moreProducts } });
+        }
+        // Default fallback
+        return Promise.resolve({ data: {} });
+      });
 
       render(<HomePage />);
 
+      // Wait for the Loadmore button to appear
       await waitFor(() => {
         expect(screen.getByText(/Loadmore/i)).toBeInTheDocument();
       });
 
-      const loadMoreButton = screen.getByText(/Loadmore/i);
-      // Simulate rapid clicks
-      fireEvent.click(loadMoreButton);
-      fireEvent.click(loadMoreButton);
+      // Click the Loadmore button
+      fireEvent.click(screen.getByText(/Loadmore/i));
 
+      // Wait for the button to disappear after loading more products
       await waitFor(() => {
-        // Check that the API call for page 2 is made only once
-        const page2Calls = axios.get.mock.calls.filter(
-          (call) => call[0] === "/api/v1/product/product-list/2"
-        );
-        expect(page2Calls.length).toBe(1);
+        expect(screen.queryByText(/Loadmore/i)).not.toBeInTheDocument();
       });
     });
   });

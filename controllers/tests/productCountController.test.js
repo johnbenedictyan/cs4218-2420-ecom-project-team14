@@ -18,13 +18,25 @@ describe("Product Count Controller tests", () => {
     jest.resetModules();
   });
 
-  it("Should fetch product count successfully", async () => {
-    const mockGetCountSuccess = {
-      estimatedDocumentCount: jest.fn().mockResolvedValue(3),
-    };
-    productModel.find = jest.fn().mockReturnValue(mockGetCountSuccess);
+  afterAll(() => {
+    // Clean up any mocks to prevent memory leaks
+    jest.restoreAllMocks();
+    // Reset modules to clean state
+    jest.resetModules();
+  });
 
-    await productCountController({}, res);
+  it("Should fetch product count successfully", async () => {
+    // Mock countDocuments to return count 3
+    productModel.countDocuments = jest.fn().mockResolvedValue(3);
+
+    // Create a mock request with empty query parameters
+    const req = {
+      query: {
+        checked: [],
+        radio: [],
+      },
+    };
+    await productCountController(req, res);
 
     // Assertions
     expect(res.status).toHaveBeenCalledWith(200);
@@ -35,14 +47,19 @@ describe("Product Count Controller tests", () => {
   });
 
   it("Should return error response when there is error fetching product count", async () => {
-    const mockGetCountError = {
-      estimatedDocumentCount: jest.fn().mockImplementation(() => {
-        throw new Error("some error");
-      }),
-    };
-    productModel.find = jest.fn().mockReturnValue(mockGetCountError);
+    // Create a mock error
+    const mockError = new Error("some error");
 
-    await productCountController({}, res);
+    // Mock countDocuments to reject with the error
+    productModel.countDocuments = jest.fn().mockRejectedValue(mockError);
+    // Create a mock request with empty query parameters
+    const req = {
+      query: {
+        checked: [],
+        radio: [],
+      },
+    };
+    await productCountController(req, res);
 
     // Assertions
     expect(res.status).toHaveBeenCalledWith(400);

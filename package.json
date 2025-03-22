@@ -11,8 +11,8 @@
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "sonarqube": "sonar-scanner",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "test:frontend": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.frontend.config.js --passWithNoTests",
-    "test:backend": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.backend.config.js --passWithNoTests",
+    "test:frontend": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.frontend.config.js --passWithNoTests --coverageDirectory=coverage/frontend",
+    "test:backend": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.backend.config.js --passWithNoTests --coverageDirectory=coverage/backend",
     "test:frontend:no-coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.frontend.config.js --passWithNoTests --coverage=false",
     "test:backend:no-coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.backend.config.js --passWithNoTests --coverage=false"
   },

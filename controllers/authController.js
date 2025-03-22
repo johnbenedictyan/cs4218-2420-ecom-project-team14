@@ -36,12 +36,10 @@ export const registerController = async (req, res) => {
 
     // Add validation for password length (Need to be minimum of length 6)
     if (password.length < 6) {
-      return res
-        .status(400)
-        .send({
-          message:
-            "The length of the password should be at least 6 characters long",
-        });
+      return res.status(400).send({
+        message:
+          "The length of the password should be at least 6 characters long",
+      });
     }
 
     // Add validation for email check
@@ -72,12 +70,10 @@ export const registerController = async (req, res) => {
     // Add validation for phone number
     const phoneRegex = /^[689]\d{7}$/;
     if (!phone.match(phoneRegex)) {
-      return res
-        .status(400)
-        .send({
-          message:
-            "The phone number must start with 6,8 or 9 and be 8 digits long",
-        });
+      return res.status(400).send({
+        message:
+          "The phone number must start with 6,8 or 9 and be 8 digits long",
+      });
     }
 
     // Add validation for address
@@ -135,9 +131,9 @@ export const loginController = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    console.log(email, password)
+    console.log(email, password);
     //validation
-    if (!email.trim() || !password.trim()) {
+    if (!email || !password || !email.trim() || !password.trim()) {
       // Changed error message to have same generic error message as below
       return res.status(400).send({
         success: false,
@@ -147,7 +143,7 @@ export const loginController = async (req, res) => {
     }
     //check user
     const user = await userModel.findOne({ email });
-    console.log(user)
+    console.log(user);
     if (!user) {
       // Change error message as it should not reveal that email is not registered (Should just give generic message)
       return res.status(400).send({
@@ -157,7 +153,7 @@ export const loginController = async (req, res) => {
       });
     }
     const match = await comparePassword(password, user.password);
-    console.log(match)
+    console.log(match);
     if (!match) {
       // Change http status code to 400 instead of 200 which is for successful response case
       // Change error message as it should not reveal whether email is wrong or password is wrong (Security Reasons)
@@ -211,12 +207,10 @@ export const forgotPasswordController = async (req, res) => {
 
     // Add validation for new password length (Need to be minimum of length 6)
     if (newPassword.length < 6) {
-      return res
-        .status(400)
-        .send({
-          message:
-            "The length of the new password should be at least 6 characters long",
-        });
+      return res.status(400).send({
+        message:
+          "The length of the new password should be at least 6 characters long",
+      });
     }
 
     // Add validation for email being used
@@ -290,12 +284,10 @@ export const updateProfileController = async (req, res) => {
     // Add validation for non-empty phone number
     const phoneRegex = /^[689]\d{7}$/;
     if (phone && !phone.match(phoneRegex)) {
-      return res
-        .status(400)
-        .send({
-          message:
-            "The phone number must start with 6,8 or 9 and be 8 digits long",
-        });
+      return res.status(400).send({
+        message:
+          "The phone number must start with 6,8 or 9 and be 8 digits long",
+      });
     }
 
     // Add validation for non-empty address

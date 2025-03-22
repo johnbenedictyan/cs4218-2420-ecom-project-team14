@@ -40,6 +40,8 @@ describe("Login Integration Tests", () => {
 
   // Test 1: Success case where user is able to login successfully with valid email and valid password
   it("should allow the user to login successfully when correct email and password is entered", async () => {
+    console.log("TEST EMAILLLLLLLL", testEmail)
+    console.log("TEST PASWORD", testEmail)
     const response = await request(app)
       .post(apiURL)
       .field("email", testEmail)

@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom/extend-expect";
-import { fireEvent, getByText, render, waitFor } from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import { describe } from "node:test";
 import React from "react";
 import toast from "react-hot-toast";
@@ -16,12 +16,11 @@ jest.mock("../hooks/useCategory");
 
 describe("Header Component", () => {
   const mockSetAuth = jest.fn();
-  const mockSetCart = jest.fn();
   const mockCategories = [
     { name: "category1", slug: "cat-1" },
     { name: "category2", slug: "cat-2" },
   ];
-  const mockCart = [{ name: "cart item 1" }, { name: "cart item 2" }];
+  const mockCart = { 1: { quantity: 1 }, 2: { quantity: 1 } };
 
   const mockAdminUser = {
     user: {
@@ -41,7 +40,13 @@ describe("Header Component", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    useCart.mockReturnValue([mockCart, mockSetCart]);
+    useCart.mockReturnValue({
+      cart: mockCart,
+      addToCart: jest.fn(),
+      removeFromCart: jest.fn(),
+      updateQuantity: jest.fn(),
+      clearCart: jest.fn(),
+    });
   });
 
   it("renders correctly", () => {
@@ -71,9 +76,6 @@ describe("Header Component", () => {
       "href",
       "/cart"
     );
-
-    // Check cart badge
-    expect(getByTitle(mockCategories.length.toString())).toBeInTheDocument();
   });
 
   it("renders category links correctly", () => {

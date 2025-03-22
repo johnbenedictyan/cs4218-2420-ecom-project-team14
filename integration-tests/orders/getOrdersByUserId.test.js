@@ -102,7 +102,12 @@ describe("Get Orders By User Id Integration Tests", () => {
       .get(getOrderURL)
       .set("Authorization", jwtToken);
     expect(response.status).toBe(200);
-    expect(response.body).toBe({});
+    expect(response.body.success).toBe(true);
+    expect(response.body.message).toBe("Fetched orders successfully");
+    expect(response.body.orders).toHaveLength(1);
+    const productNames = response.body.order[0].products.map((x) => x.name);
+    expect(productNames).toContain(product1.name);
+    expect(productNames).toContain(product2.name);
   });
 
   // Test 2: Success case where user did not make any orders
@@ -116,12 +121,14 @@ describe("Get Orders By User Id Integration Tests", () => {
       .get(getOrderURL)
       .set("Authorization", jwtToken);
     expect(response.status).toBe(200);
-    expect(response.body).toBe({});
+    expect(response.body.success).toBe(true);
+    expect(response.body.message).toBe("Fetched orders successfully");
+    expect(response.body.orders).toHaveLength(0);
   });
 
   // Test 3: Failure case when the user is not signed in
   it("should return an error when the user has not signed in", async () => {
     const response = await request(app).get(getOrderURL);
-    expect(response.status).toBe(400);
+    expect(response.status).toBe(401);
   });
 });

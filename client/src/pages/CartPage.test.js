@@ -1,31 +1,25 @@
-import React from "react";
+import "@testing-library/jest-dom";
 import {
+  act,
+  fireEvent,
   render,
   screen,
-  fireEvent,
   waitFor,
-  act,
 } from "@testing-library/react";
-import "@testing-library/jest-dom";
-import CartPage from "./CartPage";
+import axios from "axios";
+import React from "react";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/auth";
 import { useCart } from "../context/cart";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import toast from "react-hot-toast";
+import CartPage from "./CartPage";
 
 // Mock modules
-jest.mock("../context/auth", () => ({
-  useAuth: jest.fn(),
-}));
+jest.mock("../context/auth", () => ({ useAuth: jest.fn() }));
 
-jest.mock("../context/cart", () => ({
-  useCart: jest.fn(),
-}));
+jest.mock("../context/cart", () => ({ useCart: jest.fn() }));
 
-jest.mock("react-router-dom", () => ({
-  useNavigate: jest.fn(),
-}));
+jest.mock("react-router-dom", () => ({ useNavigate: jest.fn() }));
 
 jest.mock("axios", () => ({
   __esModule: true,
@@ -84,17 +78,49 @@ jest.mock("../components/Layout", () => {
   };
 });
 
+const mockProducts = [
+  {
+    _id: "1",
+    name: "Test Product 1",
+    slug: "test-product-1",
+    description: "Test description",
+    price: 99.99,
+    category: "67bd7972f616a1f52783a628",
+    quantity: 10,
+    shipping: true,
+  },
+  {
+    _id: "2",
+    name: "Test Product 2",
+    slug: "test-product-1",
+    description: "Test description 2",
+    price: 99.99,
+    category: "67bd7972f616a1f52783a628",
+    quantity: 1,
+    shipping: true,
+  },
+];
+
+const emptyCart = {};
+
+const generateCart = (n) => {
+  let cart = {};
+  for (let i = 0; i < n; i++) {
+    cart[mockProducts[i].slug] = { quantity: 1 };
+  }
+  return cart;
+};
+
 describe("CartPage component", () => {
   const mockNavigate = jest.fn();
-  const mockSetCart = jest.fn();
-  const mockCart = [
-    {
-      _id: "1",
-      name: "Test Product",
-      price: 99.99,
-      description: "Test description",
-    },
-  ];
+
+  const mockAddToCart = jest.fn();
+  const mockRemoveFromCart = jest.fn();
+  const mockUpdateQuantity = jest.fn();
+  const mockClearCart = jest.fn();
+
+  const mockCart = generateCart(1);
+  const cartWithTwoItems = generateCart(2);
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -107,7 +133,21 @@ describe("CartPage component", () => {
       jest.fn(),
     ]);
     useNavigate.mockReturnValue(mockNavigate);
-    axios.get.mockResolvedValue({ data: { clientToken: "test-client-token" } });
+    axios.get.mockImplementation((url) => {
+      if (url.startsWith("/api/v1/product/braintree/token")) {
+        return Promise.resolve({ data: { clientToken: "test-client-token" } });
+      } else if (url.startsWith("/api/v1/product/get-product/")) {
+        return Promise.resolve({
+          data: {
+            message: "Single Product Fetched",
+            product: mockProducts[0],
+            success: true,
+          },
+        });
+      }
+      return Promise.reject(new Error("Not Found"));
+    });
+
     axios.post.mockResolvedValue({ data: { success: true } });
     mockRequestPaymentMethod.mockClear();
     mockRequestPaymentMethod.mockResolvedValue({ nonce: "test-payment-nonce" });
@@ -115,7 +155,13 @@ describe("CartPage component", () => {
 
   // Check if empty cart renders (BVA: when cart is empty)
   it("displays empty cart message when cart is empty", async () => {
-    useCart.mockReturnValue([[], mockSetCart]);
+    useCart.mockReturnValue({
+      cart: emptyCart,
+      addToCart: mockAddToCart,
+      removeFromCart: mockRemoveFromCart,
+      updateQuantity: mockUpdateQuantity,
+      clearCart: mockClearCart,
+    });
     await act(async () => {
       render(<CartPage />);
     });
@@ -123,20 +169,40 @@ describe("CartPage component", () => {
   });
 
   it("renders cart items correctly", async () => {
-    useCart.mockReturnValue([mockCart, mockSetCart]);
+    useCart.mockReturnValue({
+      cart: mockCart,
+      addToCart: mockAddToCart,
+      removeFromCart: mockRemoveFromCart,
+      updateQuantity: mockUpdateQuantity,
+      clearCart: mockClearCart,
+    });
+
     await act(async () => {
       render(<CartPage />);
     });
     // Check if cart item (default 1 item cart) is displayed
-    expect(screen.getByText("Test Product")).toBeInTheDocument();
-    expect(screen.getByText("Test description")).toBeInTheDocument();
-    expect(screen.getByText("Price : 99.99")).toBeInTheDocument();
+    expect(screen.getByText(mockProducts[0].name)).toBeInTheDocument();
+    expect(screen.getByText(mockProducts[0].description)).toBeInTheDocument();
+
+    const priceRegex = new RegExp(
+      `Price\\s*:\\s*\\$${mockProducts[0].price}`,
+      "i"
+    );
+
+    expect(screen.getByText(priceRegex)).toBeInTheDocument();
     // Check if remove button exists
-    expect(screen.getByText("Remove")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Remove" })).toBeInTheDocument();
   });
 
   it("makes API call to get token on mount", async () => {
-    useCart.mockReturnValue([mockCart, mockSetCart]);
+    useCart.mockReturnValue({
+      cart: mockCart,
+      addToCart: mockAddToCart,
+      removeFromCart: mockRemoveFromCart,
+      updateQuantity: mockUpdateQuantity,
+      clearCart: mockClearCart,
+    });
+
     await act(async () => {
       render(<CartPage />);
     });
@@ -146,33 +212,28 @@ describe("CartPage component", () => {
 
   describe("removeCartItem function", () => {
     it("successfully removes the correct item from the cart when found", async () => {
-      const cartWithTwoItems = [
-        {
-          _id: "1",
-          name: "Product 1",
-          price: 10,
-          description: "Test description 1",
-        },
-        {
-          _id: "2",
-          name: "Product 2",
-          price: 20,
-          description: "Test description 2",
-        },
-      ];
-      useCart.mockReturnValue([cartWithTwoItems, mockSetCart]);
-      render(<CartPage />);
-      const removeButton = screen.getAllByText("Remove")[0];
+      useCart.mockReturnValue({
+        cart: cartWithTwoItems,
+        addToCart: mockAddToCart,
+        removeFromCart: mockRemoveFromCart,
+        updateQuantity: mockUpdateQuantity,
+        clearCart: mockClearCart,
+      });
+
+      await act(async () => {
+        render(<CartPage />);
+      });
+      const removeButton = screen.getByRole("button", { name: "Remove" });
       await act(async () => {
         fireEvent.click(removeButton);
       });
       // Removal of correct valid item from cart
-      const expectedCartAfterRemoval = [cartWithTwoItems[1]];
-      expect(mockSetCart).toHaveBeenCalledWith(expectedCartAfterRemoval);
-      expect(localStorageMock.setItem).toHaveBeenCalledWith(
-        "cart",
-        JSON.stringify(expectedCartAfterRemoval)
-      );
+      //   const expectedCartAfterRemoval = [cartWithTwoItems[1]];
+      expect(mockRemoveFromCart).toHaveBeenCalledWith(mockProducts[0].slug);
+      //   expect(localStorageMock.setItem).toHaveBeenCalledWith(
+      //     "cart",
+      //     JSON.stringify(expectedCartAfterRemoval)
+      //   );
     });
     // Removal of item that doesn't exist is not applicable to the current implementation of the component
   });
@@ -187,7 +248,14 @@ describe("CartPage component", () => {
     };
 
     it("successfully processes payment", async () => {
-      useCart.mockReturnValue([mockCart, mockSetCart]);
+      useCart.mockReturnValue({
+        cart: mockCart,
+        addToCart: mockAddToCart,
+        removeFromCart: mockRemoveFromCart,
+        updateQuantity: mockUpdateQuantity,
+        clearCart: mockClearCart,
+      });
+
       render(<CartPage />);
 
       await waitForDropIn();
@@ -204,10 +272,10 @@ describe("CartPage component", () => {
       });
       // Check if localStorage.removeItem was called
 
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith("cart");
+    //   expect(localStorageMock.removeItem).toHaveBeenCalledWith("cart");
 
-      // Check if setCart was called with empty array
-      expect(mockSetCart).toHaveBeenCalledWith([]);
+      // Check if cart was cleared
+      expect(mockClearCart).toHaveBeenCalled();
 
       // Check if navigate was called with correct path
       expect(mockNavigate).toHaveBeenCalledWith("/dashboard/user/orders");
@@ -220,7 +288,14 @@ describe("CartPage component", () => {
 
     it("handles payment error", async () => {
       axios.post.mockRejectedValueOnce(new Error("Payment failed"));
-      useCart.mockReturnValue([mockCart, mockSetCart]);
+      useCart.mockReturnValue({
+        cart: mockCart,
+        addToCart: mockAddToCart,
+        removeFromCart: mockRemoveFromCart,
+        updateQuantity: mockUpdateQuantity,
+        clearCart: mockClearCart,
+      });
+
       render(<CartPage />);
       const consoleSpy = jest.spyOn(console, "log");
       await waitForDropIn();
@@ -251,7 +326,14 @@ describe("CartPage component", () => {
         resolvePaymentMethod = resolve;
       });
       mockRequestPaymentMethod.mockReturnValueOnce(paymentPromise);
-      useCart.mockReturnValue([mockCart, mockSetCart]);
+      useCart.mockReturnValue({
+        cart: mockCart,
+        addToCart: mockAddToCart,
+        removeFromCart: mockRemoveFromCart,
+        updateQuantity: mockUpdateQuantity,
+        clearCart: mockClearCart,
+      });
+
       await act(async () => {
         render(<CartPage />);
       });

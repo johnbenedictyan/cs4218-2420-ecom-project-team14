@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { Checkbox, Radio } from "antd";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { AiOutlineReload } from "react-icons/ai";
+import { useNavigate } from "react-router-dom";
 import { Prices } from "../components/Prices";
 import { useCart } from "../context/cart";
-import axios from "axios";
-import toast from "react-hot-toast";
-import Layout from "./../components/Layout";
-import { AiOutlineReload } from "react-icons/ai";
 import "../styles/Homepages.css";
+import Layout from "./../components/Layout";
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const [cart, setCart] = useCart();
+  const { addToCart } = useCart();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [checked, setChecked] = useState([]);
@@ -62,17 +62,15 @@ const HomePage = () => {
       const { data } = await axios.get("/api/v1/product/product-count", {
         params: filtersApplied,
       });
-      setTotal(data?.total);
+      if (data.total) {
+        setTotal(data.total);
+      }
     } catch (error) {
       console.log(error);
       toast.error(`Error fetching product count: ${error.message}`);
     }
   };
 
-  useEffect(() => {
-    if (page === 1) return;
-    loadMore();
-  }, [page]);
   //load more
   const loadMore = async () => {
     try {
@@ -111,13 +109,6 @@ const HomePage = () => {
     }
     setChecked(all);
   };
-  useEffect(() => {
-    if (checked.length === 0 && radio.length === 0) getAllProducts();
-  }, [checked, radio]);
-
-  useEffect(() => {
-    if (checked.length || radio.length) filterProduct();
-  }, [checked, radio]);
 
   //get filtered product
   const filterProduct = async () => {
@@ -132,6 +123,25 @@ const HomePage = () => {
       toast.error(`Error fetching filtered products: ${error.message}`);
     }
   };
+
+  useEffect(() => {
+    if (page === 1) return;
+    loadMore();
+  }, [page]);
+
+  useEffect(() => {
+    if (checked.length === 0 && radio.length === 0) getAllProducts();
+  }, [checked, radio]);
+
+  useEffect(() => {
+    if (checked.length || radio.length) filterProduct();
+  }, [checked, radio]);
+
+  useEffect(() => {
+    getAllCategory();
+    getTotal();
+  }, []);
+
   return (
     <Layout title={"ALL Products - Best offers "}>
       {/* banner image */}
@@ -213,14 +223,7 @@ const HomePage = () => {
                     </button>
                     <button
                       className="btn btn-dark ms-1"
-                      onClick={() => {
-                        setCart([...cart, p]);
-                        localStorage.setItem(
-                          "cart",
-                          JSON.stringify([...cart, p])
-                        );
-                        toast.success("Item Added to cart");
-                      }}
+                      onClick={() => addToCart(p.slug)}
                     >
                       ADD TO CART
                     </button>

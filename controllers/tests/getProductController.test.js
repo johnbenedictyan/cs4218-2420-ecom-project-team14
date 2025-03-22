@@ -73,8 +73,8 @@ describe("Get Product Controller tests", () => {
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.send).toHaveBeenCalledWith({
       success: true,
-      counTotal: 2,
-      message: "AllProducts",
+      countTotal: 2,
+      message: "All Products Fetched",
       products: mockProducts,
     });
   });
@@ -89,8 +89,8 @@ describe("Get Product Controller tests", () => {
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.send).toHaveBeenCalledWith({
       success: true,
-      counTotal: 0,
-      message: "AllProducts",
+      countTotal: 0,
+      message: "All Products Fetched",
       products: [],
     });
   });

@@ -335,6 +335,8 @@ describe("Register Integration Tests", () => {
       .send(payload)
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
-    expect(response).toBe({});
+    expect(response.status).toBe(409);
+    expect(response.body.success).toBe(false);
+    expect(response.body.message).toBe("Already Register please login");
   });
 });

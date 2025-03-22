@@ -61,8 +61,12 @@ describe('Create Category Backend Integration Testing', () => {
         expect(response.body.category.name).toBe("Pikmin Series");
     });
 
-    // Name (Equivalence Partitioning) (There are 4 equivalence classes: Empty name, Non-empty invalid name, Already used valid name, Unused valid name)
-    // Unused valid name is already covered in Test 1
+    // Equivalence Partitioning
+    // For category name, there are 4 equivalence classes 
+    // 1) Empty name (Covered in Test 2)
+    // 2) Non-empty invalid name (Covered in Test 3)
+    // 3) Already used valid name (Covered in Test 4)
+    // 4) Unused valid name (Covered in Test 1)
     // Test 2: Check that the admin is unable to create category with empty name
     it('should not allow the admin is trying to create category with empty name', async () => {
         const response = await request(app).post('/api/v1/category/create-category')

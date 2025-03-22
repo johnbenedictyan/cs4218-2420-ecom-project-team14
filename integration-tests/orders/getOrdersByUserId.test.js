@@ -105,7 +105,7 @@ describe("Get Orders By User Id Integration Tests", () => {
     expect(response.body.success).toBe(true);
     expect(response.body.message).toBe("Fetched orders successfully");
     expect(response.body.orders).toHaveLength(1);
-    const productNames = response.body.order[0].products.map((x) => x.name);
+    const productNames = response.body.orders[0].products.map((x) => x.name);
     expect(productNames).toContain(product1.name);
     expect(productNames).toContain(product2.name);
   });

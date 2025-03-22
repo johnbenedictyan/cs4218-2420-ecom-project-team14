@@ -62,7 +62,8 @@ const HomePage = () => {
       const { data } = await axios.get("/api/v1/product/product-count", {
         params: filtersApplied,
       });
-      if (data.total) {
+      // Check for null and undefined values for total
+      if (data.total !== null && data.total !== undefined) {
         setTotal(data.total);
       }
     } catch (error) {
@@ -134,7 +135,10 @@ const HomePage = () => {
   }, [checked, radio]);
 
   useEffect(() => {
-    if (checked.length || radio.length) filterProduct();
+    if (checked.length || radio.length) {
+      filterProduct();
+      setPage(1);
+    }
   }, [checked, radio]);
 
   useEffect(() => {

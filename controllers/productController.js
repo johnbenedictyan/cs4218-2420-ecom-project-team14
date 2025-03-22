@@ -160,6 +160,9 @@ export const createProductController = async (req, res) => {
     if (photo) {
       products.photo.data = fs.readFileSync(photo.path);
       products.photo.contentType = photo.type;
+    } else {
+      products.photo.data = fs.readFileSync("placeholder-image/placeholder_image.jpg");
+      products.photo.contentType = "image/jpeg";
     }
 
     await products.save();

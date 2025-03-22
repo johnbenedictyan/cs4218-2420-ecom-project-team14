@@ -1,6 +1,6 @@
 export default {
   // display name
-  displayName: "backend",
+  displayName: "backend integration",
 
   // when testing backend
   testEnvironment: "node",
@@ -8,13 +8,9 @@ export default {
   transform: {},
 
   // which test to run
-  testMatch: ["<rootDir>/**/*.test.js"],
+  testMatch: ["<rootDir>/integration-tests/**/*.test.js"],
 
-  testPathIgnorePatterns: [
-    "<rootDir>/client/",
-    "<rootDir>/node_modules/",
-    "<rootDir>/integration-tests/",
-  ],
+  testPathIgnorePatterns: ["<rootDir>/client/", "<rootDir>/node_modules/"],
 
   // jest code coverage
   collectCoverage: true,

@@ -117,7 +117,7 @@ describe("Update Product Integration Tests", () => {
         .field("shipping", inputProduct.shipping)
         .attach(
           "photo",
-          fs.readFileSync("integration-tests/test-images/toycar.jpeg"),
+          fs.readFileSync("test-images/toycar.jpeg"),
           "toycar.jpeg"
         );
 

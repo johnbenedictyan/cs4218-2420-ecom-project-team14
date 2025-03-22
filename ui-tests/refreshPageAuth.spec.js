@@ -6,7 +6,7 @@ import userModel from '../models/userModel';
 dotenv.config();
 
 test.beforeEach(async ({ page }) => {
-    // Connecting to db which is needed for creating user for test
+    // Connecting to db which is needed for creating and deleting user for test
     await mongoose.connect(process.env.MONGO_URL);
 
     // Create user for test
@@ -34,6 +34,7 @@ test.afterEach(async () => {
 })
 
 test.describe("Authenticated user is still logged in after page refresh", () => {
+    // Check that user is still logged in even after they have refreshed the page
     test("Should ensure that the user is still logged in even after page is refreshed", async ({page}) => {
         // Logging user in first so that user is authenticated
         // Navigating to login page
@@ -62,6 +63,19 @@ test.describe("Authenticated user is still logged in after page refresh", () => 
 
         // Check that correct name appears for user on nav bar of home page after page refresh
         await expect(page.getByRole('list')).toContainText('Douglas Lim');
+
+        // Navigate to dashboard
+        await page.getByRole('button', { name: 'Douglas Lim' }).click();
+        await page.getByRole('link', { name: 'Dashboard' }).click();
+
+        // Check that the user is able to view their name, email and address on dashboard after page refresh (Verifies that user is still logged in since only logged in user can view details on dashboard)
+        const name = page.locator('h3').nth(0);
+        const email = page.locator('h3').nth(1);
+        const address = page.locator('h3').nth(2);
+        
+        await expect(name).toContainText('Douglas Lim');
+        await expect(email).toContainText('douglas.lim@mail.com');
+        await expect(address).toContainText('766 Kent Ridge Road');
 
     });
 });

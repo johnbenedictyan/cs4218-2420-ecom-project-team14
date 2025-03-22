@@ -26,8 +26,8 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
 
-      - name: Install Integration Dependencies
+      - name: Install Backend Dependencies
         run: npm ci
 
-      - name: Run Integration Tests
+      - name: Run Backend Integration Tests
         run: npm run test:integration:no-coverage

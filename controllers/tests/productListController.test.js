@@ -53,7 +53,6 @@ describe("Product List Controller tests", () => {
   it("Should return paginated product list when page is 1", async () => {
     req = { params: { page: "1" } };
     productModel.find = jest.fn().mockReturnValue(mockFindProductListSuccess);
-    console.log(mockFindProductListSuccess);
 
     await productListController(req, res);
 

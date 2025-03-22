@@ -30,12 +30,12 @@ describe('Forget Password Backend Integration Testing', () => {
             phone: "92213141", 
             address: "766 Kent Ridge Road", 
             password: hashedPassword, 
-            answer: "Basketball, Triple Jump, Cross country running, Half Marathon, Decathlon, Baseball, Volleyball, Golf"
+            answer: "Judo, Taekwondo, Long Jump, High Jump, Archery, Swimming, Netball, Cricket, Ice Hockey, Table Tennis"
         }).save();
 
         reqBodyData = {
             email: 'douglas.lim@mail.com',
-            answer: "Basketball, Triple Jump, Cross country running, Half Marathon, Decathlon, Baseball, Volleyball, Golf",
+            answer: "Judo, Taekwondo, Long Jump, High Jump, Archery, Swimming, Netball, Cricket, Ice Hockey, Table Tennis",
             newPassword: "6chrpw"
         }
     })
@@ -58,8 +58,11 @@ describe('Forget Password Backend Integration Testing', () => {
         expect(response.body.success).toBe(true);
     });
 
-    // Email (Equivalence Partitioning) (There are 3 equivalence classes: Empty email, Non-empty invalid email, Valid email)
-    // Valid email is already covered in Test 1
+    // Equivalence Partitioning 
+    // For email, there are 3 equivalence classes
+    // 1) Empty email (Covered in Test 2) 
+    // 2) Non-empty invalid email (Covered in Test 3)
+    // 3) Valid email (Covered in Test 1)
     // Test 2: User should not be able to reset their password with empty email
     it('should not allow the user to reset their password with empty email', async () => {
         reqBodyData.email = "";
@@ -72,8 +75,8 @@ describe('Forget Password Backend Integration Testing', () => {
         expect(response.body.message).toBe("Email is required");
     });
 
-    // Test 3: User should not be able to reset their password with invalid email
-    it('should not allow the user to reset their password with invalid email', async () => {
+    // Test 3: User should not be able to reset their password with non-empty, invalid email
+    it('should not allow the user to reset their password with non-empty, invalid email', async () => {
         reqBodyData.email = "ThisInvalidEmailShouldNotWork";
 
         const response = await request(app).post('/api/v1/auth/forgot-password').send(reqBodyData);
@@ -84,8 +87,11 @@ describe('Forget Password Backend Integration Testing', () => {
         expect(response.body.message).toBe("The email is in an invalid format");
     });
 
-    // New Password (Equivalence Partitioning) (There are 3 equivalence classes: Empty new password, Non-empty invalid new password, Valid new password)
-    // Valid new password is already covered in Test 1
+    // Equivalence Partitioning
+    // For new password, there are 3 equivalence classes
+    // 1) Empty new password (Covered in Test 4)
+    // 2) Non-empty invalid new password (Covered in Test 5)
+    // 3) Valid new password (Covered in Test 1)
     // Test 4: User should not be able to reset their password with empty new password
     it('should not allow the user to reset their password with empty new password', async () => {
         reqBodyData.newPassword = "";
@@ -111,8 +117,11 @@ describe('Forget Password Backend Integration Testing', () => {
         expect(response.body.message).toBe("The length of the new password should be at least 6 characters long");
     })
 
-    // Answer (Equivalence Partitioning) (There are 3 equivalence classes: Empty answer, Non-empty invalid answer, Valid answer)
-    // Valid answer is already covered in Test 1
+    // Equivalence Partitioning 
+    // For answer, there are 3 equivalence classes
+    // 1) Empty answer (Covered in Test 6)
+    // 2) Non-empty invalid answer (Covered in Test 7)
+    // 3) Valid answer (Covered in Test 1)
     // Test 6: User should not be able to reset their password with empty answer
     it('should not allow the user to reset their password with empty answer', async () => {
         reqBodyData.answer = "";

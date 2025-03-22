@@ -1,3 +1,4 @@
+import JWT from "jsonwebtoken";
 import { ObjectId } from "mongodb";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
@@ -92,13 +93,9 @@ describe("Get Orders By User Id Integration Tests", () => {
 
   // Test 1: Success case where the orders made by the user can be obtained
   it("should allow the user to get the list of orders that they have made", async () => {
-    const jwtToken = await JWT.sign(
-      { _id: testUser1._id },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "7d",
-      }
-    );
+    const jwtToken = JWT.sign({ _id: testUser1._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
 
     // Check that the order returned is correct
     const response = await request(app)
@@ -110,13 +107,9 @@ describe("Get Orders By User Id Integration Tests", () => {
 
   // Test 2: Success case where user did not make any orders
   it("should return an empty array for the user who has made 0 orders", async () => {
-    const jwtToken = await JWT.sign(
-      { _id: testUser2._id },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "7d",
-      }
-    );
+    const jwtToken = JWT.sign({ _id: testUser2._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
 
     // Check that the order array returned is empty
     const response = await request(app)

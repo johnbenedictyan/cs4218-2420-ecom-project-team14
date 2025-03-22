@@ -1,6 +1,7 @@
 // global-teardown.js
 import mongoose from "mongoose";
 import {
+  testAdmin,
   testCategory,
   testProduct1,
   testProduct2,
@@ -18,6 +19,7 @@ export default async () => {
   await productModel.deleteMany({ name: testProduct1.name });
   await productModel.deleteMany({ name: testProduct2.name });
   await userModel.deleteMany({ name: testUser.name });
+  await userModel.deleteMany({ name: testAdmin.name });
   await mongoose.disconnect();
 
   console.log("Test data cleanup complete.");

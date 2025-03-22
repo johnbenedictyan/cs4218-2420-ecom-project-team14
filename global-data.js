@@ -3,9 +3,18 @@ import { ObjectId } from "mongodb";
 
 dotenv.config();
 
-const testPassword = "srae123";
-const hashedTestPassword =
-  "$2y$10$yjTMk5gRq6X/qJv9DMRcKuWNssL.p85VeSdlwVoqHTfmZGZe9dBKK";
+const testPassword = "testPassword";
+
+const testAdmin = {
+  _id: new ObjectId("67dee66d9e3e63ab7ad4b27f"),
+  name: "test admin",
+  email: "testadmin@mail.com",
+  phone: "81234567",
+  address: "123 Fake Street",
+  password: testPassword,
+  answer: "Basketball",
+  role: 1,
+};
 
 const testUser = {
   _id: new ObjectId("67ded40f06b328cc295117bd"),
@@ -13,7 +22,7 @@ const testUser = {
   email: "testuser@mail.com",
   phone: "81234567",
   address: "123 Fake Street",
-  password: hashedTestPassword,
+  password: testPassword,
   answer: "Basketball",
 };
 
@@ -45,4 +54,12 @@ const testProduct2 = {
   price: 2,
 };
 
-export { testCategory, testPassword, testProduct1, testProduct2, testUser };
+export {
+    testAdmin,
+    testCategory,
+    testPassword,
+    testProduct1,
+    testProduct2,
+    testUser
+};
+

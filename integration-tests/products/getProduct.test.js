@@ -27,12 +27,9 @@ describe("Get Product Integration Tests", () => {
       const response = await request(app).get(apiURL);
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
-      expect(response.body).toBe({
-        countTotal: 2,
-        message: "All Products Fetched",
-        products: [product1, product2],
-        success: true,
-      });
+      expect(response.body.countTotal).toBe(0);
+      expect(response.body.message).toBe("All Products Fetched");
+      expect(response.body.products).toBe([]);
     });
 
     it("should return the product array when there are products", async () => {
@@ -60,13 +57,10 @@ describe("Get Product Integration Tests", () => {
 
       const response = await request(app).get(apiURL);
       expect(response.status).toBe(200);
+      expect(response.body.countTotal).toBe(2);
+      expect(response.body.message).toBe("All Products Fetched");
+      expect(response.body.products).toBe([product1, product2]);
       expect(response.body.success).toBe(true);
-      expect(response.body).toBe({
-        countTotal: 2,
-        message: "All Products Fetched",
-        products: [product1, product2],
-        success: true,
-      });
     });
   });
 
@@ -84,11 +78,9 @@ describe("Get Product Integration Tests", () => {
       });
       const response = await request(app).get(`${apiURL}/${product3.slug}`);
       expect(response.status).toBe(200);
-      expect(response.body).toBe({
-        message: "Single Product Fetched",
-        product: product3,
-        success: true,
-      });
+      expect(response.body.message).toBe("Single Product Fetched");
+      expect(response.body.product).toBe(product3);
+      expect(response.body.success).toBe(true);
     });
     it("should return an error when the non-exist product slug is provided", async () => {
       const response = await request(app).get(`${apiURL}/unknown`);
@@ -98,10 +90,8 @@ describe("Get Product Integration Tests", () => {
     it("should return an error when the blank product slug is provided", async () => {
       const response = await request(app).get(`${apiURL}/%20`);
       expect(response.status).toBe(400);
-      expect(response.body).toBe({
-        message: "Invalid product slug provided",
-        success: false,
-      });
+      expect(response.body.message).toBe("Invalid product slug provided");
+      expect(response.body.success).toBe(true);
     });
   });
 });

@@ -40,17 +40,19 @@ const Header = () => {
           </Link>
           <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
             <li className="nav-item">
-              <NavLink to="/" className="nav-link ">
+              <NavLink to="/" className="nav-link">
                 Home
               </NavLink>
             </li>
             <li className="nav-item">
-              <NavLink to="/search" className="nav-link ">
+              <NavLink to="/search" className="nav-link">
                 Search
               </NavLink>
             </li>
             <li className="nav-item">
-              <NavLink to={"/categories"}>All Categories</NavLink>
+              <NavLink to={"/categories"} className="nav-link">
+                All Categories
+              </NavLink>
             </li>
 
             {!auth?.user ? (
@@ -71,12 +73,12 @@ const Header = () => {
                 <li className="nav-item dropdown">
                   <NavLink
                     className="nav-link dropdown-toggle"
-                    href="#"
                     role="button"
                     data-bs-toggle="dropdown"
                     style={{ border: "none" }}
+                    id="dashboardToggle"
                   >
-                    {auth?.user?.name}
+                    {auth.user?.name}
                   </NavLink>
                   <ul className="dropdown-menu">
                     <li>
@@ -90,13 +92,9 @@ const Header = () => {
                       </NavLink>
                     </li>
                     <li>
-                      <NavLink
-                        onClick={handleLogout}
-                        to="/"
-                        className="dropdown-item"
-                      >
+                      <button onClick={handleLogout} className="dropdown-item">
                         Logout
-                      </NavLink>
+                      </button>
                     </li>
                   </ul>
                 </li>

@@ -60,8 +60,10 @@ describe("Get Product Integration Tests", () => {
       expect(response.body.countTotal).toBe(2);
       expect(response.body.message).toBe("All Products Fetched");
       expect(response.body.products).toHaveLength(2);
-      expect(response.body.products[0].name).toBe(product1.name)
-      expect(response.body.products[1].name).toBe(product2.name)
+
+      const productNames = response.body.products.map((x) => x.name);
+      expect(productNames).toContain(product1.name);
+      expect(productNames).toContain(product2.name);
       expect(response.body.success).toBe(true);
     });
   });

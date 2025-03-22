@@ -4,13 +4,11 @@ import toast from "react-hot-toast";
 import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../context/auth";
 import { useCart } from "../context/cart";
-import useCategory from "../hooks/useCategory";
 import "../styles/Header.css";
 
 const Header = () => {
   const [auth, setAuth] = useAuth();
   const { cart } = useCart();
-  const categories = useCategory();
 
   const handleLogout = () => {
     setAuth({
@@ -51,28 +49,8 @@ const Header = () => {
                 Search
               </NavLink>
             </li>
-            <li className="nav-item dropdown">
-              <Link
-                className="nav-link dropdown-toggle"
-                to={"/categories"}
-                data-bs-toggle="dropdown"
-              >
-                Categories
-              </Link>
-              <ul className="dropdown-menu">
-                <li>
-                  <Link className="dropdown-item" to={"/categories"}>
-                    All Categories
-                  </Link>
-                </li>
-                {categories?.map((c) => (
-                  <li key={c.slug}>
-                    <Link className="dropdown-item" to={`/category/${c.slug}`}>
-                      {c.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+            <li className="nav-item">
+              <NavLink to={"/categories"}>All Categories</NavLink>
             </li>
 
             {!auth?.user ? (

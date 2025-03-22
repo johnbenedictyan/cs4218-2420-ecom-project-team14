@@ -19,7 +19,7 @@ describe("Get Orders By User Id Integration Tests", () => {
     mongoMemoryServer = await MongoMemoryServer.create();
     await mongoose.connect(mongoMemoryServer.getUri());
 
-    testUser1 = userModel({
+    testUser1 = await userModel({
       _id: new ObjectId("67b18f9cbcd7fd83f1df3c20"),
       name: "Test User With Orders",
       email: "test1@mail.com",
@@ -29,7 +29,7 @@ describe("Get Orders By User Id Integration Tests", () => {
       role: 0,
     }).save();
 
-    testUser2 = userModel({
+    testUser2 = await userModel({
       _id: new ObjectId("679f3c5eb35bb2db5e6a3646"),
       name: "Test User With No Orders",
       email: "test2@mail.com",
@@ -39,7 +39,7 @@ describe("Get Orders By User Id Integration Tests", () => {
       role: 0,
     }).save();
 
-    product1 = productModel({
+    product1 = await productModel({
       _id: new ObjectId("67af136e412da5fc3b82ecde"),
       name: "Toy Car",
       slug: "Toy-Car",
@@ -53,7 +53,7 @@ describe("Get Orders By User Id Integration Tests", () => {
       __v: 0,
     }).save();
 
-    product2 = productModel({
+    product2 = await productModel({
       _id: new ObjectId("67af1437412da5fc3b82ece7"),
       name: "Snorlax Pokemon Trading Card",
       slug: "Snorlax-Pokemon-Trading-Card",
@@ -66,7 +66,7 @@ describe("Get Orders By User Id Integration Tests", () => {
       updatedAt: "2025-02-14T10:00:23.193Z",
     }).save();
 
-    order1 = orderModel({
+    order1 = await orderModel({
       _id: new ObjectId("67b1a6a6f9d490b2482c8eb2"),
       products: [product1, product2],
       buyer: {

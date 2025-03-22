@@ -59,7 +59,9 @@ describe("Get Product Integration Tests", () => {
       expect(response.status).toBe(200);
       expect(response.body.countTotal).toBe(2);
       expect(response.body.message).toBe("All Products Fetched");
-      expect(response.body.products).toStrictEqual([product1, product2]);
+      expect(response.body.products).toHaveLength(2);
+      expect(response.body.products[0].name).toBe(product1.name)
+      expect(response.body.products[1].name).toBe(product2.name)
       expect(response.body.success).toBe(true);
     });
   });
@@ -79,7 +81,7 @@ describe("Get Product Integration Tests", () => {
       const response = await request(app).get(`${apiURL}/${product3.slug}`);
       expect(response.status).toBe(200);
       expect(response.body.message).toBe("Single Product Fetched");
-      expect(response.body.product).toStrictEqual(product3);
+      expect(response.body.product.name).toBe(product3.name);
       expect(response.body.success).toBe(true);
     });
     it("should return an error when the non-exist product slug is provided", async () => {

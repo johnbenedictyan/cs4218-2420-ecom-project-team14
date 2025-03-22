@@ -150,7 +150,6 @@ export const loginController = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    console.log(email, password);
     //validation
     if (!email || !password || !email.trim() || !password.trim()) {
       // Changed error message to have same generic error message as below
@@ -162,7 +161,6 @@ export const loginController = async (req, res) => {
     }
     //check user
     const user = await userModel.findOne({ email });
-    console.log(user);
     if (!user) {
       // Change error message as it should not reveal that email is not registered (Should just give generic message)
       return res.status(400).send({
@@ -172,7 +170,6 @@ export const loginController = async (req, res) => {
       });
     }
     const match = await comparePassword(password, user.password);
-    console.log(match);
     if (!match) {
       // Change http status code to 400 instead of 200 which is for successful response case
       // Change error message as it should not reveal whether email is wrong or password is wrong (Security Reasons)

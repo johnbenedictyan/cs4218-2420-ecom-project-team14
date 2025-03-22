@@ -100,8 +100,10 @@ describe('Order Status Backend Integration Testing', () => {
         expect(orderReturned.status).toBe("Delivered");
     });
 
-    // (Equivalence Partitioning) (There are 2 equivalence classes: Valid Order Status and Invalid Order Status) 
-    // Valid Order Status is already covered in Test 1
+    // Equivalence Partitioning 
+    // For order status, there are 2 equivalence classes
+    // 1) Valid Order Status (Covered in Test 1)
+    // 2) Invalid Order Status (Covered in Test 2)
     // Test 2: Check that the admin is unable to update the order status with invalid order status
     it('should not allow the admin to update the order status when invalid order status is provided', async () => {
         const response = await request(app).put(`/api/v1/auth/order-status/${orderId}`)
@@ -116,8 +118,10 @@ describe('Order Status Backend Integration Testing', () => {
         expect(response.body.message).toBe("Invalid order status is provided");
     });
 
-    // Order ID (Equivalence Partitioning) (There are 2 equivalence classes: Valid Order ID and Invalid Order ID)
-    // Valid Order ID is already covered in Test 1
+    // Equivalence Partitioning 
+    // For order id, there are 2 equivalence classes
+    // 1) Valid Order ID (Covered in Test 1)
+    // 2) Invalid Order ID (Covered in Test 3)
     // Test 3: Check that the admin is not allowed to update the order status when invalid order id that is not found in database is provided
     it('should not allow the admin to update the order status when invalid order id which is not in database is given', async () => {
         const response = await request(app).put("/api/v1/auth/order-status/67d3ef07971e8aeb3dc1228c")

@@ -24,14 +24,10 @@ describe("Get Product Integration Tests", () => {
 
   describe("Get All Products Tests", () => {
     it("should return an empty array when there are no products", async () => {
-      request(app)
-        .get(apiURL)
-        .expect(200)
-        .then((response) => {
-          console.log(response);
-          expect(response.body.success).toBe(true);
-          expect(response.body.results.length).toBe(1);
-        });
+      const response = await request(app).get(apiURL);
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(response.body).toBe({});
     });
 
     it("should return the product array when there are products", async () => {
@@ -55,14 +51,10 @@ describe("Get Product Integration Tests", () => {
         price: 20,
       });
 
-      request(app)
-        .get(apiURL)
-        .expect(200)
-        .then((response) => {
-          console.log(response);
-          expect(response.body.success).toBe(true);
-          expect(response.body.results.length).toBe(1);
-        });
+      const response = await request(app).get(apiURL);
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(response.body).toBe({});
     });
   });
 
@@ -77,31 +69,17 @@ describe("Get Product Integration Tests", () => {
         category: categoryId,
         price: 20,
       });
-      request(app)
-        .get(`${apiURL}/${product3.slug}`)
-        .expect(200)
-        .then((response) => {
-          console.log(response);
-          expect(response.body).toBe({});
-        });
+      const response = await request(app).get(`${apiURL}/${product3.slug}`);
+      expect(response.status).toBe(200);
+      expect(response.body).toBe({});
     });
     it("should return an error when the non-exist product slug is provided", async () => {
-      request(app)
-        .get(`${apiURL}/unknown`)
-        .expect(404)
-        .then((response) => {
-          console.log(response);
-          expect(response.body).toBe({});
-        });
+      const response = await request(app).get(`${apiURL}/unknown`).expect(404);
+      expect(response.body).toBe({});
     });
     it("should return an error when the blank product slug is provided", async () => {
-      request(app)
-        .get(`${apiURL}/%20`)
-        .expect(400)
-        .then((response) => {
-          console.log(response);
-          expect(response.body).toBe({});
-        });
+      const response = await request(app).get(`${apiURL}/%20`).expect(400);
+      expect(response.body).toBe({});
     });
   });
 });

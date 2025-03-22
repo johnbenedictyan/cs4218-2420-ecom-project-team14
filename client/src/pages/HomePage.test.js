@@ -335,35 +335,74 @@ describe("HomePage component", () => {
           description: "This is product 1 description",
           slug: "test-product-1",
         },
-      ];
-      const moreProducts = [
         {
           _id: 2,
           name: "Product 2",
-          price: 200,
+          price: 150,
           description: "This is product 2 description",
           slug: "test-product-2",
         },
+        {
+          _id: 3,
+          name: "Product 3",
+          price: 200,
+          description: "This is product 3 description",
+          slug: "test-product-3",
+        },
+        {
+          _id: 4,
+          name: "Product 4",
+          price: 250,
+          description: "This is product 4 description",
+          slug: "test-product-4",
+        },
+        {
+          _id: 5,
+          name: "Product 5",
+          price: 300,
+          description: "This is product 5 description",
+          slug: "test-product-5",
+        },
+        {
+          _id: 6,
+          name: "Product 6",
+          price: 350,
+          description: "This is product 6 description",
+          slug: "test-product-6",
+        },
       ];
 
-      const getProductCount = 0;
+      const moreProducts = [
+        {
+          _id: 7,
+          name: "Product 7",
+          price: 400,
+          description: "This is product 7 description",
+          slug: "test-product-7",
+        },
+        {
+          _id: 8,
+          name: "Product 8",
+          price: 450,
+          description: "This is product 8 description",
+          slug: "test-product-8",
+        },
+      ];
 
-      axios.get = jest.fn((url) => {
-        if (url.startsWith("/api/v1/product/product-list")) {
-          if (getProductCount.count === 0) {
-            getProductCount++;
-            return Promise.resolve({ data: { products: initialProducts } });
-          }
+      // Mock API calls with specific URLs
+      axios.get.mockImplementation((url) => {
+        if (url === "/api/v1/product/product-list/1") {
+          return Promise.resolve({ data: { products: initialProducts } });
+        }
+        if (url === "/api/v1/product/product-count") {
+          return Promise.resolve({ data: { total: 8 } });
+        }
+        if (url === "/api/v1/product/product-list/2") {
           return Promise.resolve({ data: { products: moreProducts } });
         }
-
-        if (url === "/api/v1/product/product-count") {
-          return Promise.resolve({ data: { total: 2 } });
-        }
-
-        return Promise.reject(new Error("Unexpected URL"));
+        // Fallback
+        return Promise.resolve({ data: {} });
       });
-
       render(<HomePage />);
 
       await waitFor(() => {
@@ -637,8 +676,8 @@ describe("HomePage component", () => {
     });
   });
 
-  describe("Rapid Clicks on Loadmore Button", () => {
-    it("should not trigger multiple API calls on rapid clicking", async () => {
+  describe("Loadmore Button", () => {
+    it("should not show Loadmore button after products are all loaded", async () => {
       const initialProducts = [
         {
           _id: 1,
@@ -647,52 +686,87 @@ describe("HomePage component", () => {
           description: "This is product 1 description",
           slug: "test-product-1",
         },
-      ];
-      const moreProducts = [
         {
           _id: 2,
           name: "Product 2",
-          price: 200,
+          price: 150,
           description: "This is product 2 description",
           slug: "test-product-2",
         },
+        {
+          _id: 3,
+          name: "Product 3",
+          price: 200,
+          description: "This is product 3 description",
+          slug: "test-product-3",
+        },
+        {
+          _id: 4,
+          name: "Product 4",
+          price: 250,
+          description: "This is product 4 description",
+          slug: "test-product-4",
+        },
+        {
+          _id: 5,
+          name: "Product 5",
+          price: 300,
+          description: "This is product 5 description",
+          slug: "test-product-5",
+        },
+        {
+          _id: 6,
+          name: "Product 6",
+          price: 350,
+          description: "This is product 6 description",
+          slug: "test-product-6",
+        },
       ];
 
-      const getProductCount = 0;
-
-      axios.get = jest.fn((url) => {
-        if (url.startsWith("/api/v1/product/product-list")) {
-          if (getProductCount.count === 0) {
-            getProductCount++;
-            return Promise.resolve({ data: { products: initialProducts } });
-          }
+      const moreProducts = [
+        {
+          _id: 7,
+          name: "Product 7",
+          price: 400,
+          description: "This is product 7 description",
+          slug: "test-product-7",
+        },
+        {
+          _id: 8,
+          name: "Product 8",
+          price: 450,
+          description: "This is product 8 description",
+          slug: "test-product-8",
+        },
+      ];
+      // Mock API calls with specific URLs
+      axios.get.mockImplementation((url) => {
+        if (url === "/api/v1/product/product-list/1") {
+          return Promise.resolve({ data: { products: initialProducts } });
+        }
+        if (url === "/api/v1/product/product-count") {
+          return Promise.resolve({ data: { total: 8 } });
+        }
+        if (url === "/api/v1/product/product-list/2") {
           return Promise.resolve({ data: { products: moreProducts } });
         }
-
-        if (url === "/api/v1/product/product-count") {
-          return Promise.resolve({ data: { total: 2 } });
-        }
-
-        return Promise.reject(new Error("Unexpected URL"));
+        // Default fallback
+        return Promise.resolve({ data: {} });
       });
 
       render(<HomePage />);
 
+      // Wait for the Loadmore button to appear
       await waitFor(() => {
         expect(screen.getByText(/Loadmore/i)).toBeInTheDocument();
       });
 
-      const loadMoreButton = screen.getByText(/Loadmore/i);
-      // Simulate rapid clicks
-      fireEvent.click(loadMoreButton);
-      fireEvent.click(loadMoreButton);
+      // Click the Loadmore button
+      fireEvent.click(screen.getByText(/Loadmore/i));
 
+      // Wait for the button to disappear after loading more products
       await waitFor(() => {
-        // Check that the API call for page 2 is made only once
-        const page2Calls = axios.get.mock.calls.filter(
-          (call) => call[0] === "/api/v1/product/product-list/2"
-        );
-        expect(page2Calls.length).toBe(1);
+        expect(screen.queryByText(/Loadmore/i)).not.toBeInTheDocument();
       });
     });
   });

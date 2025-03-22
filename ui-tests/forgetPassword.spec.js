@@ -6,7 +6,7 @@ import userModel from '../models/userModel';
 dotenv.config();
 
 test.beforeEach(async ({ page }) => {
-    // Connecting to db which is needed for creating user for test
+    // Connecting to db which is needed for creating and deleting user for test
     await mongoose.connect(process.env.MONGO_URL);
 
     // Create user for test
@@ -33,24 +33,24 @@ test.afterEach(async () => {
     await mongoose.disconnect();
 })
 
-test.describe("Resetting of password", () => {
+test.describe("Successful Resetting of password", () => {
+    // Check that the user is able to successfully reset their password
     test("Should allow the user to reset their password successfully", async ({page}) => {
         // Navigating to login page
         await page.getByRole('link', { name: 'Login' }).click();
 
-        // Click on button to go to forget password page
+        // Click on forgot password button to go to forget password page
         await page.getByRole('button', { name: 'Forgot Password' }).click();
 
+        // Keying in details needed for resetting the password
         // Key in email address
         await page.getByRole('textbox', { name: 'Enter your email address' }).fill('douglas.lim@mail.com');
-
         // Key in new password
         await page.getByRole('textbox', { name: 'Enter your new password' }).fill('simple-password');
-
         // Key in answer to favourite sports
         await page.getByRole('textbox', { name: 'Enter your favourite sports' }).fill('Football');
         
-        // Click on reset password button to change button
+        // Click on reset password button to reset password
         await page.getByRole('button', { name: 'Reset Password' }).click();
 
         // Check that toast message for successful resetting of password is shown after resetting password

@@ -6,10 +6,10 @@ import userModel from '../models/userModel';
 dotenv.config();
 
 test.beforeEach(async ({ page }) => {
-    // Connecting to db which is needed for creating user for test
+    // Connecting to db which is needed for creating and deleting user for test
     await mongoose.connect(process.env.MONGO_URL);
 
-    // Create user for test
+    // Creating user for test
     const hashedPassword = "$2b$10$u/a/pMmAY0Iezeuna3W1OOiggduh3sEla8jhXvg0hUDW6vBIeTeWa";
 
     await new userModel({
@@ -24,14 +24,11 @@ test.beforeEach(async ({ page }) => {
     // Login to become authenticated user
     // Navigating to login page
     await page.goto('http://localhost:3000/login');
-
     // Inputting user details in login page to login
     await page.getByRole('textbox', { name: 'Enter Your Email' }).fill('douglas.lim@mail.com');
     await page.getByRole('textbox', { name: 'Enter Your Password' }).fill('Exact6');
-
     // Click on the login button
     await page.getByRole('button', { name: 'LOGIN' }).click();
-
     // Check that toast message for successful login is shown after login 
     await expect(page.getByText('login successfully')).toBeVisible();
 });
@@ -45,7 +42,8 @@ test.afterEach(async () => {
 })
 
 test.describe("Update Profile Success case", () => {
-    test("Should allow the user to update their profile when valid details are passed in", async ({page}) => {
+    // Check that user is able to successfully update their profile when valid name, password, phone number and adddress is passed as input
+     test("Should allow the user to update their profile when valid details are passed in", async ({page}) => {
         // Navigate to dashboard
         await page.getByRole('button', { name: 'Douglas Lim' }).click();
         await page.getByRole('link', { name: 'Dashboard' }).click();
@@ -55,13 +53,13 @@ test.describe("Update Profile Success case", () => {
 
         // Key in details for updating the profile
         // Keying in the updated name
-        await page.getByRole('textbox', { name: 'Enter Your Name' }).fill('Tester1234');
+        await page.getByRole('textbox', { name: 'Enter Your Name (Required)' }).fill('Tester1234');
         // Keying in the updated password
         await page.getByRole('textbox', { name: 'Enter Your Password' }).fill('newPassword');
         // Keying in the update phone number
-        await page.getByRole('textbox', { name: 'Enter Your Phone' }).fill('91234567');
+        await page.getByRole('textbox', { name: 'Enter Your Phone (Required)' }).fill('91234567');
         // Keying in the updated address
-        await page.getByRole('textbox', { name: 'Enter Your Address' }).fill('Some testing location hidden');
+        await page.getByRole('textbox', { name: 'Enter Your Address (Required)' }).fill('Some testing location hidden');
 
         // Clicking the button to update profile
         await page.getByRole('button', { name: 'UPDATE' }).click();
@@ -83,7 +81,19 @@ test.describe("Update Profile Success case", () => {
         // Check that toast message for successful login is shown to verify successful login after updating profile 
         await expect(page.getByText('login successfully')).toBeVisible();
 
-        // Check that name on nav bar on home page is now updated to new name
+        // Check that name on nav bar on home page is now updated to updated name
         await expect(page.getByRole('list')).toContainText('Tester1234');
+
+        // Navigate to dashboard
+        await page.getByRole('button', { name: 'Tester1234' }).click();
+        await page.getByRole('link', { name: 'Dashboard' }).click();
+
+        // Check that the updated name and address is correctly displayed on dashboard
+        const name = page.locator('h3').nth(0);
+        const address = page.locator('h3').nth(2);
+        
+        await expect(name).toContainText('Tester1234');
+        await expect(address).toContainText('Some testing location hidden');
+
     });
 });

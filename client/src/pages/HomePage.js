@@ -33,6 +33,14 @@ const HomePage = () => {
     }
   };
 
+  useEffect(() => {
+    getTotal();
+  }, [checked, radio]);
+
+  useEffect(() => {
+    getAllCategory();
+  }, []);
+
   //get products
   const getAllProducts = async () => {
     try {
@@ -50,7 +58,10 @@ const HomePage = () => {
   //getTotal Count
   const getTotal = async () => {
     try {
-      const { data } = await axios.get("/api/v1/product/product-count");
+      const filtersApplied = { checked, radio };
+      const { data } = await axios.get("/api/v1/product/product-count", {
+        params: filtersApplied,
+      });
       if (data.total) {
         setTotal(data.total);
       }
@@ -64,9 +75,23 @@ const HomePage = () => {
   const loadMore = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get(`/api/v1/product/product-list/${page}`);
-      setLoading(false);
-      setProducts((prevProducts) => [...prevProducts, ...data?.products]);
+      // If filters are applied, use filter endpoint for paginations
+      if (checked.length || radio.length) {
+        const { data } = await axios.post("/api/v1/product/product-filters", {
+          checked,
+          radio,
+          page,
+        });
+        setLoading(false);
+        setProducts((prevProducts) => [...prevProducts, ...data?.products]);
+      } else {
+        // Otherwise use the product-list endpoint
+        const { data } = await axios.get(
+          `/api/v1/product/product-list/${page}`
+        );
+        setLoading(false);
+        setProducts((prevProducts) => [...prevProducts, ...data?.products]);
+      }
     } catch (error) {
       console.log(error);
       toast.error(`Error fetching product list: ${error.message}`);

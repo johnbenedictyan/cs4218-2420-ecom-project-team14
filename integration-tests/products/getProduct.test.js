@@ -34,7 +34,7 @@ describe("Get Product Integration Tests", () => {
 
     it("should return the product array when there are products", async () => {
       const product1 = await productModel.create({
-        _id: ObjectId("67de810d449b5e29752d604c"),
+        _id: new ObjectId("67de810d449b5e29752d604c"),
         name: "Test Product 1",
         slug: "test-product-1",
         description: "Test Product 1 description",
@@ -45,7 +45,7 @@ describe("Get Product Integration Tests", () => {
       });
 
       const product2 = await productModel.create({
-        _id: ObjectId("67de810d449b5e29752d604d"),
+        _id: new ObjectId("67de810d449b5e29752d604d"),
         name: "Test Product 2",
         slug: "test-product-2",
         description: "Test Product 2 description",
@@ -67,7 +67,7 @@ describe("Get Product Integration Tests", () => {
   describe("Get Single Product Tests", () => {
     it("should return the product when the correct slug is provided", async () => {
       const product3 = await productModel.create({
-        _id: ObjectId("67de810d449b5e29752d604e"),
+        _id: new ObjectId("67de810d449b5e29752d604e"),
         name: "Test Product 3",
         slug: "test-product-3",
         description: "Test Product 3 description",

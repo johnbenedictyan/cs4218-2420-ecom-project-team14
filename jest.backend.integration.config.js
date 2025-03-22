@@ -8,7 +8,7 @@ export default {
   transform: {},
 
   // which test to run
-  testMatch: ["<rootDir>/integration-tests/*.test.js"],
+  testMatch: ["<rootDir>/integration-tests/**/*.test.js"],
 
   testPathIgnorePatterns: ["<rootDir>/client/", "<rootDir>/node_modules/"],
 

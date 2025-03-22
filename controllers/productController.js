@@ -220,7 +220,7 @@ export const getSingleProductController = async (req, res) => {
     if (!product) {
       return res.status(404).send({
         success: false,
-        message: "Not Product Found",
+        message: "No Product Found",
       });
     }
     return res.status(200).send({

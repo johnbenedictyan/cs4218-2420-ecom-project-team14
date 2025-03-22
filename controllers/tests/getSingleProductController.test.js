@@ -66,11 +66,10 @@ describe("Get Single Product Controller tests", () => {
     await getSingleProductController(req, res);
 
     // Assertions
-    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.status).toHaveBeenCalledWith(404);
     expect(res.send).toHaveBeenCalledWith({
-      success: true,
-      message: "Single Product Fetched",
-      product: null,
+      success: false,
+      message: "No Product Found",
     });
   });
 

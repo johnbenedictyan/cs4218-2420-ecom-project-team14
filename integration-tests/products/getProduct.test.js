@@ -85,13 +85,14 @@ describe("Get Product Integration Tests", () => {
     it("should return an error when the non-exist product slug is provided", async () => {
       const response = await request(app).get(`${apiURL}/unknown`);
       expect(response.status).toBe(404);
-      expect(response.body).toBe({});
+      expect(response.body.message).toBe("No Product Found");
+      expect(response.body.success).toBe(false);
     });
     it("should return an error when the blank product slug is provided", async () => {
       const response = await request(app).get(`${apiURL}/%20`);
       expect(response.status).toBe(400);
       expect(response.body.message).toBe("Invalid product slug provided");
-      expect(response.body.success).toBe(true);
+      expect(response.body.success).toBe(false);
     });
   });
 });

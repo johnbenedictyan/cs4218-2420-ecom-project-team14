@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
+import request from "supertest";
 import { hashPassword } from "../../helpers/authHelper.js";
 import orderModel from "../../models/orderModel.js";
 import productModel from "../../models/productModel.js";

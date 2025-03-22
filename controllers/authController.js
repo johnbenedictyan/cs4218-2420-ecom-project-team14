@@ -365,7 +365,11 @@ export const getAllOrdersController = async (req, res) => {
       .populate("buyer", "name")
       .sort({ createdAt: -1 });
 
-    res.json(orders);
+    res.json({
+      success: true,
+      message: "Fetched orders successfully",
+      orders,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).send({

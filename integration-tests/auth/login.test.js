@@ -40,88 +40,78 @@ describe("Login Integration Tests", () => {
 
   // Test 1: Success case where user is able to login successfully with valid email and valid password
   it("should allow the user to login successfully when correct email and password is entered", async () => {
-    await request(app)
+    const response = await request(app)
       .post(apiURL)
       .field("email", testEmail)
       .field("password", testPassword)
       .set("Content-Type", "application/json")
-      .set("Accept", "application/json")
-      .expect(200)
-      .then((response) => {
-        expect(response.body.success).toBe(true);
-        expect(response.body.message).toBe("login successfully");
-      });
+      .set("Accept", "application/json");
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
+    expect(response.body.message).toBe("login successfully");
   });
 
   // Email (Equivalence Partitioning) (There are 3 equivalence classes: Empty email, Non-empty invalid email, Valid email)
   // Valid email is already covered in Test 1
   // Test 2 (Empty email): Case where empty email is inputted
   it("should not allow user with an empty email to login", async () => {
-    await request(app)
+    const response = await request(app)
       .post(apiURL)
       .field("email", "")
       .field("password", testPassword)
       .set("Content-Type", "application/json")
-      .set("Accept", "application/json")
-      .expect(400)
-      .then((response) => {
-        expect(response.body.message).toBe(
-          "Invalid email or password has been entered or email is not registered"
-        );
-        expect(response.body.success).toBe(false);
-      });
+      .set("Accept", "application/json");
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe(
+      "Invalid email or password has been entered or email is not registered"
+    );
+    expect(response.body.success).toBe(false);
   });
 
   // Test 3 (Non-empty invalid email): Case where non-empty email is inputted but not found in database
   it("should not allow user with a non-empty email that is not in the database to login", async () => {
-    await request(app)
+    const response = await request(app)
       .post(apiURL)
       .field("email", "random@mail.com")
       .field("password", testPassword)
       .set("Content-Type", "application/json")
-      .set("Accept", "application/json")
-      .expect(400)
-      .then((response) => {
-        expect(response.body.message).toBe(
-          "Invalid email or password has been entered or email is not registered"
-        );
-        expect(response.body.success).toBe(false);
-      });
+      .set("Accept", "application/json");
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe(
+      "Invalid email or password has been entered or email is not registered"
+    );
+    expect(response.body.success).toBe(false);
   });
 
   // Password (Equivalence Partitioning) (There are 3 equivalence classes: Empty password, Non-empty invalid password, Valid Password)
   // Valid password is already covered in Test 1
   // Test 4 (Empty Password): Case where empty password is inputted
   it("should not allow user with an empty password to login", async () => {
-    await request(app)
+    const response = await request(app)
       .post(apiURL)
       .field("email", testEmail)
       .field("password", "")
       .set("Content-Type", "application/json")
-      .set("Accept", "application/json")
-      .expect(400)
-      .then((response) => {
-        expect(response.body.message).toBe(
-          "Invalid email or password has been entered or email is not registered"
-        );
-        expect(response.body.success).toBe(false);
-      });
+      .set("Accept", "application/json");
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe(
+      "Invalid email or password has been entered or email is not registered"
+    );
+    expect(response.body.success).toBe(false);
   });
 
   // Test 5 (Non-empty invalid password): Case where non-empty password is inputted but it is invalid as the hash of the passwords do not match
   it("should not allow user with a non-empty invalid password to login", async () => {
-    await request(app)
+    const response = await request(app)
       .post(apiURL)
       .field("email", testEmail)
       .field("password", "wrongPassword")
       .set("Content-Type", "application/json")
-      .set("Accept", "application/json")
-      .expect(400)
-      .then((response) => {
-        expect(response.body.message).toBe(
-          "Invalid email or password has been entered or email is not registered"
-        );
-        expect(response.body.success).toBe(false);
-      });
+      .set("Accept", "application/json");
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe(
+      "Invalid email or password has been entered or email is not registered"
+    );
+    expect(response.body.success).toBe(false);
   });
 });

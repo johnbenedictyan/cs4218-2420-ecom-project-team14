@@ -163,14 +163,14 @@ export const createProductController = async (req, res) => {
     }
 
     await products.save();
-    res.status(201).send({
+    return res.status(201).send({
       success: true,
       message: "Product Created Successfully",
       products,
     });
   } catch (error) {
     console.log(error);
-    res.status(500).send({
+    return res.status(500).send({
       success: false,
       error,
       message: "Error in creating product",
@@ -187,7 +187,7 @@ export const getProductController = async (req, res) => {
       .select("-photo")
       .limit(PRODUCT_LIMIT)
       .sort({ createdAt: -1 });
-    res.status(200).send({
+    return res.status(200).send({
       success: true,
       countTotal: products.length,
       message: "All Products Fetched",
@@ -195,7 +195,7 @@ export const getProductController = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(500).send({
+    return res.status(500).send({
       success: false,
       message: "Error in getting products",
       error: error.message,
@@ -216,14 +216,21 @@ export const getSingleProductController = async (req, res) => {
       .findOne({ slug: slug })
       .select("-photo")
       .populate("category");
-    res.status(200).send({
+
+    if (!product) {
+      return res.status(404).send({
+        success: false,
+        message: "Not Product Found",
+      });
+    }
+    return res.status(200).send({
       success: true,
       message: "Single Product Fetched",
       product,
     });
   } catch (error) {
     console.log(error);
-    res.status(500).send({
+    return res.status(500).send({
       success: false,
       message: "Error while getting single product",
       error,
@@ -249,7 +256,7 @@ export const productPhotoController = async (req, res) => {
     }
   } catch (error) {
     console.log(error);
-    res.status(500).send({
+    return res.status(500).send({
       success: false,
       message: "Error while getting photo",
       error,
@@ -282,13 +289,13 @@ export const deleteProductController = async (req, res) => {
       });
     }
 
-    res.status(200).send({
+    return res.status(200).send({
       success: true,
       message: "Product Deleted successfully",
     });
   } catch (error) {
     console.log(error);
-    res.status(500).send({
+    return res.status(500).send({
       success: false,
       message: "Error while deleting product",
       error,
@@ -447,14 +454,14 @@ export const updateProductController = async (req, res) => {
       updatedProduct.photo.contentType = photo.type;
     }
     await updatedProduct.save();
-    res.status(201).send({
+    return res.status(201).send({
       success: true,
       message: "Product Updated Successfully",
       product: updatedProduct,
     });
   } catch (error) {
     console.log(error);
-    res.status(500).send({
+    return res.status(500).send({
       success: false,
       error,
       message: "Error in Update product",
@@ -504,13 +511,13 @@ export const productFiltersController = async (req, res) => {
       .skip((pageNum - 1) * PER_PAGE_LIMIT) // Use Offset of 1 because we don't want to skip one page
       .limit(PER_PAGE_LIMIT); // Consistent with productListController
 
-    res.status(200).send({
+    return res.status(200).send({
       success: true,
       products,
     });
   } catch (error) {
     console.log(error);
-    res.status(400).send({
+    return res.status(400).send({
       success: false,
       message: "Error While Filtering Products",
       error,
@@ -530,13 +537,13 @@ export const productCountController = async (req, res) => {
       args.price = { $gte: radio[0], $lte: radio[1] };
     // Opt to use countDocuments to ensure productCountController always returns correct count
     const total = await productModel.countDocuments(args);
-    res.status(200).send({
+    return res.status(200).send({
       success: true,
       total,
     });
   } catch (error) {
     console.log(error);
-    res.status(400).send({
+    return res.status(400).send({
       message: "Error in product count",
       error,
       success: false,
@@ -568,13 +575,13 @@ export const productListController = async (req, res) => {
       .skip((page - 1) * PER_PAGE_LIMIT)
       .limit(PER_PAGE_LIMIT)
       .sort({ createdAt: -1 });
-    res.status(200).send({
+    return res.status(200).send({
       success: true,
       products,
     });
   } catch (error) {
     console.log(error);
-    res.status(400).send({
+    return res.status(400).send({
       success: false,
       message: "error in per page ctrl",
       error,
@@ -616,10 +623,10 @@ export const searchProductController = async (req, res) => {
       .skip((pageNum - 1) * PER_PAGE_LIMIT)
       .limit(PER_PAGE_LIMIT);
 
-    res.status(200).json({ success: true, results });
+    return res.status(200).json({ success: true, results });
   } catch (error) {
     console.log(error);
-    res.status(400).json({
+    return res.status(400).json({
       success: false,
       message: "Error In Search Product API",
       error,
@@ -654,13 +661,13 @@ export const relatedProductController = async (req, res) => {
       .limit(RELATED_PRODUCT_LIMIT)
       .populate("category");
 
-    res.status(200).send({
+    return res.status(200).send({
       success: true,
       products,
     });
   } catch (error) {
     console.log(error);
-    res.status(400).send({
+    return res.status(400).send({
       success: false,
       message: "error while geting related product",
       error,
@@ -689,14 +696,14 @@ export const productCategoryController = async (req, res) => {
 
     const products = await productModel.find({ category }).populate("category");
 
-    res.status(200).send({
+    return res.status(200).send({
       success: true,
       category,
       products,
     });
   } catch (error) {
     console.log(error);
-    res.status(400).send({
+    return res.status(400).send({
       success: false,
       error,
       message: "Error While Getting products",
@@ -710,7 +717,7 @@ export const braintreeTokenController = async (req, res) => {
   try {
     gateway.clientToken.generate({}, function (err, response) {
       if (err) {
-        res.status(500).send(err);
+        return res.status(500).send(err);
       } else {
         res.send(response);
       }
@@ -777,7 +784,7 @@ export const brainTreePaymentController = async (req, res) => {
           }
           res.json({ ok: true });
         } else {
-          res.status(500).send(error);
+          return res.status(500).send(error);
         }
       }
     );

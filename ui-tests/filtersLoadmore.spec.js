@@ -344,14 +344,14 @@ test.describe("Successful filtering by category and price functionality as well 
     ).toHaveCount(0);
   });
 
-  // Can filter by price and then category
+  // Can filter by category first and then price
   // Clicking the reset filters button should  reset the filters and return unfiltered product page
   test("Should be able to filter by price then category, and reset filters when click on reset filters button", async ({
     page,
   }) => {
     await page.goto("http://localhost:3000", { waitUntil: "commit" });
 
-    // Filter by category and price
+    // Filter by category first then price
     await page.getByRole("checkbox", { name: "Toys and more" }).check();
     await page.getByRole("radio", { name: "$60 to 79" }).check();
 
@@ -453,7 +453,7 @@ test.describe("Successful filtering by category and price functionality as well 
     ).toBeVisible();
   });
 
-  // Can add test in future: filter by price then by category test
+  // Can add test in future: filter by price then by category
 
   // Can add test for authenticated users in the future: should be able to repeat same workflow
 });

@@ -85,7 +85,7 @@ describe("Product Filter Integration Tests", () => {
    * 3. Price range only (pairwise)
    * 4. Both CategoryID and price range (pairwise)
    * 5. Price bounded by extreme range (boundary/pairwise)
-   * 6. Inputs checked and radio are invalid (Negative)
+   * 6. Inputs checked and radio are invalid (Negative/BVA)
    * 7. No products matching filters (Boundary)
    *
    */

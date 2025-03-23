@@ -148,7 +148,7 @@ export const deleteCategoryCOntroller = async (req, res) => {
 
     res.status(200).send({
       success: true,
-      message: "Category Deleted Successfully",
+      message: "Categry Deleted Successfully",
     });
   } catch (error) {
     console.log(error);

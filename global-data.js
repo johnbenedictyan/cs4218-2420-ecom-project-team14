@@ -3,6 +3,8 @@ import { ObjectId } from "mongodb";
 
 dotenv.config();
 
+const rootURL = "http://localhost:3000";
+
 const testPassword = "testPassword";
 
 const testAdmin = {
@@ -55,11 +57,11 @@ const testProduct2 = {
 };
 
 export {
-    testAdmin,
-    testCategory,
-    testPassword,
-    testProduct1,
-    testProduct2,
-    testUser
+  rootURL,
+  testAdmin,
+  testCategory,
+  testPassword,
+  testProduct1,
+  testProduct2,
+  testUser,
 };
-

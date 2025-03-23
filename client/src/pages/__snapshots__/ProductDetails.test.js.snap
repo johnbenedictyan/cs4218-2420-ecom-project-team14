@@ -62,7 +62,8 @@ exports[`ProductDetails Component matches snapshot 1`] = `
         class="d-flex flex-wrap"
       >
         <div
-          class="card m-2"
+          class="card m-2 relatedProductCard"
+          id="related-product-card-related-1"
         >
           <img
             alt="Short"
@@ -103,7 +104,8 @@ exports[`ProductDetails Component matches snapshot 1`] = `
           </div>
         </div>
         <div
-          class="card m-2"
+          class="card m-2 relatedProductCard"
+          id="related-product-card-related-2"
         >
           <img
             alt="Medium Name Product"
@@ -144,7 +146,8 @@ exports[`ProductDetails Component matches snapshot 1`] = `
           </div>
         </div>
         <div
-          class="card m-2"
+          class="card m-2 relatedProductCard"
+          id="related-product-card-related-3"
         >
           <img
             alt="Extremely Long Product Name That Might Cause UI Issues If Not Handled Properly But Should Still Be Handled Gracefully By The System Even If This Is Usually Not Very Common"

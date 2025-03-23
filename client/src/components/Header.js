@@ -75,20 +75,7 @@ const Header = () => {
               </ul>
             </li>
 
-            {!auth?.user ? (
-              <>
-                <li className="nav-item">
-                  <NavLink to="/register" className="nav-link">
-                    Register
-                  </NavLink>
-                </li>
-                <li className="nav-item">
-                  <NavLink to="/login" className="nav-link">
-                    Login
-                  </NavLink>
-                </li>
-              </>
-            ) : (
+            {auth?.user ? (
               <>
                 <li className="nav-item dropdown">
                   <NavLink
@@ -97,14 +84,15 @@ const Header = () => {
                     role="button"
                     data-bs-toggle="dropdown"
                     style={{ border: "none" }}
+                    id="dashboardToggle"
                   >
-                    {auth?.user?.name}
+                    {auth.user.name ?? "Anonymous"}
                   </NavLink>
-                  <ul className="dropdown-menu" id="dashboardToggle">
+                  <ul className="dropdown-menu">
                     <li>
                       <NavLink
                         to={`/dashboard/${
-                          auth?.user?.role === 1 ? "admin" : "user"
+                          auth.user?.role === 1 ? "admin" : "user"
                         }`}
                         className="dropdown-item"
                       >
@@ -121,6 +109,19 @@ const Header = () => {
                       </NavLink>
                     </li>
                   </ul>
+                </li>
+              </>
+            ) : (
+              <>
+                <li className="nav-item">
+                  <NavLink to="/register" className="nav-link">
+                    Register
+                  </NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink to="/login" className="nav-link">
+                    Login
+                  </NavLink>
                 </li>
               </>
             )}

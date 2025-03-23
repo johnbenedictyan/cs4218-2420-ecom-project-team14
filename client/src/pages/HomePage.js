@@ -192,8 +192,12 @@ const HomePage = () => {
         <div className="col-md-9 ">
           <h1 className="text-center">All Products</h1>
           <div className="d-flex flex-wrap">
-            {products?.map((p) => (
-              <div className="card m-2" key={p._id}>
+            {products.map((p) => (
+              <div
+                className="card m-2"
+                key={p._id}
+                id={`product-card-${p.slug}`}
+              >
                 <img
                   src={`/api/v1/product/product-photo/${p._id}`}
                   className="card-img-top"

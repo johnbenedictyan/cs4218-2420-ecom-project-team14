@@ -178,7 +178,7 @@ describe("Get All Categories Integration Tests", () => {
       expect(response.body.category.length).toBe(expectedCount);
     });
 
-    describe("Authentication of users does not affect Category List", async () => {
+    describe("Authentication of users does not affect Category List", () => {
       // Test Case 3: Authenticated + Empty DB
       it("should return empty category list with empty DB and authenticated request", async () => {
         // Clear the database

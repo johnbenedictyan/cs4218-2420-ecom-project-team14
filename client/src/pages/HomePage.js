@@ -1,6 +1,6 @@
 import { Checkbox, Radio } from "antd";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { AiOutlineReload } from "react-icons/ai";
 import { Link } from "react-router-dom";
@@ -20,11 +20,11 @@ const HomePage = () => {
   const [loading, setLoading] = useState(false);
 
   //get all cat
-  const getAllCategory = async () => {
+  const getAllCategories = async () => {
     try {
       const { data } = await axios.get("/api/v1/category/get-category");
-      if (data?.success) {
-        setCategories(data?.category);
+      if (data.category) {
+        setCategories(data.category);
       }
     } catch (error) {
       console.log(error);
@@ -32,72 +32,47 @@ const HomePage = () => {
     }
   };
 
-  useEffect(() => {
-    getTotal();
-  }, [checked, radio]);
-
-  useEffect(() => {
-    getAllCategory();
-  }, []);
-
   //get products
-  const getAllProducts = async () => {
-    try {
-      setLoading(true);
-      const { data } = await axios.get(`/api/v1/product/product-list/${page}`);
-      setLoading(false);
-      console.log(data)
-      setProducts(data.products);
-    } catch (error) {
-      setLoading(false);
-      console.log(error);
-      toast.error(`Error fetching product list: ${error.message}`);
-    }
-  };
+  const getAllProducts = useCallback(
+    async (selectedPage) => {
+      try {
+        const { data } = await axios.get(
+          `/api/v1/product/product-list/${selectedPage}`
+        );
+        if (data.products) {
+          setProducts((prev) => [...prev, ...data.products]);
+        }
+      } catch (error) {
+        console.log(error);
+        toast.error(`Error fetching product list: ${error.message}`);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [setProducts]
+  );
 
   //getTotal Count
-  const getTotal = async () => {
-    try {
-      const filtersApplied = { checked, radio };
-      const { data } = await axios.get("/api/v1/product/product-count", {
-        params: filtersApplied,
-      });
-      if (data.total) {
-        setTotal(data.total);
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error(`Error fetching product count: ${error.message}`);
-    }
-  };
-
-  //load more
-  const loadMore = async () => {
-    try {
-      setLoading(true);
-      // If filters are applied, use filter endpoint for paginations
-      if (checked.length || radio.length) {
-        const { data } = await axios.post("/api/v1/product/product-filters", {
-          checked,
-          radio,
-          page,
+  const getTotal = useCallback(
+    async (checkedCategories = undefined, selectedPrice = undefined) => {
+      try {
+        const filtersApplied = {
+          checked: checkedCategories,
+          radio: selectedPrice,
+        };
+        const { data } = await axios.get("/api/v1/product/product-count", {
+          params: filtersApplied,
         });
-        setLoading(false);
-        setProducts((prevProducts) => [...prevProducts, ...data?.products]);
-      } else {
-        // Otherwise use the product-list endpoint
-        const { data } = await axios.get(
-          `/api/v1/product/product-list/${page}`
-        );
-        setLoading(false);
-        setProducts((prevProducts) => [...prevProducts, ...data?.products]);
+        if (data.total) {
+          setTotal(data.total);
+        }
+      } catch (error) {
+        console.log(error);
+        toast.error(`Error fetching product count: ${error.message}`);
       }
-    } catch (error) {
-      console.log(error);
-      toast.error(`Error fetching product list: ${error.message}`);
-      setLoading(false);
-    }
-  };
+    },
+    [setTotal]
+  );
 
   // filter by cat
   const handleFilter = (value, id) => {
@@ -111,35 +86,42 @@ const HomePage = () => {
   };
 
   //get filtered product
-  const filterProduct = async () => {
-    try {
-      const { data } = await axios.post("/api/v1/product/product-filters", {
-        checked,
-        radio,
-      });
-      setProducts(data?.products);
-    } catch (error) {
-      console.log(error);
-      toast.error(`Error fetching filtered products: ${error.message}`);
+  const filterProduct = useCallback(
+    async (checkedCategories, selectedPrice, selectedPage) => {
+      try {
+        const { data } = await axios.post("/api/v1/product/product-filters", {
+          checked: checkedCategories,
+          radio: selectedPrice,
+          page: selectedPage,
+        });
+        if (data.products) {
+          setProducts((prev) => [...prev, ...data.products]);
+        }
+      } catch (error) {
+        console.log(error);
+        toast.error(`Error fetching filtered products: ${error.message}`);
+      }
+    },
+    [setProducts]
+  );
+
+  useEffect(() => {
+    setLoading(true);
+    console.log(checked, radio, page);
+    if (checked.length == 0 && radio.length == 0) {
+      console.log("A");
+      getAllProducts(page);
+      getTotal();
+    } else {
+      console.log("B");
+      filterProduct(checked, radio, page);
+      getTotal(checked, radio);
     }
-  };
+    setLoading(false);
+  }, [getAllProducts, filterProduct, getTotal, checked, radio, page]);
 
   useEffect(() => {
-    if (page === 1) return;
-    loadMore();
-  }, [page]);
-
-  useEffect(() => {
-    if (checked.length === 0 && radio.length === 0) getAllProducts();
-  }, [checked, radio]);
-
-  useEffect(() => {
-    if (checked.length || radio.length) filterProduct();
-  }, [checked, radio]);
-
-  useEffect(() => {
-    getAllCategory();
-    getTotal();
+    getAllCategories();
   }, []);
 
   return (
@@ -156,7 +138,7 @@ const HomePage = () => {
         <div className="col-md-3 filters">
           <h4 className="text-center">Filter By Category</h4>
           <div className="d-flex flex-column">
-            {categories?.map((c) => (
+            {categories.map((c) => (
               <Checkbox
                 key={c._id}
                 onChange={(e) => handleFilter(e.target.checked, c._id)}
@@ -169,7 +151,7 @@ const HomePage = () => {
           <h4 className="text-center mt-4">Filter By Price</h4>
           <div className="d-flex flex-column">
             <Radio.Group onChange={(e) => setRadio(e.target.value)}>
-              {Prices?.map((p, index) => (
+              {Prices.map((p, index) => (
                 <Radio key={`${p._id}-${index}`} value={p.array}>
                   {p.name}
                 </Radio>
@@ -188,17 +170,13 @@ const HomePage = () => {
         <div className="col-md-9 ">
           <h1 className="text-center">All Products</h1>
           <div className="d-flex flex-wrap">
-            {products?.map((p) => (
+            {products.map((p) => (
               <div
                 className="card m-2"
                 key={p._id}
                 id={`product-card-${p.slug}`}
               >
-                <img
-                  src={`/api/v1/product/product-photo/${p._id}`}
-                  className="card-img-top"
-                  alt={p.name}
-                />
+                <img src={""} className="card-img-top" alt={p.name} />
                 <div className="card-body">
                   <div className="card-name-price">
                     <h5 className="card-title">{p.name}</h5>
@@ -240,18 +218,16 @@ const HomePage = () => {
             {products && products.length < total && (
               <button
                 className="btn loadmore"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setPage(page + 1);
+                onClick={() => {
+                  setPage((prev) => prev + 1);
                 }}
               >
                 {loading ? (
                   "Loading ..."
                 ) : (
-                  <>
-                    {" "}
+                  <p>
                     Loadmore <AiOutlineReload />
-                  </>
+                  </p>
                 )}
               </button>
             )}

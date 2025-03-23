@@ -159,7 +159,7 @@ test.describe("Adding and removing products from cart", () => {
     ).toBeVisible();
   });
 
-  test.only("added items total price correctly", async ({ page }) => {
+  test("added items total price correctly", async ({ page }) => {
     await page
       .locator("#product-card-test-product-1")
       .locator('button:has-text("Add to Cart")')

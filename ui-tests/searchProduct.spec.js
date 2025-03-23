@@ -241,4 +241,8 @@ test.describe("Successful searching, loadmore and view product details functiona
 
     await searchAndLoadmoreVerification(page);
   });
+
+  // Can add test: Should display empty input message if user searches with empty input
+
+  // Can add test: Should display too long input message if user searches with more than 100 characters
 });

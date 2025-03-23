@@ -86,7 +86,7 @@ const Header = () => {
                     style={{ border: "none" }}
                     id="dashboardToggle"
                   >
-                    {auth.user.name ?? "Anonymous"}
+                    {auth.user?.name ?? "Guest"}
                   </NavLink>
                   <ul className="dropdown-menu">
                     <li>

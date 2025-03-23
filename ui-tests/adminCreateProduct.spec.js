@@ -99,7 +99,7 @@ test.describe("Admin Create Product", () => {
     await expect(productCard.getByRole("button", { name: "ADD TO CART" })).toBeVisible();
   });
   
-  test("should verify required fields when creating a product", async ({ page }) => {
+  test("should verify required fields are inputted when creating a product", async ({ page }) => {
     await page.getByRole("button", { name: "createproductadmin" }).click();
     await page.getByRole("link", { name: "Dashboard" }).click();
     

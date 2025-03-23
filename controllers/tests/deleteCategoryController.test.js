@@ -37,7 +37,7 @@ describe("Delete Category Controller Tests", () => {
 
         expect(res.status).toHaveBeenCalledWith(200);
         // Check that message shows that the category is deleted successfully
-        expect(res.send.mock.lastCall[0].message).toBe("Categry Deleted Successfully");
+        expect(res.send.mock.lastCall[0].message).toBe("Category Deleted Successfully");
     });
 
     // Id (Equivalence Partitioning) (There are 3 equivalence classes: Empty id, Invalid id and Valid id)

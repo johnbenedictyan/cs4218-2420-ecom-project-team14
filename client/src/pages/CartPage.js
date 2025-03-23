@@ -86,12 +86,11 @@ const CartPage = () => {
               {!auth?.user
                 ? "Hello Guest"
                 : `Hello  ${auth?.token && auth?.user?.name}`}
-              <p className="text-center">
+              <p className="text-center" id="cartQuantityBanner">
                 {cartItems.length
-                  ? `You have ${cartItems.length > 1 ? cartItems.length + " products" : cartItems.length + " product"} in your cart ${
-                      auth?.token ? "" : "please login to checkout !"
-                    }`
-                  : " Your Cart Is Empty"}
+                  ? `You have ${cartItems.length > 1 ? cartItems.length + " products" : cartItems.length + " product"} in your cart.`
+                  : "Your Cart Is Empty"}
+                {!auth.token && " Please login to checkout!"}
               </p>
             </h1>
           </div>
@@ -100,7 +99,11 @@ const CartPage = () => {
           <div className="row ">
             <div className="col-md-7 p-0 m-0">
               {cartItems.map((p) => (
-                <div className="row card flex-row" key={p._id}>
+                <div
+                  className="row card flex-row"
+                  key={p._id}
+                  id={`cart-row-${p.slug}`}
+                >
                   <div className="col-md-4">
                     <img
                       src={`/api/v1/product/product-photo/${p._id}`}
@@ -138,10 +141,13 @@ const CartPage = () => {
                           parseInt(e.target.value, 10) ?? 1
                         )
                       }
+                      value={p.quantity}
                     >
                       {Array.from({ length: p.inventory }, (_, i) => i + 1).map(
                         (x) => (
-                          <option value={x}>{x}</option>
+                          <option key={`cart-row-${p.slug}-qty-${x}`} value={x}>
+                            {x}
+                          </option>
                         )
                       )}
                     </select>

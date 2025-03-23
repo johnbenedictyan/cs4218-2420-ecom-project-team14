@@ -1,15 +1,13 @@
 import { expect, test } from "@playwright/test";
 import dotenv from "dotenv";
 import {
+  rootURL,
   testCategory,
   testPassword,
   testProduct1,
-  testUser,
 } from "../../global-data";
 
 dotenv.config();
-
-const rootURL = "http://localhost:3000";
 
 test.describe("Authenticated Non-Admin Users", () => {
   test.beforeEach(async ({ page }) => {

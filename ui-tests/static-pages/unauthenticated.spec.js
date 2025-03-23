@@ -1,10 +1,8 @@
 import { expect, test } from "@playwright/test";
 import dotenv from "dotenv";
-import { testCategory, testProduct1 } from "../../global-data";
+import { rootURL, testCategory, testProduct1 } from "../../global-data";
 
 dotenv.config();
-
-const rootURL = "http://localhost:3000";
 
 test.describe("Unauthenticated Users", () => {
   test.beforeEach(async ({ page }) => {

@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import dotenv from "dotenv";
 import {
+  rootURL,
   testAdmin,
   testCategory,
   testPassword,
@@ -8,8 +9,6 @@ import {
 } from "../../global-data";
 
 dotenv.config();
-
-const rootURL = "http://localhost:3000";
 
 test.describe("Authenticated Admin Users", () => {
   test.beforeEach(async ({ page }) => {

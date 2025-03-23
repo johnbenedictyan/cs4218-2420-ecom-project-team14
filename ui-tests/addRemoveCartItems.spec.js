@@ -1,76 +1,31 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import dotenv from "dotenv";
-import mongoose from "mongoose";
-import userModel from "../models/userModel";
-import productModel from "../models/productModel";
-import { ObjectId } from "mongodb";
+import {
+  rootURL,
+  testPassword,
+  testProduct1,
+  testProduct2,
+  testUser,
+} from "../global-data";
 
 dotenv.config();
 
-const categoryId = new ObjectId("bc7f29ed898fefd6a5f713fd");
-const product1 = {
-  name: "Test Product 1",
-  slug: "test-product-1",
-  description: "Test Product 1 Description",
-  quantity: "10",
-  shipping: "1",
-  category: categoryId,
-  price: 10,
-};
-
-const product2 = {
-  name: "Test Product 2",
-  slug: "test-product-2",
-  description: "Test Product 2 Description",
-  quantity: "10",
-  shipping: "1",
-  category: categoryId,
-  price: 100,
-};
 test.beforeEach(async ({ page }) => {
-  // Connecting to DB for test user deletion
-  await mongoose.connect(process.env.MONGO_URL);
-
-  const hashedPassword =
-    "$2b$10$//wWsN./fEX1WiipH57HG.SAwgkYv1MRrPSkpXM38Dy5seOEhCoUy";
-
-  await new userModel({
-    name: "Test User",
-    email: "test@mail.com",
-    phone: "81234567",
-    address: "123 Test Road",
-    password: hashedPassword,
-    answer: "password is cs4218@test.com",
-  }).save();
-
-  await productModel.create({
-    ...product1,
-  });
-
-  await productModel.create({ ...product2 });
-  // Navigating to home
-  await page.goto("http://localhost:3000", { waitUntil: "commit" });
-
+  await page.goto(rootURL, { waitUntil: "domcontentloaded" });
   await page.getByRole("link", { name: "Login" }).click();
   await page
     .getByRole("textbox", { name: "Enter Your Email" })
-    .fill("test@mail.com");
+    .fill(testUser.email);
   await page
     .getByRole("textbox", { name: "Enter Your Password" })
-    .fill("cs4218@test.com");
-  await page.getByRole("button", { name: "Login" }).click();
-});
+    .fill(testPassword);
+  await page.getByRole("button", { name: "LOGIN" }).click();
 
-test.afterEach(async () => {
-  // Delete user created from this test
-  await userModel.deleteMany({ email: "test@mail.com" });
+  await page.waitForURL(rootURL + "/", { waitUntil: "domcontentloaded" });
+  await page.waitForSelector("#dashboardToggle", { state: "visible" });
 
-  // Delete products
-  await productModel.deleteMany({ name: "Test Product 1" });
-  await productModel.deleteMany({ name: "Test Product 2" });
-
-  // Close connection to DB
-  await mongoose.disconnect();
+  await expect(page.locator("a[href='/register']")).not.toBeVisible();
+  await expect(page.locator("a[href='/login']")).not.toBeVisible();
 });
 
 test.describe("Adding and removing products from cart", () => {
@@ -79,22 +34,22 @@ test.describe("Adding and removing products from cart", () => {
   }) => {
     // Find the product cards that contains the product name and click its Add to Cart button
     await page
-      .locator('.card-body:has-text("Test Product 1")')
-      .locator('button:has-text("Add to Cart")')
+      .locator(`.card-body:has-text("${testProduct1.name}")`)
+      .locator('button:has-text("ADD TO CART")')
       .click();
 
     await page
-      .locator('.card-body:has-text("Test Product 2")')
-      .locator('button:has-text("Add to Cart")')
+      .locator(`.card-body:has-text("${testProduct2.name}")`)
+      .locator('button:has-text("ADD TO CART")')
       .click();
 
     // Find the cart
     await page.getByRole("link", { name: "Cart" }).click();
 
-    // Validate both items and only both items are in the cart
-    await expect(
-      page.locator('p.text-center:has-text("You Have 2 items in your cart")')
-    ).toBeVisible();
+    // Validate both products and only both products are in the cart
+    await expect(page.locator("#cartQuantityBanner")).toHaveText(
+      "You have 2 products in your cart."
+    );
     await expect(
       page.locator('.card:has-text("Test Product 1")')
     ).toBeVisible();
@@ -102,16 +57,16 @@ test.describe("Adding and removing products from cart", () => {
       page.locator('.card:has-text("Test Product 2")')
     ).toBeVisible();
 
-    // Remove the first item
+    // Remove the first product
     await page
       .locator('.card:has-text("Test Product 1")')
       .locator('button:has-text("Remove")')
       .click();
 
-    // Validate the correct item is removed from cart
-    await expect(
-      page.locator('p.text-center:has-text("You Have 1 items in your cart")')
-    ).toBeVisible();
+    // Validate the correct product is removed from cart
+    await expect(page.locator("#cartQuantityBanner")).toHaveText(
+      "You have 1 product in your cart."
+    );
     await expect(
       page.locator('.card:has-text("Test Product 1")')
     ).not.toBeVisible();
@@ -120,32 +75,36 @@ test.describe("Adding and removing products from cart", () => {
     ).toBeVisible();
   });
 
-  test("should correctly add multiple of the same items then correctly remove all items", async ({
+  test("should correctly add multiple of the same products then correctly remove all products", async ({
     page,
     browserName,
   }) => {
     // Find the product card that contains the product name and click its Add to Cart button 10 times
-    let i = 0;
-    while (i < 10) {
+    for (let i = 0; i < 10; i++) {
       await page
-        .locator('.card-body:has-text("Test Product 1")')
-        .locator('button:has-text("Add to Cart")')
+        .locator(`.card-body:has-text("${testProduct2.name}")`)
+        .locator('button:has-text("ADD TO CART")')
         .click();
-      i++;
     }
 
     await page.getByRole("link", { name: "Cart" }).click();
 
-    await expect(
-      page.locator('p.text-center:has-text("You Have 10 items in your cart")')
-    ).toBeVisible();
+    expect(
+      page
+        .locator(`#cart-row-${testProduct2.slug}`)
+        .locator(".form-select option:checked")
+    ).toHaveText("10");
+
+    await expect(page.locator("#cartQuantityBanner")).toHaveText(
+      "You have 1 product in your cart."
+    );
 
     let removeButtons = await page
       .locator('.btn-danger:has-text("Remove")')
       .all();
 
     while (removeButtons.length > 0) {
-      // Firefox and webkit shows an overlay after removing item, hard-coded the overlay here
+      // Firefox and webkit shows an overlay after removing product, hard-coded the overlay here
       // for manual removal
       if (browserName === "firefox" || browserName === "webkit") {
         // Inject JS script to remove overlay manually on webkit and firefox
@@ -169,29 +128,30 @@ test.describe("Adding and removing products from cart", () => {
     ).toBeVisible();
   });
 
-  test("added items total price correctly", async ({ page }) => {
+  test("added products total price correctly", async ({ page }) => {
     await page
-      .locator('.card-body:has-text("Test Product 1")')
-      .locator('button:has-text("Add to Cart")')
+      .locator(`.card-body:has-text("${testProduct1.name}")`)
+      .locator('button:has-text("ADD TO CART")')
       .click();
 
     await page
-      .locator('.card-body:has-text("Test Product 2")')
-      .locator('button:has-text("Add to Cart")')
+      .locator(`.card-body:has-text("${testProduct2.name}")`)
+      .locator('button:has-text("ADD TO CART")')
       .click();
 
     await page
-      .locator('.card-body:has-text("Test Product 1")')
-      .locator('button:has-text("Add to Cart")')
+      .locator(`.card-body:has-text("${testProduct1.name}")`)
+      .locator('button:has-text("ADD TO CART")')
       .click();
 
-    let totalPrice = product1.price + product2.price + product1.price;
+    let totalPrice =
+      testProduct1.price + testProduct2.price + testProduct1.price;
 
     await page.getByRole("link", { name: "Cart" }).click();
 
-    await expect(
-      page.locator('p.text-center:has-text("You Have 3 items in your cart")')
-    ).toBeVisible();
+    await expect(page.locator("#cartQuantityBanner")).toHaveText(
+      "You have 2 products in your cart."
+    );
 
     // Get the total price text
     const totalPriceText = await page
@@ -209,21 +169,21 @@ test.describe("Adding and removing products from cart", () => {
 
   test("cart persistence after refresh", async ({ page }) => {
     await page
-      .locator('.card-body:has-text("Test Product 1")')
-      .locator('button:has-text("Add to Cart")')
+      .locator(`.card-body:has-text("${testProduct1.name}")`)
+      .locator('button:has-text("ADD TO CART")')
       .click();
 
     await page.getByRole("link", { name: "Cart" }).click();
 
-    await expect(
-      page.locator('p.text-center:has-text("You Have 1 items in your cart")')
-    ).toBeVisible();
+    await expect(page.locator("#cartQuantityBanner")).toHaveText(
+      "You have 1 product in your cart."
+    );
 
     // Refresh the page
     await page.reload({ waitUntil: "domcontentloaded" });
 
-    await expect(
-      page.locator('p.text-center:has-text("You Have 1 items in your cart")')
-    ).toBeVisible();
+    await expect(page.locator("#cartQuantityBanner")).toHaveText(
+      "You have 1 product in your cart."
+    );
   });
 });

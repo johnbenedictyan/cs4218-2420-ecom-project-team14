@@ -1,6 +1,7 @@
 import axios from "axios";
 import { createContext, useContext, useEffect, useReducer } from "react";
 import toast from "react-hot-toast";
+import { useAuth } from "./auth";
 
 const CartContext = createContext();
 
@@ -44,13 +45,17 @@ const cartReducer = (state, action) => {
 };
 
 export const CartProvider = ({ children }) => {
+  const auth = useAuth();
+
+  const user = auth.user ?? "guest";
+
   const [cart, dispatch] = useReducer(cartReducer, {}, () => {
-    const localData = localStorage.getItem("cart");
+    const localData = localStorage.getItem(`cart-${user}`);
     return localData ? JSON.parse(localData) : {};
   });
 
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
+    localStorage.setItem(`cart-${user}`, JSON.stringify(cart));
   }, [cart]);
 
   const addToCart = async (slug) => {

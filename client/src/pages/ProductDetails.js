@@ -1,12 +1,14 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Link, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Layout from "../components/Layout";
 import { useCart } from "../context/cart";
 import "../styles/ProductDetailsStyles.css";
 
 const ProductDetails = () => {
+  const navigate = useNavigate();
+
   const { addToCart } = useCart();
   const params = useParams();
   const [product, setProduct] = useState({});
@@ -118,9 +120,12 @@ const ProductDetails = () => {
                     : ""}
                 </p>
                 <div className="card-name-price">
-                  <Link className="btn btn-info ms-1" to={`/product/${p.slug}`}>
+                  <button
+                    className="btn btn-info ms-1"
+                    onClick={() => navigate(`/product/${p.slug}`)}
+                  >
                     More Details
-                  </Link>
+                  </button>
                 </div>
               </div>
             </div>

@@ -1,10 +1,10 @@
 import "@testing-library/jest-dom";
-import { act, render, screen } from "@testing-library/react";
+import { act, render, screen, fireEvent } from "@testing-library/react";
 import axios from "axios";
 import React from "react";
 import { MemoryRouter, useNavigate, useParams } from "react-router-dom";
-import ProductDetails from "./ProductDetails";
 import { useCart } from "../context/cart";
+import ProductDetails from "./ProductDetails";
 
 // Mock axios
 jest.mock("axios");
@@ -339,12 +339,9 @@ describe("ProductDetails Component", () => {
     const moreDetailsButtons = screen.getAllByText("More Details");
     expect(moreDetailsButtons.length).toBe(relatedProducts.length);
 
-    // Click the first "More Details" button
-    await act(async () => {
-      moreDetailsButtons[0].click();
-    });
+    fireEvent.click(moreDetailsButtons[0]);
 
-    expect(mockNavigate).toHaveBeenCalledWith(`/product/related-1`);
+    expect(mockNavigate).toHaveBeenCalledWith("/product/related-1");
   });
 
   // Error Handling: API Error
@@ -402,7 +399,9 @@ describe("ProductDetails Component", () => {
     expect(screen.getByText(/Category : Electronics/i)).toBeInTheDocument();
 
     // Check for "ADD TO CART" button
-    expect(screen.getByRole("button", {name: "ADD TO CART"})).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "ADD TO CART" })
+    ).toBeInTheDocument();
 
     // Check for product image
     const productImage = screen.getByAltText("Test Product");

@@ -35,6 +35,7 @@ const ProductDetails = () => {
       const { data } = await axios.get(
         `/api/v1/product/related-product/${pid}/${cid}`
       );
+
       // Set default to empty array if data is not truthy
       setRelatedProducts(data.products ?? []);
     } catch (error) {
@@ -94,7 +95,11 @@ const ProductDetails = () => {
         )}
         <div className="d-flex flex-wrap">
           {relatedProducts.map((p) => (
-            <div className="card m-2" key={p._id}>
+            <div
+              className="card m-2 relatedProductCard"
+              key={p._id}
+              id={`related-product-card-${p.slug}`}
+            >
               <img
                 src={`/api/v1/product/product-photo/${p._id}`}
                 className="card-img-top"

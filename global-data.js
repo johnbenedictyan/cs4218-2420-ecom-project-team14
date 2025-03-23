@@ -16,6 +16,9 @@ const testAdmin = {
   password: testPassword,
   answer: "Basketball",
   role: 1,
+  createdAt: "2025-02-02T10:19:12.524Z",
+  updatedAt: "2025-02-13T08:11:12.724Z",
+  __v: 0,
 };
 
 const testUser = {
@@ -26,6 +29,9 @@ const testUser = {
   address: "123 Fake Street",
   password: testPassword,
   answer: "Basketball",
+  createdAt: "2025-02-02T10:19:13.524Z",
+  updatedAt: "2025-02-13T08:11:13.724Z",
+  __v: 0,
 };
 
 const forgetPasswordUser = {
@@ -36,34 +42,46 @@ const forgetPasswordUser = {
   address: "123 Fake Street",
   password: testPassword,
   answer: "Basketball",
+  createdAt: "2025-02-02T10:19:14.524Z",
+  updatedAt: "2025-02-13T08:11:14.724Z",
+  __v: 0,
 };
 
 const testCategory = {
   _id: new ObjectId("67ded4dd7ad06592dc97a763"),
   name: "test category",
   slug: "test-category",
+  createdAt: "2025-02-02T10:19:15.524Z",
+  updatedAt: "2025-02-13T08:11:16.724Z",
+  __v: 0,
 };
 
 const testProduct1 = {
   _id: new ObjectId("67ded57c282d8af763590d9a"),
-  name: "Test Product 1",
-  slug: "test-product-1",
-  description: "Test Product 1 Description",
+  name: "Test Product 101",
+  slug: "test-product-101",
+  description: "Test Product 100 Description",
   quantity: 10,
   shipping: true,
   category: testCategory._id,
   price: 1,
+  createdAt: "2025-02-02T10:19:37.524Z",
+  updatedAt: "2025-02-13T08:11:52.724Z",
+  __v: 0,
 };
 
 const testProduct2 = {
   _id: new ObjectId("67deda6fe90bda948e15487c"),
-  name: "Test Product 2",
-  slug: "test-product-2",
+  name: "Test Product 102",
+  slug: "test-product-102",
   description: "Test Product 2 Description",
   quantity: 20,
   shipping: true,
   category: testCategory._id,
   price: 2,
+  createdAt: "2025-02-02T10:19:38.525Z",
+  updatedAt: "2025-02-13T08:11:53.724Z",
+  __v: 0,
 };
 
 const testProductDeleteProduct = {
@@ -75,17 +93,19 @@ const testProductDeleteProduct = {
   shipping: true,
   category: testCategory._id,
   price: 2,
+  createdAt: "2025-02-02T10:19:39.526Z",
+  updatedAt: "2025-02-13T08:11:54.724Z",
+  __v: 0,
 };
 
 export {
-    forgetPasswordUser,
-    rootURL,
-    testAdmin,
-    testCategory,
-    testPassword,
-    testProduct1,
-    testProduct2,
-    testProductDeleteProduct,
-    testUser
+  forgetPasswordUser,
+  rootURL,
+  testAdmin,
+  testCategory,
+  testPassword,
+  testProduct1,
+  testProduct2,
+  testProductDeleteProduct,
+  testUser,
 };
-

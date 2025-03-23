@@ -6,6 +6,7 @@ import {
   testPassword,
   testProduct1,
   testProduct2,
+  testProductDeleteProduct,
   testUser,
 } from "./global-data";
 import { hashPassword } from "./helpers/authHelper";
@@ -23,6 +24,7 @@ export default async () => {
   await categoryModel.deleteMany({ name: testCategory.name });
   await productModel.deleteMany({ name: testProduct1.name });
   await productModel.deleteMany({ name: testProduct2.name });
+  await productModel.deleteMany({ name: testProductDeleteProduct.name });
   await userModel.deleteMany({ name: testUser.name });
   await userModel.deleteMany({ name: testAdmin.name });
 

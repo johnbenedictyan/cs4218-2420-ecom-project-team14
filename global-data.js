@@ -28,6 +28,16 @@ const testUser = {
   answer: "Basketball",
 };
 
+const forgetPasswordUser = {
+  _id: new ObjectId("67dfc780b53890c3fdc1cd68"),
+  name: "forget password user",
+  email: "forgetPasswordUser@mail.com",
+  phone: "81234567",
+  address: "123 Fake Street",
+  password: testPassword,
+  answer: "Basketball",
+};
+
 const testCategory = {
   _id: new ObjectId("67ded4dd7ad06592dc97a763"),
   name: "test category",
@@ -56,12 +66,26 @@ const testProduct2 = {
   price: 2,
 };
 
-export {
-  rootURL,
-  testAdmin,
-  testCategory,
-  testPassword,
-  testProduct1,
-  testProduct2,
-  testUser,
+const testProductDeleteProduct = {
+  _id: new ObjectId("67dfc8a5f3a658354e181ceb"),
+  name: "Test Product To Be Deleted",
+  slug: "test-product-to-be-deleted",
+  description: "Test Product To Be Deleted Description",
+  quantity: 20,
+  shipping: true,
+  category: testCategory._id,
+  price: 2,
 };
+
+export {
+    forgetPasswordUser,
+    rootURL,
+    testAdmin,
+    testCategory,
+    testPassword,
+    testProduct1,
+    testProduct2,
+    testProductDeleteProduct,
+    testUser
+};
+

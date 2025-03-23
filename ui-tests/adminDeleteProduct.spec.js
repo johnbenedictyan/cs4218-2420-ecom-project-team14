@@ -1,75 +1,45 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import userModel from "../models/userModel";
+import {
+  rootURL,
+  testAdmin,
+  testPassword,
+  testProduct2,
+  testProductDeleteProduct,
+} from "../global-data";
 import productModel from "../models/productModel";
-import { ObjectId } from "mongodb";
 
 dotenv.config();
 
 test.beforeEach(async ({ page }) => {
-  // Connect to DB for test objects creation and deletion
-  await mongoose.connect(process.env.MONGO_URL);
-
-  const hashedPassword =
-    "$2b$10$//wWsN./fEX1WiipH57HG.SAwgkYv1MRrPSkpXM38Dy5seOEhCoUy";
-
-  await new userModel({
-    name: "deleteproductadmin",
-    email: "deleteproductadmin@mail.com",
-    password: hashedPassword,
-    role: 1,
-    address: "123 Test Road",
-    phone: "81234567",
-    answer: "password is cs4218@test.com",
-  }).save();
-
-  const categoryId = new ObjectId("bc7f29ed898fefd6a5f713fd");
-
-  // Create test products in DB
-  await productModel.create({
-    name: "Test Product 1",
-    slug: "test-product-1",
-    description: "Test Product 1 description",
-    quantity: "10",
-    shipping: "1",
-    category: categoryId,
-    price: 10,
-  });
-
-  await productModel.create({
-    name: "Test Product 2",
-    slug: "test-product-2",
-    description: "Test Product 2 description",
-    quantity: "5",
-    shipping: "0",
-    category: categoryId,
-    price: 20,
-  });
-
-  // Login as test admin user
-  await page.goto("http://localhost:3000", { waitUntil: "commit" });
-
+  await page.goto(rootURL, { waitUntil: "domcontentloaded" });
   await page.getByRole("link", { name: "Login" }).click();
-
   await page
     .getByRole("textbox", { name: "Enter Your Email" })
-    .fill("deleteproductadmin@mail.com");
+    .fill(testAdmin.email);
   await page
     .getByRole("textbox", { name: "Enter Your Password" })
-    .fill("cs4218@test.com");
+    .fill(testPassword);
   await page.getByRole("button", { name: "LOGIN" }).click();
+
+  await page.waitForURL(rootURL + "/", { waitUntil: "domcontentloaded" });
+  await page.waitForSelector("#dashboardToggle", { state: "visible" });
+
+  await expect(page.locator("a[href='/register']")).not.toBeVisible();
+  await expect(page.locator("a[href='/login']")).not.toBeVisible();
 });
 
 test.afterEach(async () => {
-  // Delete all test data
-  await userModel.deleteMany({ email: "deleteproductadmin@mail.com" });
-  await productModel.deleteMany({ name: "Test Product 1" });
-
-  await productModel.deleteMany({ name: "Test Product 2" });
-
-  // Disconnect from DB
-  await mongoose.disconnect();
+  try {
+    await mongoose.connect(process.env.MONGO_URL);
+    const product = await productModel.findById(testProductDeleteProduct._id);
+    if (!product) {
+      await productModel(testProductDeleteProduct).save();
+    }
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 test.describe("Admin Delete Product", () => {
@@ -78,18 +48,20 @@ test.describe("Admin Delete Product", () => {
   }) => {
     // Check both items are visible
     await expect(
-      page.locator('.card-body:has-text("Test Product 1")')
+      page.locator(`.card-body:has-text("${testProductDeleteProduct.name}")`)
     ).toBeVisible();
 
     await expect(
-      page.locator('.card-body:has-text("Test Product 2")')
+      page.locator(`.card-body:has-text("${testProduct2.name}")`)
     ).toBeVisible();
 
     // Navigate to Product detail that is to be deleted
-    await page.getByRole("button", { name: "deleteproductadmin" }).click();
+    await page.getByRole("button", { name: testAdmin.name }).click();
     await page.getByRole("link", { name: "Dashboard" }).click();
     await page.getByRole("link", { name: "Products" }).click();
-    await page.getByRole("link", { name: "Test Product 1" }).click();
+    await page
+      .getByRole("link", { name: testProductDeleteProduct.name })
+      .click();
 
     // Handle dialog confirmation for when we click DELETE PRODUCT
     page.once("dialog", (dialog) => {
@@ -102,11 +74,11 @@ test.describe("Admin Delete Product", () => {
     await page.getByText("HOME").click();
     // Should still be on platform
     await expect(
-      page.locator('.card-body:has-text("Test Product 2")')
+      page.locator(`.card-body:has-text("${testProduct2.name}")`)
     ).toBeVisible({ timeout: 10000 });
     // Should be deleted
     await expect(
-      page.locator('.card-body:has-text("Test Product 1")')
+      page.locator(`.card-body:has-text("${testProductDeleteProduct.name}")`)
     ).not.toBeVisible({ timeout: 10000 });
   });
 
@@ -115,18 +87,20 @@ test.describe("Admin Delete Product", () => {
   }) => {
     // Check both items are visible
     await expect(
-      page.locator('.card-body:has-text("Test Product 1")')
+      page.locator(`.card-body:has-text("${testProductDeleteProduct.name}")`)
     ).toBeVisible();
 
     await expect(
-      page.locator('.card-body:has-text("Test Product 2")')
+      page.locator(`.card-body:has-text("${testProduct2.name}")`)
     ).toBeVisible();
 
     // Navigate to Product detail for cancellation of delete test
-    await page.getByRole("button", { name: "deleteproductadmin" }).click();
+    await page.getByRole("button", { name: testAdmin.name }).click();
     await page.getByRole("link", { name: "Dashboard" }).click();
     await page.getByRole("link", { name: "Products" }).click();
-    await page.getByRole("link", { name: "Test Product 1" }).click();
+    await page
+      .getByRole("link", { name: testProductDeleteProduct.name })
+      .click();
 
     // DELETE PRODUCT cancellation in dialog
     page.once("dialog", (dialog) => {
@@ -139,11 +113,11 @@ test.describe("Admin Delete Product", () => {
     await page.getByText("HOME").click();
 
     await expect(
-      page.locator('.card-body:has-text("Test Product 2")')
+      page.locator(`.card-body:has-text("${testProduct2.name}")`)
     ).toBeVisible({ timeout: 10000 });
 
     await expect(
-      page.locator('.card-body:has-text("Test Product 1")')
+      page.locator(`.card-body:has-text("${testProductDeleteProduct.name}")`)
     ).toBeVisible({ timeout: 10000 });
   });
 
@@ -152,18 +126,20 @@ test.describe("Admin Delete Product", () => {
   }) => {
     // Check both items are visible
     await expect(
-      page.locator('.card-body:has-text("Test Product 1")')
+      page.locator(`.card-body:has-text("${testProductDeleteProduct.name}")`)
     ).toBeVisible();
 
     await expect(
-      page.locator('.card-body:has-text("Test Product 2")')
+      page.locator(`.card-body:has-text("${testProduct2.name}")`)
     ).toBeVisible();
 
     // Navigate to Product detail that is to be deleted
-    await page.getByRole("button", { name: "deleteproductadmin" }).click();
+    await page.getByRole("button", { name: testAdmin.name }).click();
     await page.getByRole("link", { name: "Dashboard" }).click();
     await page.getByRole("link", { name: "Products" }).click();
-    await page.getByRole("link", { name: "Test Product 1" }).click();
+    await page
+      .getByRole("link", { name: testProductDeleteProduct.name })
+      .click();
 
     // DELETE PRODUCT confirmation in dialog for redirection
     page.once("dialog", (dialog) => {

@@ -52,7 +52,7 @@ exports[`Profile Component Snapshot matches snapshot 1`] = `
                   class="form-control"
                   disabled=""
                   id="exampleInputEmail1"
-                  placeholder="Enter Your Email "
+                  placeholder="Enter Your Email"
                   type="email"
                   value="john@example.com"
                 />

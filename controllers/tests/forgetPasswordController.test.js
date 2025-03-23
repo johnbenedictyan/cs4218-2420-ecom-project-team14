@@ -10,7 +10,7 @@ describe("Forget Password Controller Tests", () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
-        
+
         req = {
             body: {
                 email: "douglas@mail.com",
@@ -28,7 +28,7 @@ describe("Forget Password Controller Tests", () => {
             address: 'Beautiful Home on Earth',
             role: 0
           }
-      
+
           res = {
             status: jest.fn().mockReturnThis(),
             send: jest.fn(),
@@ -41,12 +41,12 @@ describe("Forget Password Controller Tests", () => {
     // Test 1: Success case where user is able to reset their password with all valid fields
     // This test also covers the case for the upper boundary for BVA for answer (100 characters)
     // This test also covers the case for the lower boundary for BVA for password (6 characters)
-    // This also covers Pairwise Testing Combination 1 (Valid email, Valid answer, Valid new password) 
+    // This also covers Pairwise Testing Combination 1 (Valid email, Valid answer, Valid new password)
     it('should allow the user to reset their password successfully with all valid fields', async () => {
         await forgotPasswordController(req, res);
 
         expect(res.status).toHaveBeenCalledWith(200);
-        // Check that the message shows that the password can be resetted successfully
+        // Check that the message shows that the password can be reset successfully
         expect(res.send.mock.lastCall[0].message).toBe("Password Reset Successfully");
     });
 
@@ -57,7 +57,7 @@ describe("Forget Password Controller Tests", () => {
         req.body.email = "";
 
         await forgotPasswordController(req, res);
-        
+
         expect(res.status).toHaveBeenCalledWith(400);
         // Check that the message shows that the email is required
         expect(res.send.mock.lastCall[0].message).toBe("Email is required");
@@ -98,7 +98,7 @@ describe("Forget Password Controller Tests", () => {
         // Check that the message shows that the answer can only be up to 100 characters
         expect(res.send.mock.lastCall[0].message).toBe("The answer can only be up to 100 characters long");
     });
-    
+
     // Password (Equivalence Partitioning) (There are 3 equivalence classes: Empty password, Non-empty invalid password, Valid password)
     // Valid password is already covered in Test 1
     // Test 6 (Empty Password): Case where new password is empty
@@ -129,7 +129,7 @@ describe("Forget Password Controller Tests", () => {
         userModel.findOne = jest.fn().mockResolvedValue(null);
 
         await forgotPasswordController(req, res);
-        
+
         expect(res.status).toHaveBeenCalledWith(404);
         // Check that the message shows that the email or answer is incorrect
         expect(res.send.mock.lastCall[0].message).toBe("Wrong Email Or Answer");
@@ -180,7 +180,7 @@ describe("Forget Password Controller Tests", () => {
 
     expect(res.status).toHaveBeenCalledWith(400);
     // Check that the message shows that an answer is required
-    expect(res.send.mock.lastCall[0].message).toBe("An answer is required");    
+    expect(res.send.mock.lastCall[0].message).toBe("An answer is required");
   });
 
 
@@ -198,7 +198,7 @@ describe("Forget Password Controller Tests", () => {
 
     expect(res.status).toHaveBeenCalledWith(400);
     // Check that the message shows that new password is required
-    expect(res.send.mock.lastCall[0].message).toBe("New Password is required");   
+    expect(res.send.mock.lastCall[0].message).toBe("New Password is required");
   });
 
   /* Pairwise Testing Combination 5 (Test 13)

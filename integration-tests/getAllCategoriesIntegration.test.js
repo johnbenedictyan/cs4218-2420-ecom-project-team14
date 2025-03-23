@@ -138,21 +138,10 @@ describe("Get All Categories Integration Tests", () => {
   });
 
   /**
-   * Pairwise Testing for Get All Categories
-   *
-   * Dimensions:
-   * 1. Authentication: Authenticated vs Non-authenticated
-   * 2. Database State: Empty vs Non-empty
-   *
-   * This gives us 4 test cases:
-   * 1. Non-authenticated + Empty DB
-   * 2. Non-authenticated + Non-empty DB
-   * 3. Authenticated + Empty DB
-   * 4. Authenticated + Non-empty DB
-   *
+   * Equivalence partitioning tests for getAllCategories: number of categories in database
    */
-  describe("Pairwise Testing for Authentication and Database State", () => {
-    // Test Case 1: Non-authenticated + Empty DB
+  describe("Equivalence partitioning for database tests", () => {
+    // Test Case 1: Empty DB
     it("should return empty category list with empty DB and non-authenticated request", async () => {
       // Clear the database
       await categoryModel.deleteMany({});
@@ -167,7 +156,7 @@ describe("Get All Categories Integration Tests", () => {
       expect(response.body.category.length).toBe(0);
     });
 
-    // Test Case 2: Non-authenticated + Non-empty DB
+    // Test Case 2: Non-empty DB
     it("should return correct categories with non-empty DB and non-authenticated request", async () => {
       // Ensure we have categories in the database
       if ((await categoryModel.countDocuments()) === 0) {
@@ -189,53 +178,55 @@ describe("Get All Categories Integration Tests", () => {
       expect(response.body.category.length).toBe(expectedCount);
     });
 
-    // Test Case 3: Authenticated + Empty DB
-    it("should return empty category list with empty DB and authenticated request", async () => {
-      // Clear the database
-      await categoryModel.deleteMany({});
+    describe("Authentication of users does not affect Category List", async () => {
+      // Test Case 3: Authenticated + Empty DB
+      it("should return empty category list with empty DB and authenticated request", async () => {
+        // Clear the database
+        await categoryModel.deleteMany({});
 
-      const response = await request(app)
-        .get(getAllCategoryPath)
-        .set("Authorization", token)
-        .expect(200);
+        const response = await request(app)
+          .get(getAllCategoryPath)
+          .set("Authorization", token)
+          .expect(200);
 
-      // Verify authentication exists
-      expect(response.request.header.Authorization).toBeTruthy();
+        // Verify authentication exists
+        expect(response.request.header.Authorization).toBeTruthy();
 
-      expect(response.body.success).toBe(true);
-      expect(response.body.message).toBe("All Categories List");
-      expect(response.body.category.length).toBe(0);
-    });
+        expect(response.body.success).toBe(true);
+        expect(response.body.message).toBe("All Categories List");
+        expect(response.body.category.length).toBe(0);
+      });
 
-    // Test Case 4: Authenticated + Non-empty DB
-    it("should return correct categories with non-empty DB and authenticated request", async () => {
-      // Ensure we have categories in the database
-      if ((await categoryModel.countDocuments()) === 0) {
-        await categoryModel.create([
-          {
-            name: "Test Category 1",
-            slug: "test-category-1",
-          },
-          {
-            name: "Test Category 2",
-            slug: "test-category-2",
-          },
-        ]);
-      }
+      // Test Case 4: Authenticated + Non-empty DB
+      it("should return correct categories with non-empty DB and authenticated request", async () => {
+        // Ensure we have categories in the database
+        if ((await categoryModel.countDocuments()) === 0) {
+          await categoryModel.create([
+            {
+              name: "Test Category 1",
+              slug: "test-category-1",
+            },
+            {
+              name: "Test Category 2",
+              slug: "test-category-2",
+            },
+          ]);
+        }
 
-      const expectedCount = await categoryModel.countDocuments();
+        const expectedCount = await categoryModel.countDocuments();
 
-      const response = await request(app)
-        .get(getAllCategoryPath)
-        .set("Authorization", token)
-        .expect(200);
+        const response = await request(app)
+          .get(getAllCategoryPath)
+          .set("Authorization", token)
+          .expect(200);
 
-      // Verify authentication exists
-      expect(response.request.header.Authorization).toBeTruthy();
+        // Verify authentication exists
+        expect(response.request.header.Authorization).toBeTruthy();
 
-      expect(response.body.success).toBe(true);
-      expect(response.body.message).toBe("All Categories List");
-      expect(response.body.category.length).toBe(expectedCount);
+        expect(response.body.success).toBe(true);
+        expect(response.body.message).toBe("All Categories List");
+        expect(response.body.category.length).toBe(expectedCount);
+      });
     });
   });
 });

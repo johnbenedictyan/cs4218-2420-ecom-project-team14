@@ -49,6 +49,7 @@ describe("Product Filters Controller tests", () => {
     // Create mock functions for the chained methods
     mockChain = {
       select: jest.fn().mockReturnThis(),
+      sort: jest.fn().mockReturnThis(),
       skip: jest.fn().mockReturnThis(),
       limit: jest.fn().mockResolvedValue(mockProducts),
     };

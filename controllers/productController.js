@@ -161,7 +161,9 @@ export const createProductController = async (req, res) => {
       products.photo.data = fs.readFileSync(photo.path);
       products.photo.contentType = photo.type;
     } else {
-      products.photo.data = fs.readFileSync("placeholder-image/placeholder_image.jpg");
+      products.photo.data = fs.readFileSync(
+        "placeholder-image/placeholder_image.jpg"
+      );
       products.photo.contentType = "image/jpeg";
     }
 
@@ -511,6 +513,7 @@ export const productFiltersController = async (req, res) => {
     const products = await productModel
       .find(args)
       .select("-photo")
+      .sort({ createdAt: -1 })
       .skip((pageNum - 1) * PER_PAGE_LIMIT) // Use Offset of 1 because we don't want to skip one page
       .limit(PER_PAGE_LIMIT); // Consistent with productListController
 

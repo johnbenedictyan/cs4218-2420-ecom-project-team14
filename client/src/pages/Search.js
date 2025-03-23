@@ -14,7 +14,7 @@ const Search = () => {
   });
   const [page, setPage] = useState(1);
   const navigate = useNavigate();
-  const [cart, setCart] = useCart();
+  const { addToCart } = useCart();
   const [loading, setLoading] = useState(false);
   const [noMorePage, setNoMorePage] = useState(false);
 
@@ -139,14 +139,7 @@ const Search = () => {
                   </button>
                   <button
                     class="btn btn-secondary ms-1"
-                    onClick={() => {
-                      setCart([...cart, p]);
-                      localStorage.setItem(
-                        "cart",
-                        JSON.stringify([...cart, p])
-                      );
-                      toast.success("Item Added to cart");
-                    }}
+                    onClick={() => addToCart(p.slug)}
                   >
                     ADD TO CART
                   </button>

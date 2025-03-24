@@ -1,6 +1,12 @@
 import { expect, test } from "@playwright/test";
 import dotenv from "dotenv";
-import { rootURL, testCategory, testProduct1 } from "../../global-data";
+import {
+  rootURL,
+  testCategory,
+  testPassword,
+  testProduct1,
+  testUser,
+} from "../../global-data";
 
 dotenv.config();
 
@@ -10,10 +16,10 @@ test.describe("Authenticated Non-Admin Users", () => {
     await page.getByRole("link", { name: "Login" }).click();
     await page
       .getByRole("textbox", { name: "Enter Your Email" })
-      .fill("testuser@mail.com");
+      .fill(testUser.email);
     await page
       .getByRole("textbox", { name: "Enter Your Password" })
-      .fill("Exact6");
+      .fill(testPassword);
     await page.getByRole("button", { name: "LOGIN" }).click();
     await page.waitForURL(rootURL + "/", { waitUntil: "domcontentloaded" });
     await page.waitForSelector("#dashboardToggle", { state: "visible" });
@@ -89,14 +95,10 @@ test.describe("Authenticated Non-Admin Users", () => {
       state: "visible",
     });
 
-    const singleProductLinks = await page
-      .locator(`a[href="/product/${testProduct1.slug}"]`)
-      .all();
-    expect(singleProductLinks.length).toBeGreaterThanOrEqual(1);
-    for (let singleProductLink of singleProductLinks) {
-      expect(singleProductLink).toBeVisible();
-    }
-    await singleProductLinks[0].click();
+    await page
+      .locator(`#product-card-${testProduct1.slug}`)
+      .getByRole("button", { name: "More Details" })
+      .click();
     expect(page.url()).toBe(rootURL + `/product/${testProduct1.slug}`);
   });
 
@@ -128,6 +130,7 @@ test.describe("Authenticated Non-Admin Users", () => {
 
     expect(page.url()).toBe(rootURL + "/dashboard/user");
   });
+
   test("Should be able to visit the user orders page", async ({ page }) => {
     await page.locator("#dashboardToggle").click();
 
@@ -141,6 +144,7 @@ test.describe("Authenticated Non-Admin Users", () => {
 
     expect(page.url()).toBe(rootURL + "/dashboard/user/orders");
   });
+
   test("Should be able to visit the user profile page", async ({ page }) => {
     await page.locator("#dashboardToggle").click();
 

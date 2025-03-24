@@ -23,7 +23,7 @@ test.beforeEach(async ({ page }) => {
 
     // Login to become authenticated user
     // Navigating to login page
-    await page.goto('http://localhost:3000/login');
+    await page.goto('http://localhost:3000/login', { waitUntil: 'commit' });
     // Inputting user details in login page to login
     await page.getByRole('textbox', { name: 'Enter Your Email' }).fill('douglas.lim@mail.com');
     await page.getByRole('textbox', { name: 'Enter Your Password' }).fill('Exact6');

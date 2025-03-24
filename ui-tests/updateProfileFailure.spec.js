@@ -196,7 +196,7 @@ test.describe("Update Profile Validation UI tests (Invalid inputs only)", () => 
 
     // Log out and log back in using old password to see password was not changed
     await page.getByRole("button", { name: initialName }).click();
-    await page.getByRole("button", { name: "Logout" }).click();
+    await page.getByRole("link", { name: "Logout" }).click();
     await page.getByRole("link", { name: "Login" }).click();
     await page
       .getByRole("textbox", { name: "Enter Your Email" })

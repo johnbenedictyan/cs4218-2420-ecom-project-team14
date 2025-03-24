@@ -10,7 +10,6 @@ import "../styles/Header.css";
 const Header = () => {
   const [auth, setAuth] = useAuth();
   const { cart } = useCart();
-  const categories = useCategory();
 
   const handleLogout = () => {
     setAuth({
@@ -82,9 +81,9 @@ const Header = () => {
                       </NavLink>
                     </li>
                     <li>
-                      <button onClick={handleLogout} className="dropdown-item">
+                      <Link onClick={handleLogout} className="dropdown-item">
                         Logout
-                      </button>
+                      </Link>
                     </li>
                   </ul>
                 </li>

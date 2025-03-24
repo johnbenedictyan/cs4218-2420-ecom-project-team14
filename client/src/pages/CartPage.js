@@ -142,6 +142,7 @@ const CartPage = () => {
                           parseInt(e.target.value, 10) ?? 1
                         )
                       }
+                      value={p.quantity}
                     >
                       {Array.from({ length: p.inventory }, (_, i) => i + 1).map(
                         (x) => (

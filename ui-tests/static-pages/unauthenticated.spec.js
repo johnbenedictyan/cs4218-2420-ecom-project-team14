@@ -81,14 +81,10 @@ test.describe("Unauthenticated Users", () => {
       state: "visible",
     });
 
-    const singleProductLinks = await page
-      .locator(`a[href="/product/${testProduct1.slug}"]`)
-      .all();
-    expect(singleProductLinks.length).toBeGreaterThanOrEqual(1);
-    for (let singleProductLink of singleProductLinks) {
-      expect(singleProductLink).toBeVisible();
-    }
-    await singleProductLinks[0].click();
+    await page
+      .locator(`#product-card-${testProduct1.slug}`)
+      .getByRole("button", { name: "More Details" })
+      .click();
     expect(page.url()).toBe(rootURL + `/product/${testProduct1.slug}`);
   });
 

@@ -10,32 +10,27 @@ test.beforeEach(async ({ page }) => {
   await mongoose.connect(process.env.MONGO_URL);
 
   // Creating user for test
-  const hashedPassword =
-    "$2b$10$u/a/pMmAY0Iezeuna3W1OOiggduh3sEla8jhXvg0hUDW6vBIeTeWa";
+  const hashedPassword = "$2b$10$u/a/pMmAY0Iezeuna3W1OOiggduh3sEla8jhXvg0hUDW6vBIeTeWa";
 
   await new userModel({
-    name: "Douglas Lim",
-    email: "douglas.lim@mail.com",
-    phone: "91123321",
-    address: "766 Kent Ridge Road",
-    password: hashedPassword,
-    answer: "Football",
+      name: "Douglas Lim", 
+      email: "douglas.lim@mail.com", 
+      phone: "91123321", 
+      address: "766 Kent Ridge Road", 
+      password: hashedPassword, 
+      answer: "Football"
   }).save();
 
   // Login to become authenticated user
   // Navigating to login page
-  await page.goto("http://localhost:3000/login");
+  await page.goto('http://localhost:3000/login', { waitUntil: 'commit' });
   // Inputting user details in login page to login
-  await page
-    .getByRole("textbox", { name: "Enter Your Email" })
-    .fill("douglas.lim@mail.com");
-  await page
-    .getByRole("textbox", { name: "Enter Your Password" })
-    .fill("Exact6");
+  await page.getByRole('textbox', { name: 'Enter Your Email' }).fill('douglas.lim@mail.com');
+  await page.getByRole('textbox', { name: 'Enter Your Password' }).fill('Exact6');
   // Click on the login button
-  await page.getByRole("button", { name: "LOGIN" }).click();
-  // Check that toast message for successful login is shown after login
-  await expect(page.getByText("login successfully")).toBeVisible();
+  await page.getByRole('button', { name: 'LOGIN' }).click();
+  // Check that toast message for successful login is shown after login 
+  await expect(page.getByText('login successfully')).toBeVisible();
 });
 
 test.afterEach(async () => {

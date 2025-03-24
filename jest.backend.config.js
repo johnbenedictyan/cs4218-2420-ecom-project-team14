@@ -18,7 +18,7 @@ export default {
 
   // jest code coverage
   collectCoverage: true,
-  collectCoverageFrom: ["controllers/**", "middlewares/**"],
+  collectCoverageFrom: ["controllers/**", "middlewares/**", "helpers/**"],
   coverageThreshold: {
     global: {
       lines: 100,

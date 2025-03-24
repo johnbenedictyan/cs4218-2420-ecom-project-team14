@@ -22,7 +22,7 @@ test.beforeEach(async ({ page }) => {
     }).save();
 
     // Navigating to home page
-    await page.goto('http://localhost:3000');
+    await page.goto('http://localhost:3000', { waitUntil: 'commit' });
 });
 
 test.afterEach(async () => {

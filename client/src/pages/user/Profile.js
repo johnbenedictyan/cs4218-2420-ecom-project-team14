@@ -17,11 +17,18 @@ const Profile = () => {
 
   //get user data
   useEffect(() => {
-    const { email, name, phone, address } = auth?.user;
-    setName(name);
-    setPhone(phone);
-    setEmail(email);
-    setAddress(address);
+    if (auth?.user) {
+      const { email, name, phone, address } = auth?.user;
+      setName(name);
+      setPhone(phone);
+      setEmail(email);
+      setAddress(address);
+    } else {
+      setName("");
+      setPhone("");
+      setEmail("");
+      setAddress("");
+    }
   }, [auth?.user]);
 
   const validateData = () => {

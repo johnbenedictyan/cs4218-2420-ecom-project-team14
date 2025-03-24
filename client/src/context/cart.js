@@ -1,6 +1,7 @@
 import axios from "axios";
 import { createContext, useContext, useEffect, useReducer } from "react";
 import toast from "react-hot-toast";
+import { useAuth } from "./auth";
 
 const CartContext = createContext();
 
@@ -38,20 +39,31 @@ const cartReducer = (state, action) => {
     case "CLEAR_CART":
       toast.success("Cart Cleared Successfully");
       return {};
+    case "SET_CART":
+      const { cart } = action.payload;
+      return cart;
     default:
       return state;
   }
 };
 
 export const CartProvider = ({ children }) => {
-  const [cart, dispatch] = useReducer(cartReducer, {}, () => {
-    const localData = localStorage.getItem("cart");
-    return localData ? JSON.parse(localData) : {};
-  });
+  const [auth] = useAuth();
+  const [cart, dispatch] = useReducer(cartReducer, {});
 
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
+    const user = auth?.user ?? "guest";
+    const localData = localStorage.getItem(`cart-${user}`);
+    dispatch({
+      type: "SET_CART",
+      payload: { cart: localData ? JSON.parse(localData) : {} },
+    });
+  }, [auth]);
+
+  useEffect(() => {
+    const user = auth?.user ?? "guest";
+    localStorage.setItem(`cart-${user}`, JSON.stringify(cart));
+  }, [cart, auth]);
 
   const addToCart = async (slug) => {
     const { data } = await axios.get(`/api/v1/product/get-product/${slug}`);

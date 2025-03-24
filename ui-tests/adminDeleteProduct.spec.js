@@ -77,19 +77,17 @@ test.describe("Admin Delete Product", () => {
     page,
   }) => {
     // Check both items are visible
-    await expect(
-      page.locator('.card-body:has-text("Test Product 1")')
-    ).toBeVisible();
+    await expect(page.locator("#product-card-test-product-1")).toBeVisible();
 
-    await expect(
-      page.locator('.card-body:has-text("Test Product 2")')
-    ).toBeVisible();
+    await expect(page.locator("#product-card-test-product-2")).toBeVisible();
 
     // Navigate to Product detail that is to be deleted
     await page.getByRole("button", { name: "deleteproductadmin" }).click();
     await page.getByRole("link", { name: "Dashboard" }).click();
     await page.getByRole("link", { name: "Products" }).click();
-    await page.getByRole("link", { name: "Test Product 1" }).click();
+    await page
+      .locator('a[href="/dashboard/admin/product/test-product-1"]')
+      .click();
 
     // Handle dialog confirmation for when we click DELETE PRODUCT
     page.once("dialog", (dialog) => {
@@ -101,32 +99,30 @@ test.describe("Admin Delete Product", () => {
     // Navigate back HOME
     await page.getByText("HOME").click();
     // Should still be on platform
-    await expect(
-      page.locator('.card-body:has-text("Test Product 2")')
-    ).toBeVisible({ timeout: 10000 });
+    await expect(page.locator("#product-card-test-product-2")).toBeVisible({
+      timeout: 10000,
+    });
     // Should be deleted
-    await expect(
-      page.locator('.card-body:has-text("Test Product 1")')
-    ).not.toBeVisible({ timeout: 10000 });
+    await expect(page.locator("#product-card-test-product-1")).not.toBeVisible({
+      timeout: 10000,
+    });
   });
 
   test("should not delete product when dialog is not accepted with a 'yes'", async ({
     page,
   }) => {
     // Check both items are visible
-    await expect(
-      page.locator('.card-body:has-text("Test Product 1")')
-    ).toBeVisible();
+    await expect(page.locator("#product-card-test-product-1")).toBeVisible();
 
-    await expect(
-      page.locator('.card-body:has-text("Test Product 2")')
-    ).toBeVisible();
+    await expect(page.locator("#product-card-test-product-2")).toBeVisible();
 
     // Navigate to Product detail for cancellation of delete test
     await page.getByRole("button", { name: "deleteproductadmin" }).click();
     await page.getByRole("link", { name: "Dashboard" }).click();
     await page.getByRole("link", { name: "Products" }).click();
-    await page.getByRole("link", { name: "Test Product 1" }).click();
+    await page
+      .locator('a[href="/dashboard/admin/product/test-product-1"]')
+      .click();
 
     // DELETE PRODUCT cancellation in dialog
     page.once("dialog", (dialog) => {
@@ -138,32 +134,30 @@ test.describe("Admin Delete Product", () => {
     // Navigate back HOME
     await page.getByText("HOME").click();
 
-    await expect(
-      page.locator('.card-body:has-text("Test Product 2")')
-    ).toBeVisible({ timeout: 10000 });
+    await expect(page.locator("#product-card-test-product-2")).toBeVisible({
+      timeout: 10000,
+    });
 
-    await expect(
-      page.locator('.card-body:has-text("Test Product 1")')
-    ).toBeVisible({ timeout: 10000 });
+    await expect(page.locator("#product-card-test-product-1")).toBeVisible({
+      timeout: 10000,
+    });
   });
 
   test("should redirect to 'all products list' page after delete", async ({
     page,
   }) => {
     // Check both items are visible
-    await expect(
-      page.locator('.card-body:has-text("Test Product 1")')
-    ).toBeVisible();
+    await expect(page.locator("#product-card-test-product-1")).toBeVisible();
 
-    await expect(
-      page.locator('.card-body:has-text("Test Product 2")')
-    ).toBeVisible();
+    await expect(page.locator("#product-card-test-product-2")).toBeVisible();
 
     // Navigate to Product detail that is to be deleted
     await page.getByRole("button", { name: "deleteproductadmin" }).click();
     await page.getByRole("link", { name: "Dashboard" }).click();
     await page.getByRole("link", { name: "Products" }).click();
-    await page.getByRole("link", { name: "Test Product 1" }).click();
+    await page
+      .locator('a[href="/dashboard/admin/product/test-product-1"]')
+      .click();
 
     // DELETE PRODUCT confirmation in dialog for redirection
     page.once("dialog", (dialog) => {

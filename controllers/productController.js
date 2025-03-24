@@ -738,11 +738,18 @@ export const brainTreePaymentController = async (req, res) => {
   try {
     const { nonce, cart } = req.body;
     let total = 0;
-    cart.map((i) => {
-      total += i.price;
+    const productsPaid = []
+    
+    Object.values(cart).map(item => {
+      total += item.price * item.quantity
+      for (let i = 0; i < item.quantity; i++) {
+        productsPaid.push(new mongoose.Types.ObjectId(item.productId));
+      }
     });
+    
     // Truncate price to 2dp
     total = total.toFixed(2);
+
     let newTransaction = gateway.transaction.sale(
       {
         amount: total,
@@ -756,34 +763,22 @@ export const brainTreePaymentController = async (req, res) => {
           if (result.success) {
             // Create order with processing order status
             const order = new orderModel({
-              products: cart,
+              products: productsPaid,
               payment: result,
               buyer: req.user._id,
               status: "Processing",
             }).save();
 
-            const productCount = new Map();
-            // Getting the quantity of each product in the order (To avoid making too many API calls)
-            cart.forEach((product) => {
-              if (productCount.get(product._id)) {
-                productCount.set(
-                  product._id,
-                  productCount.get(product._id) + 1
-                );
-              } else {
-                productCount.set(product._id, 1);
-              }
-            });
 
             // Decrementing product count for each product
-            productCount.forEach((value, key) => {
+            Object.values(cart).forEach(value => {
               productModel
-                .findByIdAndUpdate(key, { $inc: { quantity: -value } })
+                .findByIdAndUpdate(value.productId, { $inc: { quantity: -value.quantity } })
                 .exec();
             });
           } else {
             const order = new orderModel({
-              products: cart,
+              products: productsPaid,
               payment: result,
               buyer: req.user._id,
             }).save();

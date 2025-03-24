@@ -64,16 +64,17 @@ describe("Search Product Integration Tests", () => {
    * 5. No capital letter -> success and return products that match it in its name or
    * description
    * 6. Valid page (e.g 1) just on the boundary -> should return products from page 1
-   * 7. Test with invalid page (e.g 0) which is just outside the page boundary
-   * Should return products from page 1
+   * 7. Invalid page (e.g 0) which is just outside (less than) the page boundary -> Should return products from page 1
    *
    */
   describe("Boundary Value Analysis test cases", () => {
-    // BVA test: smallest valid input (1 character)
+    // BVA test:
+    // 1. smallest valid input (1 character)
+    // 2. Valid page (e.g 1) just on boundary
     it("Should fetch associated products given minimum valid input that matches product name or description", async () => {
-      const keyword = "1"; // smallest valid input, no capital letter
+      const keyword = "1"; // smallest valid input
       const response = await request(app).get(
-        `${productPath}/search/${keyword}/1`
+        `${productPath}/search/${keyword}/1` // page just on boundary
       );
 
       expect(response.status).toBe(200);

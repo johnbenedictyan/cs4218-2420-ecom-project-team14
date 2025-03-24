@@ -70,7 +70,8 @@ describe("Search Product Controller tests", () => {
    * 8. No capital letter -> success and return products that match it in its name or
    * description
    * 9. Valid page (e.g 1) just on the boundary -> should return products from page 1
-   *
+   * 10. Invalid page - page that is greater than the last non-empty page of products (just outside (more than) the boundary) -> Should return products from page 1
+   * 11. Invalid page (e.g 0) which is just outside (less than) the page boundary -> Should return products from page 1
    */
   describe("Boundary Value Analysis test cases", () => {
     // BVA test:
@@ -199,7 +200,7 @@ describe("Search Product Controller tests", () => {
    * 1. Products returned is less than or equal per page product limit
    * (Test at the boundary of per page product limit and one more than per page product limit)
    *
-   * 2. Test with invalid page (e.g 0) which is just outside the page boundary
+   * 2. Test with invalid page (e.g 0) which is just outside (less than) the page boundary
    * Should return products from page 1
    *
    * 3. Test with page that is greater than the last non-empty page of products (just outside the boundary)

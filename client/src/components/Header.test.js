@@ -122,11 +122,7 @@ describe("Header Component", () => {
       );
 
       expect(getByRole("link", { name: "Dashboard" })).toBeInTheDocument();
-      expect(getByRole("link", { name: "Logout" })).toBeInTheDocument();
-      expect(getByRole("link", { name: "Logout" })).toHaveAttribute(
-        "href",
-        "/"
-      );
+      expect(getByRole("button", { name: "Logout" })).toBeInTheDocument();
     });
 
     it("should not render register and login links", () => {
@@ -153,7 +149,7 @@ describe("Header Component", () => {
         </MemoryRouter>
       );
 
-      fireEvent.click(getByRole("link", { name: "Logout" }));
+      fireEvent.click(getByRole("button", { name: "Logout" }));
 
       await waitFor(() => {
         expect(mockSetAuth).toHaveBeenCalledTimes(1);

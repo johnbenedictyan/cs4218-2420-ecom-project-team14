@@ -16,10 +16,6 @@ jest.mock("../hooks/useCategory");
 
 describe("Header Component", () => {
   const mockSetAuth = jest.fn();
-  const mockCategories = [
-    { name: "category1", slug: "cat-1" },
-    { name: "category2", slug: "cat-2" },
-  ];
   const mockCart = { 1: { quantity: 1 }, 2: { quantity: 1 } };
 
   const mockAdminUser = {
@@ -65,8 +61,8 @@ describe("Header Component", () => {
       "/"
     );
 
-    expect(getByRole("link", { name: "Categories" })).toBeInTheDocument();
-    expect(getByRole("link", { name: "Categories" })).toHaveAttribute(
+    expect(getByRole("link", { name: "All Categories" })).toBeInTheDocument();
+    expect(getByRole("link", { name: "All Categories" })).toHaveAttribute(
       "href",
       "/categories"
     );
@@ -76,28 +72,6 @@ describe("Header Component", () => {
       "href",
       "/cart"
     );
-  });
-
-  it("renders category links correctly", () => {
-    useAuth.mockReturnValue([null, mockSetAuth]);
-    useCategory.mockReturnValue(mockCategories);
-
-    const { getByRole } = render(
-      <MemoryRouter>
-        <Header />
-      </MemoryRouter>
-    );
-
-    for (let idx = 0; idx < mockCategories.length; idx++) {
-      const currCategory = mockCategories[idx];
-      expect(
-        getByRole("link", { name: currCategory.name })
-      ).toBeInTheDocument();
-      expect(getByRole("link", { name: currCategory.name })).toHaveAttribute(
-        "href",
-        `/category/${currCategory.slug}`
-      );
-    }
   });
 
   describe("when user is logged in", () => {
@@ -149,10 +123,6 @@ describe("Header Component", () => {
 
       expect(getByRole("link", { name: "Dashboard" })).toBeInTheDocument();
       expect(getByRole("link", { name: "Logout" })).toBeInTheDocument();
-      expect(getByRole("link", { name: "Logout" })).toHaveAttribute(
-        "href",
-        "/"
-      );
     });
 
     it("should not render register and login links", () => {

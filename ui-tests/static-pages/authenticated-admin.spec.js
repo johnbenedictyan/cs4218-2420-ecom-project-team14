@@ -1,12 +1,14 @@
 import { expect, test } from "@playwright/test";
 import dotenv from "dotenv";
+import {
+  rootURL,
+  testAdmin,
+  testCategory,
+  testPassword,
+  testProduct1,
+} from "../../global-data";
 
 dotenv.config();
-
-const categorySlug = "test-category-zz";
-const productSlug = "test-product-zz";
-
-const rootURL = "http://localhost:3000";
 
 test.describe("Authenticated Admin Users", () => {
   test.beforeEach(async ({ page }) => {
@@ -14,13 +16,15 @@ test.describe("Authenticated Admin Users", () => {
     await page.getByRole("link", { name: "Login" }).click();
     await page
       .getByRole("textbox", { name: "Enter Your Email" })
-      .fill("testadmin@mail.com");
+      .fill(testAdmin.email);
     await page
       .getByRole("textbox", { name: "Enter Your Password" })
-      .fill("Exact6");
+      .fill(testPassword);
     await page.getByRole("button", { name: "LOGIN" }).click();
     await page.waitForURL(rootURL + "/", { waitUntil: "domcontentloaded" });
     await page.waitForSelector("#dashboardToggle", { state: "visible" });
+    await expect(page.locator("a[href='/register']")).not.toBeVisible();
+    await expect(page.locator("a[href='/login']")).not.toBeVisible();
   });
 
   test("Should be able to visit the home page", async ({ page }) => {
@@ -87,32 +91,28 @@ test.describe("Authenticated Admin Users", () => {
   });
 
   test("Should be able to visit the single product page", async ({ page }) => {
-    await page.waitForSelector(`#product-card-${productSlug}`, {
+    await page.waitForSelector(`#product-card-${testProduct1.slug}`, {
       state: "visible",
     });
 
-    const singleProductLinks = await page
-      .locator('a[href="/product/test-product-zz"]')
-      .all();
-    expect(singleProductLinks.length).toBeGreaterThanOrEqual(1);
-    for (let singleProductLink of singleProductLinks) {
-      expect(singleProductLink).toBeVisible();
-    }
-    await singleProductLinks[0].click();
-    expect(page.url()).toBe(rootURL + "/product/test-product-zz");
+    await page
+      .locator(`#product-card-${testProduct1.slug}`)
+      .getByRole("button", { name: "More Details" })
+      .click();
+    expect(page.url()).toBe(rootURL + `/product/${testProduct1.slug}`);
   });
 
   test("Should be able to visit the single category page", async ({ page }) => {
-    await page.goto("http://localhost:3000/categories", {
+    await page.goto(rootURL + "/categories", {
       waitUntil: "domcontentloaded",
     });
 
-    await page.waitForSelector(`#category-card-${categorySlug}`, {
+    await page.waitForSelector(`#category-card-${testCategory.slug}`, {
       state: "visible",
     });
 
     const singleCategoryLinks = await page
-      .locator('a[href="/category/test-category-zz"]')
+      .locator(`a[href="/category/${testCategory.slug}"]`)
       .all();
 
     expect(singleCategoryLinks.length).toBeGreaterThanOrEqual(1);
@@ -120,7 +120,7 @@ test.describe("Authenticated Admin Users", () => {
       expect(singleCategoryLink).toBeVisible();
     }
     await singleCategoryLinks[0].click();
-    expect(page.url()).toBe(rootURL + "/category/test-category-zz");
+    expect(page.url()).toBe(rootURL + `/category/${testCategory.slug}`);
   });
 
   test("Should be able to visit the admin dashboard page", async ({ page }) => {
@@ -195,11 +195,11 @@ test.describe("Authenticated Admin Users", () => {
     expect(page.url()).toBe(rootURL + "/dashboard/admin/products");
 
     await page
-      .locator('a[href="/dashboard/admin/product/test-product-zz"]')
+      .locator(`a[href="/dashboard/admin/product/${testProduct1.slug}"]`)
       .click();
 
     expect(page.url()).toBe(
-      rootURL + "/dashboard/admin/product/test-product-zz"
+      rootURL + `/dashboard/admin/product/${testProduct1.slug}`
     );
   });
 

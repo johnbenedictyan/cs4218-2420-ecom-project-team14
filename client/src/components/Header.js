@@ -10,7 +10,6 @@ import "../styles/Header.css";
 const Header = () => {
   const [auth, setAuth] = useAuth();
   const { cart } = useCart();
-  const categories = useCategory();
 
   const handleLogout = () => {
     setAuth({
@@ -51,28 +50,10 @@ const Header = () => {
                 Search
               </NavLink>
             </li>
-            <li className="nav-item dropdown">
-              <Link
-                className="nav-link dropdown-toggle"
-                to={"/categories"}
-                data-bs-toggle="dropdown"
-              >
-                Categories
-              </Link>
-              <ul className="dropdown-menu">
-                <li>
-                  <Link className="dropdown-item" to={"/categories"}>
-                    All Categories
-                  </Link>
-                </li>
-                {categories?.map((c) => (
-                  <li key={c.slug}>
-                    <Link className="dropdown-item" to={`/category/${c.slug}`}>
-                      {c.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+            <li className="nav-item">
+              <NavLink to="/categories" className="nav-link ">
+                All Categories
+              </NavLink>
             </li>
 
             {auth?.user ? (
@@ -100,13 +81,9 @@ const Header = () => {
                       </NavLink>
                     </li>
                     <li>
-                      <NavLink
-                        onClick={handleLogout}
-                        to="/"
-                        className="dropdown-item"
-                      >
+                      <Link onClick={handleLogout} className="dropdown-item">
                         Logout
-                      </NavLink>
+                      </Link>
                     </li>
                   </ul>
                 </li>

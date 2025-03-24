@@ -31,7 +31,7 @@ const UpdateProduct = () => {
       setDescription(data.product.description);
       setPrice(data.product.price);
       setQuantity(data.product.quantity);
-      setShipping(data.product.shipping);
+      setShipping(data.product.shipping === true || data.product.shipping === "1" ? "1" : "0");
       setCategory(data.product.category._id);
     } catch (error) {
       console.log(error);
